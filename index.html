@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Itin — Pacific Coast Road Trip Wireframe</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<!-- Cal Sans (app-wide) + itin font options (Google Fonts) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Instrument+Serif:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  /*
+  =============================================
+  ITIN WIREFRAME — DEVELOPER HANDOFF (LIVE PROTOTYPE)
+  Pacific Coast Road Trip · May 29 – Jun 5, 2026
+  =============================================
+
+  This is a clickable wireframe, not production code. It demonstrates the
+  intended interactions so a developer can see how the app should feel.
+
+  WORKING INTERACTIONS (see notes at bottom of file):
+  - Heart toggle on saveable elements
+  - Live search filter (Home)
+  - "Add element" inserts a nameable card
+  - "Invite" share sheet with copy-link
+  - Drag-to-reorder elements within a day (pointer + touch)
+  - Trip search (search icon on trip view): live text search across all
+    elements, day headers included; empty days collapse while searching
+  - Trip filter (filter icon on trip view): bottom sheet filtering by
+    element type, Want to go (hearts), and Favorites (stars)
+  - Heart = "Want to go", star = "Favorites" — both toggleable per card
+  - Day notes: editable auto-growing notes box at the end of each day
+  - New itin (any + button): full-screen create page — trip name,
+    participants (toggle avatars), start/end dates, location chips, cover
+    photo (file picker), trip type. Create prepends a card to Home
+  - Explore tab (compass nav): world map of published itineraries with a
+    number badge per region (US = states, elsewhere = countries); tapping a
+    badge opens a bottom sheet listing that region's published itins.
+    Data in EXPLORE_REGIONS
+  - Saved tab (star nav): star any published itin in a region sheet to
+    favorite it; the Saved screen shows a compact list of starred itins
+    (savedItins set, keyed regionKey-index)
+  - Profile tab (person nav): cover photo + overlapping avatar, name/handle/
+    bio, stat row, and a "Countries visited" chip grid (PROFILE_COUNTRIES)
+  - Element meta chips: per-card info chips (times, status pills, link
+    chips) injected from the CARD_META map keyed by element name
+  - Tap any element card: bottom sheet to edit name, details, time, tag,
+    and link (with delete); saving rebuilds the card and its chips.
+    Booking confirmation copy now lives on the "tap to copy" line only
+  - Tap a photo tile: lightbox with prev/next arrows through that
+    element's photos; tap anywhere to close
+  - Edit sheet Photos row: remove photos (✕) or add up to 4 from the
+    device via a real file picker (stored as data URLs, DOM-only)
+  - Trip map (map icon on trip view): Leaflet map with pins for every
+    location-based element, color-matched to element types, day filter chips,
+    and a dashed drive route. Pin coordinates are approximate (wireframe).
+  - Tap a booking card to copy its confirmation number
+  - Unbuilt nav tabs show a "coming soon" toast
+
+  PHOTOS:
+  Element photos render as small inset tiles (.photo-tiles > .pt) that fill
+  left to right, max 4 per element (extras hidden via CSS nth-child cap).
+  Colored .pt-ph tiles are placeholders for real images, color-matched to
+  the actual photos (see legend at bottom). To add a photo to an element:
+    <div class="photo-tiles"><img class="pt" src="your-image.jpg" alt="..."></div>
+  =============================================
+  */
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; background: #F1EFE8; display: flex; justify-content: center; align-items: center; padding: 40px 20px; min-height: 100vh; }
+  .phone { width: 375px; background: #fff; border: 1px solid #ddd; border-radius: 40px; overflow: hidden; display: flex; flex-direction: column; min-height: 720px; height: 760px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); position: relative; }
+  .dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 20px; z-index: 45; }
+  .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+  .screen.active { display: flex; }
+  .sbar { padding: 0 24px; height: 58px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+  .trip-screen .sbar { position: absolute; top: 0; left: 0; right: 0; z-index: 20; background: transparent; }
+  .trip-screen .sbar-t { color: #fff; }
+  .trip-screen .sbar-i [fill="#1a1a1a"] { fill: #fff; }
+  .trip-screen .sbar-i [stroke="#1a1a1a"] { stroke: #fff; }
+  .trip-screen .sbar { transition: background 0.2s ease; }
+  .trip-screen.scrolled .sbar { background: var(--pal-bg); }
+  .trip-screen.scrolled .sbar-t { color: var(--pal-text); }
+  .trip-screen.scrolled .sbar-i [fill="#1a1a1a"] { fill: var(--pal-text); }
+  .trip-screen.scrolled .sbar-i [stroke="#1a1a1a"] { stroke: var(--pal-text); }
+  .trip-screen.scrolled .days-nav { box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+  /* An open itinerary uses the full screen — hide the bottom nav (hero back button returns Home) */
+  .trip-screen .nav { display: none; }
+  .trip-screen .content { padding-bottom: 40px; background: var(--pal-bg); transition: background-color 0.3s ease; }
+
+  /* ===== ITIN PALETTE SYSTEM (paintbrush customizer) ===== */
+  /* Classic = base defaults (matches the original look). Themed palettes override below. */
+  .trip-screen {
+    --itin-font: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --pal-bg: #ffffff;
+    --pal-text: #1a1a1a;
+    --pal-ed: #999999;
+    --pal-notes-text: #444444;
+    --pal-notes-label: #999999;
+    --pal-muted: #bbbbbb;
+    --pal-line: #f0f0f0;
+    --pal-card-bg: #ffffff;
+    --pal-card-border: #ececec;
+    --pal-notes-bg: #F7F5EC;
+    --pal-notes-border: #eae7dc;
+    --pal-chip-border: #dddddd;
+    --pal-chip-text: #888888;
+    --pal-chip-on-bg: #1a1a1a;
+    --pal-chip-on-text: #ffffff;
+    --pal-city-bg: #31E981;
+    --pal-city-text: #000000;
+  }
+  /* Supporting tones derived from each themed palette's bg + text */
+  .trip-screen.pal-wanderlust, .trip-screen.pal-cozy, .trip-screen.pal-nature {
+    --pal-ed: color-mix(in srgb, var(--pal-text) 65%, var(--pal-bg));
+    --pal-notes-text: color-mix(in srgb, var(--pal-text) 82%, var(--pal-bg));
+    --pal-notes-label: color-mix(in srgb, var(--pal-text) 60%, var(--pal-bg));
+    --pal-muted: color-mix(in srgb, var(--pal-text) 45%, var(--pal-bg));
+    --pal-line: color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg));
+    --pal-card-bg: color-mix(in srgb, var(--pal-text) 6%, var(--pal-bg));
+    --pal-card-border: color-mix(in srgb, var(--pal-text) 16%, var(--pal-bg));
+    --pal-notes-bg: color-mix(in srgb, var(--pal-text) 9%, var(--pal-bg));
+    --pal-notes-border: color-mix(in srgb, var(--pal-text) 18%, var(--pal-bg));
+    --pal-chip-border: color-mix(in srgb, var(--pal-text) 26%, var(--pal-bg));
+    --pal-chip-text: color-mix(in srgb, var(--pal-text) 55%, var(--pal-bg));
+    --pal-chip-on-bg: var(--pal-text);
+    --pal-chip-on-text: var(--pal-bg);
+  }
+  .trip-screen.pal-wanderlust { --pal-bg: #2A1342; --pal-text: #D2E8FF; --pal-city-bg: #FFEFFE; --pal-city-text: #2A1342; }
+  .trip-screen.pal-cozy       { --pal-bg: #F7F2B6; --pal-text: #4C2719; --pal-city-bg: #26BEFF; --pal-city-text: #123A42; --pal-chip-on-bg: #26BEFF; --pal-chip-on-text: #123A42; }
+  .trip-screen.pal-nature     { --pal-bg: #454F2A; --pal-text: #F0F5CE; --pal-city-bg: #F0F5CE; --pal-city-text: #454F2A; }
+  /* Cozy: blue accent for the button-like controls */
+  .trip-screen.pal-cozy .collab-add { background: var(--pal-city-bg); }
+  .trip-screen.pal-cozy .collab-add svg { stroke: var(--pal-city-text); }
+
+  /* Itin font options (applied to the whole trip screen) */
+  .trip-screen { font-family: var(--itin-font); }
+  .trip-screen.font-elegant    { --itin-font: 'Instrument Serif', Georgia, 'Times New Roman', serif; }
+  .trip-screen.font-typewriter { --itin-font: 'Courier Prime', 'Courier New', monospace; }
+  /* Instrument Serif has a small x-height — nudge itin text up for legibility */
+  .trip-screen.font-elegant .hero-name { font-size: 25px; }
+  .trip-screen.font-elegant .hero-sub { font-size: 14px; }
+  .trip-screen.font-elegant .dh-date { font-size: 21px; }
+  .trip-screen.font-elegant .dh-geo { font-size: 13px; }
+  .trip-screen.font-elegant .dc { font-size: 13px; }
+  .trip-screen.font-elegant .en,
+  .trip-screen.font-elegant .new-el-input { font-size: 15px; }
+  .trip-screen.font-elegant .ed { font-size: 12px; }
+  .trip-screen.font-elegant .add-btn { font-size: 13px; }
+  .trip-screen.font-elegant .day-notes-input { font-size: 14px; }
+  .trip-screen.font-elegant .day-notes-label { font-size: 11px; }
+  .trip-screen.font-elegant .subhead { font-size: 12px; }
+  .trip-screen.font-elegant .mc { font-size: 11px; }
+  .trip-screen.font-elegant .invite-btn { font-size: 13px; }
+  .trip-screen.font-elegant .drive-note { font-size: 12px; }
+  .sbar-t { font-size: 13px; font-weight: 800; color: #1a1a1a; transform: scale(1.05); transform-origin: left center; }
+  .sbar-i { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; transform: scale(1.05); transform-origin: right center; }
+  .content { flex: 1; overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
+  .content::-webkit-scrollbar { width: 0; }
+  .nav { position: absolute; left: 26px; right: 26px; bottom: 30px; z-index: 30; padding: 11px 14px; display: flex; justify-content: space-around; align-items: center; background: #fff; border-radius: 40px; box-shadow: 0 6px 22px rgba(0,0,0,0.16); border: 0.5px solid #ececec; }
+  .nav-indicator { position: absolute; top: 50%; left: 0; height: 42px; border-radius: 999px; background: #EAE8E0; z-index: 0; pointer-events: none; transform: translate(0,-50%); transition: transform 0.4s cubic-bezier(0.34,1.35,0.5,1), width 0.4s cubic-bezier(0.34,1.35,0.5,1), opacity 0.22s ease; }
+  .nav-indicator.hidden { opacity: 0; }
+  .ni { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: #bbb; text-decoration: none; background: none; border: none; }
+  .ni.on { color: #1a1a1a; }
+  .ni svg { width: 26px; height: 26px; fill: currentColor; stroke: none; }
+  .nav-add { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; position: relative; z-index: 1; transition: transform 0.12s; }
+  .nav-add:active { transform: scale(0.9); }
+  .nav-add svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+  .ni-avatar { width: 24px; height: 24px; border-radius: 50%; display: block; }
+  .ni span { display: none; }
+
+  /* HOME */
+  .home-hdr { padding: 10px 20px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .home-title { font-size: 26px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
+  .home-add { width: 34px; height: 34px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; cursor: pointer; line-height: 1; user-select: none; }
+  .home-add:active { background: #000; }
+  .home-actions { display: flex; align-items: center; gap: 14px; }
+  .home-filter { display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1a1a1a; }
+  .home-filter svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+  .home-filter:active { color: #666; }
+  .search-bar { margin: 0 16px 14px; background: #F1EFE8; border-radius: 24px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; color: #999; font-size: 13px; }
+  .search-bar input { border: none; background: none; outline: none; flex: 1; font-size: 13px; color: #1a1a1a; font-family: inherit; }
+  .search-bar input::placeholder { color: #999; }
+  .section-label { display: inline-block; margin: 0 20px 10px; padding: 5px 12px; font-size: 11px; font-weight: 800; color: #999; letter-spacing: 0.8px; text-transform: uppercase; border: 1px solid #ddd; border-radius: 999px; }
+  .trip-card { margin: 0 16px 20px; border-radius: 20px; overflow: hidden; cursor: pointer; border: 0.5px solid #e5e5e5; box-shadow: 0 10px 28px rgba(0,0,0,0.14); transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .trip-card:active { transform: scale(0.985); }
+  .trip-cover { height: 180px; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
+  .trip-cover-bg { position: absolute; inset: 0; }
+  .trip-cover-avatars { position: absolute; right: 12px; bottom: 12px; z-index: 2; }
+  .trip-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%); }
+  .trip-cover-info { position: relative; z-index: 1; padding: 14px 16px; color: white; }
+  .trip-body { padding: 13px 16px 14px; background: #fff; }
+  .trip-name { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; color: #1a1a1a; }
+  .trip-dates { font-size: 12px; font-weight: 400; color: #999; margin-top: 3px; }
+  .trip-meta { margin-top: 6px; display: flex; align-items: center; gap: 10px; }
+  .trip-people { font-size: 12px; font-weight: 400; color: #777; }
+  .avatars { display: flex; }
+  .av { width: 26px; height: 26px; border-radius: 50%; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; margin-left: -7px; }
+  .av:first-child { margin-left: 0; }
+  .tags { display: flex; gap: 6px; }
+  .tag { font-size: 11px; color: #777; background: #F1EFE8; padding: 3px 9px; border-radius: 20px; }
+  .empty-state { padding: 40px 20px; text-align: center; color: #bbb; font-size: 13px; display: none; }
+
+  /* TRIP HERO */
+  .hero { height: 270px; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%), linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 22%); }
+  .hero-back { position: absolute; top: 52px; left: 16px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; background: #1a1a1a; border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.35); }
+  .hero-back:active { background: #000; }
+  .hero-info { position: relative; z-index: 1; padding: 14px 20px; color: white; width: 100%; }
+  .hero-name { font-size: 22px; font-weight: 800; letter-spacing: 0.2px; }
+  .hero-sub { font-size: 13px; font-weight: 400; opacity: 0.85; margin-top: 3px; }
+  .collab-row { position: sticky; top: 58px; z-index: 16; background: var(--pal-bg); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--pal-line); transition: background-color 0.3s ease; }
+  .collab-left { display: flex; align-items: center; gap: 12px; }
+  .collab-right { display: flex; align-items: center; gap: 18px; }
+  .collab-icon { display: flex; cursor: pointer; color: var(--pal-text); }
+  .collab-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .collab-icon:active { color: #666; }
+  .collab-add { width: 30px; height: 30px; border-radius: 50%; background: var(--pal-text); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .collab-add:active { opacity: 0.85; }
+  .collab-add svg { width: 16px; height: 16px; stroke: var(--pal-bg); fill: none; stroke-width: 2.4; stroke-linecap: round; }
+  .invite-btn { font-family: inherit; font-size: 12px; font-weight: 700; color: var(--pal-city-text); background: var(--pal-city-bg); border: none; border-radius: 20px; padding: 5px 13px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease; }
+  .invite-btn:active { filter: brightness(0.92); }
+
+  /* DAYS NAV */
+  .days-nav { position: sticky; top: 112px; z-index: 15; background: var(--pal-bg); display: flex; gap: 7px; padding: 12px 16px; overflow-x: auto; border-bottom: 0.5px solid var(--pal-line); scrollbar-width: none; transition: background-color 0.3s ease; }
+  .days-nav::-webkit-scrollbar { display: none; }
+  .dc { padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; border: 0.5px solid var(--pal-chip-border); color: var(--pal-chip-text); background: var(--pal-bg); transition: all 0.15s; }
+  .dc.on { background: var(--pal-chip-on-bg); color: var(--pal-chip-on-text); border-color: var(--pal-chip-on-bg); }
+
+  /* DAY SECTIONS */
+  .day-sec { display: block; scroll-margin-top: 166px; }
+  .dh { padding: 12px 20px 12px; }
+  .dh-date { font-size: 19px; font-weight: 800; color: var(--pal-text); letter-spacing: -0.2px; }
+  .dh-geo { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--pal-city-text); margin-top: 6px; padding: 4px 11px; background: var(--pal-city-bg); border-radius: 999px; }
+  .dh-geo svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .dh-geo + .dh-geo { margin-left: 6px; }
+  .drive-note { padding: 2px 20px 8px; font-size: 11px; font-weight: 400; color: var(--pal-muted); }
+  .subhead { padding: 8px 20px 3px; font-size: 11px; font-weight: 800; color: var(--pal-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* ELEMENT CARDS */
+  .ec { margin: 0 16px 10px; border-radius: 14px; border: 0.5px solid var(--pal-card-border); background: var(--pal-card-bg); overflow: hidden; transition: box-shadow 0.15s, transform 0.12s, background-color 0.3s ease, border-color 0.3s ease; }
+  .ec[data-copy] { cursor: pointer; }
+  .ec[data-copy]:active { transform: scale(0.99); }
+  .ec-inner { padding: 11px 13px; display: flex; gap: 11px; align-items: flex-start; }
+  .ei { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ei svg { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+  /* Element icons: tinted from the active palette's city-tag color */
+  .ei { background: color-mix(in srgb, var(--pal-city-bg) 25%, #ffffff) !important; }
+  .ei svg { color: color-mix(in srgb, var(--pal-city-bg) 45%, #1a1a1a) !important; }
+  .einfo { flex: 1; min-width: 0; }
+  .en { font-size: 13px; font-weight: 800; color: var(--pal-text); }
+  .ed { font-size: 11px; font-weight: 400; color: var(--pal-ed); margin-top: 2px; line-height: 1.4; }
+  .new-el-input { border: none; outline: none; font-size: 13px; font-weight: 800; color: var(--pal-text); font-family: inherit; width: 100%; background: none; }
+  .ea { display: flex; gap: 7px; align-items: center; flex-shrink: 0; }
+  .hb { font-size: 18px; color: #ccc; cursor: pointer; border: none; background: none; padding: 2px; line-height: 1; transition: transform 0.12s; user-select: none; display: flex; }
+  .hb svg { width: 20px; height: 18px; fill: currentColor; display: block; }
+  .hb.on { color: #E24B4A; }
+  .hb.pop { transform: scale(1.4); }
+  .sb { font-size: 16px; color: #ccc; cursor: pointer; border: none; background: none; padding: 2px; line-height: 1; transition: transform 0.12s; user-select: none; }
+  .sb.on { color: #F0A020; }
+  .sb.pop { transform: scale(1.4); }
+
+  /* ELEMENT META CHIPS */
+  .em { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .mc { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #F1EFE8; color: #666; white-space: nowrap; }
+  .mc svg { width: 11px; height: 11px; fill: currentColor; flex-shrink: 0; }
+  .mc.green { background: #E1F5EE; color: #0F6E56; }
+  .mc.blue { background: #E6F1FB; color: #185FA5; }
+  .mc.amber { background: #FAEEDA; color: #854F0B; }
+  .mc.link { background: #fff; border: 0.5px solid #ddd; color: #1a1a1a; cursor: pointer; }
+  .mc.link:active { background: #f2f2f2; }
+
+  /* EDIT ELEMENT SHEET */
+  .ef-label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 6px; }
+  .ef-input { width: 100%; border: 0.5px solid #ddd; background: #fff; border-radius: 12px; padding: 10px 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: #1a1a1a; outline: none; }
+  .ef-input:focus { border-color: #1a1a1a; }
+  .ef-row { display: flex; gap: 10px; }
+  .ef-col { flex: 1; min-width: 0; }
+  .ef-delete { color: #E34234; border-color: #f0d0cb; }
+  .ef-photos { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
+  .ef-pt { position: relative; width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0; }
+  .ef-pt img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+  .ef-pt .ef-pt-ph { width: 100%; height: 100%; border-radius: 10px; }
+  .ef-pt-x { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: #1a1a1a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; cursor: pointer; border: 1.5px solid #fff; }
+  .ef-add { width: 56px; height: 56px; border-radius: 10px; border: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; cursor: pointer; font-size: 22px; background: none; flex-shrink: 0; }
+  .ef-add:active { border-color: #888; color: #666; }
+  .ec-inner { cursor: pointer; }
+
+  /* TRIP SEARCH + FILTER */
+  .trip-search-row { display: none; position: sticky; top: 112px; z-index: 15; background: var(--pal-bg); padding: 10px 16px; border-bottom: 0.5px solid var(--pal-line); align-items: center; gap: 10px; }
+  .trip-search-row .search-bar { flex: 1; margin: 0; }
+  .trip-screen.searching .trip-search-row { display: flex; }
+  .trip-screen.searching .days-nav { top: 166px; }
+  .search-cancel { border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 700; color: #1a1a1a; cursor: pointer; padding: 4px 2px; }
+  .search-cancel:active { color: #666; }
+  .collab-icon.active { color: #0b3ef7; }
+  .drag-icon { color: #ccc; font-size: 16px; cursor: grab; touch-action: none; padding: 2px; user-select: none; }
+  .drag-icon:active { cursor: grabbing; color: #999; }
+  .drag-ghost { opacity: 0.35; }
+  .drag-chosen { box-shadow: 0 6px 20px rgba(0,0,0,0.14); }
+
+  /* PHOTO STRIPS */
+  .photo-strip { width: 100%; height: 120px; object-fit: cover; display: block; }
+  .photo-placeholder {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .photo-caption { padding: 7px 13px 10px; font-size: 11px; font-weight: 400; color: #bbb; display: flex; align-items: center; gap: 5px; }
+
+  /* PHOTO TILES (square, inset, scale to fill the row: 1 = full width, 2 = halves, 3 = thirds, 4 = quarters; max 4) */
+  .photo-tiles { display: flex; gap: 6px; padding: 0 13px 12px; }
+  .photo-tiles .pt { flex: 1 1 0; min-width: 0; width: auto; height: auto; aspect-ratio: 1 / 1; border-radius: 10px; object-fit: cover; display: block; cursor: pointer; }
+  .photo-tiles .pt:nth-child(n+5) { display: none; }
+
+  /* PHOTO LIGHTBOX */
+  .lightbox { position: absolute; inset: 0; z-index: 70; background: rgba(10,12,18,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .lightbox.show { opacity: 1; pointer-events: auto; }
+  .lightbox img { max-width: 100%; max-height: 68%; border-radius: 16px; box-shadow: 0 12px 44px rgba(0,0,0,0.5); transform: scale(0.96); transition: transform 0.25s; }
+  .lightbox.show img { transform: scale(1); }
+  #lb-ph { width: 100%; height: 55%; border-radius: 16px; display: none; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 800; text-align: center; padding: 20px; }
+  .lb-cap { margin-top: 14px; color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 600; text-align: center; }
+  .lb-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: none; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .lb-arrow:active { background: rgba(255,255,255,0.3); }
+  .lb-arrow svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .lb-prev { left: 12px; }
+  .lb-next { right: 12px; }
+  .lb-arrow.hidden { display: none; }
+
+  /* ADD BUTTON */
+  .add-btn { margin: 2px 16px 0; padding: 10px; border: 0.5px dashed var(--pal-chip-border); border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer; color: var(--pal-muted); font-size: 12px; background: none; width: calc(100% - 32px); transition: border-color 0.15s, color 0.15s; }
+  .add-btn:active { border-color: #999; color: #777; }
+  .spacer { height: 20px; }
+
+  /* DAY NOTES */
+  .day-notes { margin: 10px 16px 0; background: var(--pal-notes-bg); border: 0.5px solid var(--pal-notes-border); border-radius: 14px; padding: 11px 14px 9px; transition: background-color 0.3s ease, border-color 0.3s ease; }
+  .day-notes-label { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--pal-notes-label); margin-bottom: 4px; }
+  .day-notes-label svg { width: 12px; height: 12px; fill: var(--pal-notes-label); }
+  .day-notes-input { width: 100%; border: none; background: none; outline: none; resize: none; font-family: inherit; font-size: 13px; font-weight: 400; color: var(--pal-notes-text); line-height: 1.45; min-height: 20px; overflow: hidden; }
+  .day-notes-input::placeholder { color: var(--pal-muted); }
+
+  /* TOAST */
+  .toast { position: absolute; left: 50%; bottom: 108px; transform: translateX(-50%) translateY(12px); background: rgba(26,26,26,0.94); color: #fff; font-size: 12px; padding: 9px 16px; border-radius: 22px; opacity: 0; pointer-events: none; transition: opacity 0.22s, transform 0.22s; z-index: 50; white-space: nowrap; max-width: 90%; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* BOTTOM SHEET (Invite) */
+  .sheet-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 60; }
+  .sheet-scrim.show { opacity: 1; pointer-events: auto; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 10px 20px 26px; transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); z-index: 61; }
+  .sheet.show { transform: translateY(0); }
+  .sheet-grab { width: 38px; height: 4px; border-radius: 2px; background: #e0e0e0; margin: 4px auto 16px; }
+  .sheet-title { font-size: 16px; font-weight: 800; color: #1a1a1a; }
+  .sheet-sub { font-size: 12px; font-weight: 400; color: #999; margin-top: 3px; }
+  .invite-people { display: flex; gap: 10px; margin: 16px 0; }
+  .invite-person { display: flex; align-items: center; gap: 8px; background: #F1EFE8; border-radius: 20px; padding: 5px 12px 5px 5px; font-size: 12px; color: #1a1a1a; }
+  .link-row { display: flex; align-items: center; gap: 8px; background: #F1EFE8; border-radius: 14px; padding: 12px 14px; margin-top: 4px; }
+  .link-text { flex: 1; font-size: 12px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-link { border: none; background: #1a1a1a; color: #fff; font-size: 12px; font-weight: 800; padding: 8px 16px; border-radius: 12px; cursor: pointer; }
+  .copy-link:active { background: #000; }
+
+  /* INVITE / PARTICIPANT PICKER SHEET */
+  .pick-list { margin: 14px 0 4px; max-height: 42vh; overflow-y: auto; }
+  .pick-row { display: flex; align-items: center; gap: 12px; padding: 8px 4px; cursor: pointer; }
+  .pick-row.owner { cursor: default; }
+  .pick-av { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; background-color: #EAE8E0; position: relative; flex-shrink: 0; }
+  .pick-name { flex: 1; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .pick-tag { font-size: 11px; font-weight: 600; color: #999; margin-left: 6px; }
+  .pick-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
+  .pick-row.on .pick-check { background: #E34234; border-color: #E34234; }
+  .pick-divider { height: 1px; background: #eee; margin: 8px 0 14px; }
+  .pick-sec-label { font-size: 12px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .init-txt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 17px; font-weight: 800; }
+  .pick-av .init-txt { font-size: 15px; }
+  .ni-avatars { flex-wrap: nowrap; }
+  .ni-more .ni-ava { display: flex; align-items: center; justify-content: center; background: #EAE8E0; color: #555; font-size: 15px; font-weight: 800; }
+
+  /* CUSTOMIZE (PALETTE) SHEET */
+  .pal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 4px; }
+  .pal-opt { cursor: pointer; }
+  .pal-swatch { position: relative; height: 78px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: flex-end; gap: 7px; padding: 11px; overflow: hidden; }
+  .pal-opt.on .pal-swatch { outline: 2.5px solid #1a1a1a; outline-offset: 2px; }
+  .pal-city { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .pal-letter { position: absolute; top: 10px; left: 12px; font-size: 20px; font-weight: 800; line-height: 1; }
+  .pal-check { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: #1a1a1a; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .pal-opt:not(.on) .pal-check { display: none; }
+  .pal-name { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-top: 8px; text-align: center; }
+  .font-opts { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 4px; }
+  .font-opt { display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border: 1px solid #e5e5e5; border-radius: 12px; cursor: pointer; }
+  .font-opt.on { border-color: #1a1a1a; background: #faf9f5; }
+  .font-opt-name { font-size: 17px; color: #1a1a1a; }
+  .font-opt-tag { font-size: 11px; color: #999; margin-left: 7px; font-family: 'Cal Sans','Helvetica Neue',sans-serif; }
+  .font-opt-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; font-family: 'Cal Sans','Helvetica Neue',sans-serif; }
+  .font-opt.on .font-opt-check { background: #1a1a1a; border-color: #1a1a1a; }
+  .font-opt:not(.on) .font-opt-check { color: transparent; }
+
+  /* FILTER SHEET */
+  .filter-group-label { font-size: 12px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 13px; font-weight: 600; color: #555; background: #F1EFE8; border: none; border-radius: 999px; padding: 7px 14px; cursor: pointer; font-family: inherit; }
+  .chip.on { background: #1a1a1a; color: #fff; }
+  .filter-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .filter-clear { flex: 1; padding: 12px; border-radius: 999px; border: 1px solid #ddd; background: #fff; font-size: 13px; font-weight: 700; color: #555; cursor: pointer; font-family: inherit; }
+  .filter-apply { flex: 2; padding: 12px; border-radius: 999px; border: none; background: #1a1a1a; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .home-filter.active { color: #0b3ef7; }
+
+  /* ADD-ELEMENT TYPE PICKER */
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-height: 46vh; overflow-y: auto; margin-top: 8px; }
+  .type-divider { grid-column: 1 / -1; height: 1px; background: #ececec; margin: 6px 4px; }
+  .type-item { display: flex; align-items: center; gap: 10px; padding: 9px 8px; cursor: pointer; border-radius: 12px; }
+  .type-item:active { background: #F1EFE8; }
+  .type-ic { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .type-ic svg { width: 19px; height: 19px; fill: currentColor; }
+  .type-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+
+  /* TRIP MAP VIEW */
+  .map-view { position: absolute; inset: 0; z-index: 40; background: #EAE8E0; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
+  .map-view.show { transform: translateY(0); }
+  #map-canvas { position: absolute; inset: 0; }
+  .map-sbar { position: absolute; top: 0; left: 0; right: 0; z-index: 1002; background: transparent; }
+  .map-top { position: absolute; top: 56px; left: 14px; right: 0; z-index: 1001; display: flex; align-items: center; gap: 10px; }
+  .map-back { width: 34px; height: 34px; border-radius: 50%; background: #1a1a1a; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+  .map-back:active { background: #000; }
+  .map-chips { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; padding: 4px 14px 8px 0; }
+  .map-chips::-webkit-scrollbar { display: none; }
+  .map-chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; border: none; color: #555; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.14); font-family: inherit; transition: all 0.15s; }
+  .map-chip.on { background: #1a1a1a; color: #fff; }
+  .map-pin { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+  .map-pin svg { width: 14px; height: 14px; fill: #fff; }
+  .leaflet-container { font-family: inherit; background: #EAE8E0; }
+  .leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+  .leaflet-popup-content { margin: 10px 14px; font-family: inherit; line-height: 1.3; }
+  .map-pop-name { font-size: 13px; font-weight: 800; color: #1a1a1a; }
+  .map-pop-day { font-size: 11px; font-weight: 400; color: #999; margin-top: 2px; }
+  .leaflet-control-attribution { font-size: 8px; opacity: 0.6; }
+
+  /* EXPLORE (compass) TAB */
+  #explore-map { position: absolute; inset: 0; z-index: 0; background: #d3dbdd; }
+  .explore-scrim-top { position: absolute; top: 0; left: 0; right: 0; height: 132px; z-index: 1; background: linear-gradient(to bottom, rgba(241,239,232,0.96) 30%, rgba(241,239,232,0)); pointer-events: none; }
+  .explore-hdr { position: absolute; top: 62px; left: 20px; right: 20px; z-index: 2; pointer-events: none; }
+  .explore-title { font-size: 24px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
+  .explore-sub { font-size: 12px; font-weight: 400; color: #666; margin-top: 2px; }
+  /* number badges */
+  .reg-badge { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .reg-count { width: 40px; height: 40px; border-radius: 50%; background: #FF5522; color: #fff; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2.5px solid #fff; box-shadow: 0 3px 12px rgba(0,0,0,0.3); transition: transform 0.12s; }
+  .reg-badge:active .reg-count { transform: scale(0.9); }
+  /* region itinerary sheet */
+  .region-flag { font-size: 22px; margin-right: 4px; }
+  .itin-list { margin-top: 12px; max-height: 52vh; overflow-y: auto; }
+  .itin-list::-webkit-scrollbar { width: 0; }
+  .itin-item { display: flex; gap: 12px; align-items: center; padding: 9px 4px; cursor: pointer; border-radius: 12px; }
+  .itin-item:active { background: #F1EFE8; }
+  .itin-cover { width: 54px; height: 54px; border-radius: 12px; flex-shrink: 0; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
+  .itin-meta { flex: 1; min-width: 0; }
+  .itin-name { font-size: 14px; font-weight: 800; color: #1a1a1a; }
+  .itin-by { font-size: 12px; font-weight: 400; color: #999; margin-top: 2px; }
+  .itin-arrow { color: #ccc; display: flex; flex-shrink: 0; }
+  .itin-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .itin-save { display: flex; align-items: center; justify-content: center; width: 32px; flex-shrink: 0; font-size: 19px; color: #d0d0d0; cursor: pointer; transition: transform 0.12s; user-select: none; }
+  .itin-save.on { color: #F0A020; }
+  .itin-save.pop { transform: scale(1.35); }
+
+  /* SAVED (star) TAB */
+  .saved-hdr { padding: 10px 20px 12px; }
+  .saved-title { font-size: 26px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
+  .saved-sub { font-size: 12px; font-weight: 400; color: #999; margin-top: 2px; }
+  .saved-list { padding: 4px 16px 20px; }
+  .saved-row { display: flex; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 0.5px solid #f2f2f2; cursor: pointer; }
+  .saved-row:active { background: #F9F8F4; }
+  .saved-cover { width: 50px; height: 50px; border-radius: 11px; flex-shrink: 0; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 19px; }
+  .saved-meta { flex: 1; min-width: 0; }
+  .saved-name { font-size: 14px; font-weight: 800; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .saved-by { font-size: 12px; font-weight: 400; color: #999; margin-top: 2px; }
+  .saved-empty { padding: 60px 30px; text-align: center; color: #bbb; font-size: 13px; line-height: 1.5; }
+  .saved-empty .star-hint { color: #F0A020; font-size: 22px; display: block; margin-bottom: 8px; }
+
+  /* PROFILE (person) TAB */
+  .prof-hero { height: 156px; position: relative; background-size: cover; background-position: center; }
+  .prof-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.28)); }
+  .prof-edit { position: absolute; top: 52px; right: 16px; z-index: 2; background: rgba(255,255,255,0.92); border: none; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #1a1a1a; cursor: pointer; }
+  .prof-edit:active { background: #fff; }
+  .prof-ava { width: 88px; height: 88px; border-radius: 50%; border: 4px solid #fff; background-size: cover; background-position: center; margin: -52px auto 0; position: relative; z-index: 1; box-shadow: 0 3px 12px rgba(0,0,0,0.18); }
+  .prof-head { text-align: center; padding: 0 20px 6px; }
+  .prof-name { font-size: 21px; font-weight: 800; color: #1a1a1a; margin-top: 10px; letter-spacing: -0.3px; }
+  .prof-handle { font-size: 13px; color: #999; margin-top: 2px; }
+  .prof-bio { font-size: 13px; color: #555; margin-top: 9px; line-height: 1.45; }
+  .prof-stats { display: flex; justify-content: center; gap: 30px; margin-top: 16px; }
+  .prof-stat-n { font-size: 19px; font-weight: 800; color: #1a1a1a; }
+  .prof-stat-l { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .prof-section-title { padding: 20px 20px 0; font-size: 14px; font-weight: 800; color: #1a1a1a; }
+  .country-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px 20px; }
+  .country-chip { display: inline-flex; align-items: center; gap: 7px; background: #F1EFE8; border-radius: 999px; padding: 8px 13px; font-size: 13px; font-weight: 700; color: #1a1a1a; }
+  .country-chip .cf { font-size: 16px; line-height: 1; }
+
+  /* NEW ITIN CREATE SCREEN */
+  .new-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 0.5px solid #f0f0f0; background: #fff; }
+  .new-hdr-btn { background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 4px 2px; }
+  .new-hdr-btn.cancel { color: #999; }
+  .new-hdr-btn.create { color: #E34234; }
+  .new-hdr-btn.create:disabled { color: #ddd; cursor: default; }
+  .new-hdr-title { font-size: 16px; font-weight: 800; color: #1a1a1a; }
+  .new-form { padding: 6px 18px 40px; }
+  .ni-avatars { display: flex; flex-wrap: wrap; gap: 12px; }
+  .ni-person { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; width: 54px; }
+  .ni-ava { width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; border: 2.5px solid transparent; position: relative; background-color: #EAE8E0; }
+  .ni-person.on .ni-ava { border-color: #E34234; }
+  .ni-person.owner .ni-ava { border-color: #1a1a1a; }
+  .ni-person.on .ni-ava::after, .ni-person.owner .ni-ava::after { content: '✓'; position: absolute; bottom: -3px; right: -3px; width: 18px; height: 18px; border-radius: 50%; background: #E34234; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
+  .ni-person.owner .ni-ava::after { background: #1a1a1a; }
+  .ni-add .ni-ava { border: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 22px; }
+  .ni-pname { font-size: 10px; font-weight: 700; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 54px; text-align: center; }
+  .loc-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+  .loc-chip { display: inline-flex; align-items: center; gap: 7px; background: #F1EFE8; border-radius: 999px; padding: 6px 8px 6px 12px; font-size: 12px; font-weight: 700; color: #1a1a1a; }
+  .loc-chip .x { cursor: pointer; color: #999; font-size: 13px; line-height: 1; }
+  .cover-drop { margin-top: 2px; height: 150px; border-radius: 16px; border: 1.5px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #aaa; cursor: pointer; background-size: cover; background-position: center; font-size: 12px; font-weight: 700; }
+  .cover-drop.has { border: none; }
+  .cover-drop svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .type-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .type-pills .chip.on { background: #1a1a1a; color: #fff; }
+
+  /* LEGEND */
+  .legend { margin: 30px auto 0; width: 375px; background: #fff; border-radius: 16px; border: 0.5px solid #e5e5e5; padding: 20px; font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; }
+  .legend h2 { font-size: 14px; font-weight: 800; color: #1a1a1a; margin-bottom: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; color: #555; }
+  .legend-swatch { width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; }
+  .legend-label { font-weight: 700; color: #1a1a1a; }
+  .legend-sub { color: #999; margin-top: 1px; font-size: 11px; font-weight: 400; }
+  .legend ul { margin: 8px 0 0 0; padding-left: 18px; }
+  .legend li { font-size: 12px; color: #555; margin-bottom: 5px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div style="display:flex;flex-direction:column;align-items:center;">
+
+<div class="phone">
+
+  <div class="dynamic-island"></div>
+
+  <!-- ======================== HOME SCREEN ======================== -->
+  <div class="screen active" id="s-home">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="content">
+      <div class="home-hdr">
+        <div class="home-title">itin</div>
+        <div class="home-actions">
+          <span class="home-filter" onclick="openFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
+          <span class="home-add" onclick="openNewItin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </div>
+      </div>
+      <div class="search-bar"><input id="trip-search" type="text" placeholder="Search itins..." oninput="filterTrips(this.value)"></div>
+      <div class="section-label" data-section="upcoming">Upcoming</div>
+
+      <div class="trip-card" data-search="caucasus trip baku azerbaijan tbilisi georgia yerevan armenia" data-people="ryan charles" data-when="upcoming" data-status="draft" onclick="go('s-caucasus')">
+        <div class="trip-cover">
+          <!-- [PHOTO: Yerevan — Caucasus Trip cover] -->
+          <div class="trip-cover-bg" style="background:url('Photos/Yerevan.jpg') center/cover;"></div>
+          <div class="avatars trip-cover-avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Charles.png') center/cover;"></div>
+          </div>
+        </div>
+        <div class="trip-body">
+          <div class="trip-name">Caucasus Trip</div>
+          <div class="trip-dates">Oct 23 – Nov 3, 2026 · 12 days</div>
+        </div>
+      </div>
+
+      <div class="section-label" data-section="past">Past</div>
+
+      <div class="trip-card" data-search="pacific coast road trip cannon beach haystack sixt emry oregon california" data-people="ryan emily" data-when="past" data-status="draft" onclick="go('s-trip')">
+        <div class="trip-cover">
+          <!-- [PHOTO: Haystack Rock at Cannon Beach — trip cover] -->
+          <div class="trip-cover-bg" style="background:url('Photos/Cannon%20Beach.jpg') center/cover;"></div>
+          <div class="avatars trip-cover-avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Emily%20Profile%20Pic.jpeg') center/cover;"></div>
+          </div>
+        </div>
+        <div class="trip-body">
+          <div class="trip-name">Pacific Coast Road Trip</div>
+          <div class="trip-dates">May 29 – Jun 5, 2026 · 8 days</div>
+        </div>
+      </div>
+
+      <div class="trip-card" data-search="japan tokyo kyoto osaka asia" data-people="ryan nikki" data-when="past" data-status="published" onclick="toast('Trip recap — coming soon')">
+        <div class="trip-cover">
+          <div class="trip-cover-bg" style="background:url('Photos/Japan.jpg') center/cover;"></div>
+          <div class="avatars trip-cover-avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Nikki.jpg') center/cover;"></div>
+          </div>
+        </div>
+        <div class="trip-body">
+          <div class="trip-name">Japan</div>
+          <div class="trip-dates">Apr 5 – Apr 16, 2025 · 12 days</div>
+        </div>
+      </div>
+
+      <div class="trip-card" data-search="australia sydney melbourne great barrier reef oceania" data-people="ryan nikki morgan" data-when="past" data-status="published" onclick="toast('Trip recap — coming soon')">
+        <div class="trip-cover">
+          <div class="trip-cover-bg" style="background:url('Photos/Australia.jpg') center/cover;"></div>
+          <div class="avatars trip-cover-avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Nikki.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Morgan.jpeg') center/cover;"></div>
+          </div>
+        </div>
+        <div class="trip-body">
+          <div class="trip-name">Australia</div>
+          <div class="trip-dates">Nov 8 – Nov 22, 2024 · 15 days</div>
+        </div>
+      </div>
+
+      <div class="empty-state" id="trip-empty">No itins match your search.</div>
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni on" onclick="go('s-home')"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itins</span></a>
+      <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
+      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== TRIP / DAY VIEW ======================== -->
+  <div class="screen trip-screen" id="s-trip">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="content">
+      <div class="hero">
+        <!-- [PHOTO: Haystack Rock at Cannon Beach — hero banner] -->
+        <div class="hero-bg" style="background:url('Photos/Cannon%20Beach.jpg') center/cover;"></div>
+        <div class="hero-overlay"></div>
+        <button class="hero-back" onclick="go('s-home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="hero-info">
+          <div class="hero-name">Pacific Coast Road Trip</div>
+          <div class="hero-sub">May 29 – Jun 5, 2026 · 8 days</div>
+        </div>
+      </div>
+
+      <div class="collab-row">
+        <div class="collab-left">
+          <div class="avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Emily%20Profile%20Pic.jpeg') center/cover;"></div>
+          </div>
+          <button class="invite-btn" onclick="openSheet()">Share</button>
+        </div>
+        <div class="collab-right">
+          <span class="collab-icon" onclick="openThemeSheet()" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></span>
+          <span class="collab-icon" onclick="openMap()" aria-label="Map"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
+          <span class="collab-icon" id="trip-filter-icon" onclick="openTripFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
+          <span class="collab-icon" onclick="toggleTripSearch()" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+          <button class="collab-add" onclick="openAddMenu()" aria-label="Add element"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+      </div>
+
+      <div class="trip-search-row">
+        <div class="search-bar"><input id="el-search" type="text" placeholder="Search this itin..." oninput="filterElements(this.value)"></div>
+        <button class="search-cancel" onclick="closeTripSearch()">Cancel</button>
+      </div>
+
+      <div class="days-nav">
+        <div class="dc on" onclick="sd(0,this)">May 29</div>
+        <div class="dc" onclick="sd(1,this)">May 30</div>
+        <div class="dc" onclick="sd(2,this)">May 31</div>
+        <div class="dc" onclick="sd(3,this)">Jun 1</div>
+        <div class="dc" onclick="sd(4,this)">Jun 2</div>
+        <div class="dc" onclick="sd(5,this)">Jun 3</div>
+        <div class="dc" onclick="sd(6,this)">Jun 4</div>
+        <div class="dc" onclick="sd(7,this)">Jun 5</div>
+      </div>
+
+      <!-- DAY 0: May 29 Portland Arrive -->
+      <div class="day-sec on" id="d0">
+        <div class="dh"><div class="dh-date">Friday, May 29</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Portland, Oregon</div></div>
+
+        <div class="ec"><div class="ec-inner">
+          <div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div>
+          <div class="einfo"><div class="en">Ryan — Alaska 557</div><div class="ed">BWI → PDX</div></div>
+          <div class="ea"><span class="drag-icon">⠿</span></div>
+        </div></div>
+
+        <div class="ec"><div class="ec-inner">
+          <div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div>
+          <div class="einfo"><div class="en">Emily — Delta 2459</div><div class="ed">LAX → PDX</div></div>
+          <div class="ea"><span class="drag-icon">⠿</span></div>
+        </div></div>
+
+        <div class="ec" data-copy="120371749"><div class="ec-inner">
+          <div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div>
+          <div class="einfo"><div class="en">The Hoxton</div><div class="ed">Booking ref 120371749 · tap to copy</div></div>
+          <div class="ea"><span class="drag-icon">⠿</span></div>
+        </div><div class="photo-tiles"><img class="pt" src="Photos/Hoxton.jpg" alt="The Hoxton, Portland"></div></div>
+
+        <div class="ec">
+          <div class="ec-inner">
+            <div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/></svg></div>
+            <div class="einfo"><div class="en">Oscar Food & Wine</div><div class="ed">Pre-dinner drinks · Kanpachi Tostada</div></div>
+            <div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div>
+          </div>
+          <!-- [PHOTO: Wine glasses and olives at Oscar Food & Wine — warm amber tones] -->
+          <div class="photo-tiles"><img class="pt" src="Photos/Oscar.jpg" alt="Oscar Food & Wine, Portland"></div>
+        </div>
+
+        <div class="ec">
+          <div class="ec-inner">
+            <div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div>
+            <div class="einfo"><div class="en">Dinner — Fantino</div><div class="ed">Vodka Pasta</div></div>
+            <div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div>
+          </div>
+          <!-- [PHOTO: Candlelit crudo dish at Fantino — warm peachy tones] -->
+          <div class="photo-tiles"><img class="pt" src="Photos/Fantino.jpg" alt="Fantino, Portland"><img class="pt" src="Photos/Fantino%202.jpg" alt="Fantino, Portland — second dish"></div>
+        </div>
+
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)">Emily lands 20 min after Ryan — meet at baggage claim. Hoxton is a 20 min ride from PDX.</textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 1: May 30 Portland Explore -->
+      <div class="day-sec" id="d1">
+        <div class="dh"><div class="dh-date">Saturday, May 30</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Portland, Oregon</div></div>
+        <div class="subhead">Downtown</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Never Coffee</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Powell's Books</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Tender Loving Empire</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Woonwinkel</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Annam VL</div><div class="ed">Beef Pho</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div><div class="photo-tiles"><img class="pt" src="Photos/Annam%20VL.jpg" alt="Annam VL, Portland"></div></div>
+        <div class="subhead">Division St.</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#F1EFE8;"><svg viewBox="0 0 24 24" style="color:#777777;"><path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/></svg></div><div class="einfo"><div class="en">Pinolo Gelato</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Vintage Club</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Well Spent Market</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Caseus Diem Cheese Shop</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Bonita Bodega</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="subhead">Kerns</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Providore Fine Foods</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/></svg></div><div class="einfo"><div class="en">Collector Bar</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Moody bar interior, Collector Bar — warm amber/brown tones] -->
+          <div class="photo-tiles"><img class="pt" src="Photos/Collector.jpg" alt="Collector Bar, Portland"></div>
+        </div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Eem Thai BBQ</div><div class="ed">Walk-in · White Curry w/ Burnt Ends, Chopped BBQ Fried Rice</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Food dishes at Eem Thai BBQ — deep green/orange tones] -->
+          <div class="photo-tiles"><div class="pt pt-ph" style="background:#3D6B3A;" title="Eem Thai BBQ, Portland"></div></div>
+        </div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 2: May 31 Portland → Seaside -->
+      <div class="day-sec" id="d2">
+        <div class="dh"><div class="dh-date">Sunday, May 31</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Seaside, Oregon</div></div>
+        <div class="drive-note">1.5 hr drive</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Sincerely, Bagel</div><div class="ed">Parmesan Leek Bagel, Scallion Cream Cheese</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div><div class="photo-tiles"><img class="pt" src="Photos/Sincerely%20Bagel.jpg" alt="Sincerely, Bagel"><img class="pt" src="Photos/Sincerely%20Bagel%202.jpg" alt="Sincerely, Bagel — bagel close-up"></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Pittock Mansion Viewpoint</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Face Plant</div><div class="ed">The burger situation</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Face Plant burger tray — bright red/orange] -->
+          <div class="photo-tiles"><img class="pt" src="Photos/Face%20Plant.jpg" alt="Face Plant, Portland"></div>
+        </div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M18.9 6c-.2-.6-.7-1-1.4-1h-11c-.6 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16c-.8 0-1.5-.7-1.5-1.5S5.7 13 6.5 13s1.5.7 1.5 1.5S7.3 16 6.5 16zm11 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg></div><div class="einfo"><div class="en">Sixt Rental Car Pickup</div><div class="ed">Drive to Seaside via Ecola State Park</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/></svg></div><div class="einfo"><div class="en">Ecola State Park</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Misty forest road at Ecola State Park — deep blue-green] -->
+          <div class="photo-tiles"><div class="pt pt-ph" style="background:#2D5A3D;" title="Ecola State Park, OR"></div></div>
+        </div>
+        <div class="ec" data-copy="11013"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Drifthaven</div><div class="ed">Conf #11013 · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — The Wayfarer</div><div class="ed">Cannon Beach · Sunset after</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Haystack Rock at Cannon Beach golden hour — teal ocean, warm rock] -->
+          <div class="photo-tiles"><img class="pt" src="Photos/Cannon%20Beach.jpg" alt="Haystack Rock, Cannon Beach"></div>
+        </div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)">Sunset at Cannon Beach ~8:45pm — grab firewood in Seaside before dinner.</textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 3: Jun 1 Seaside → Newport -->
+      <div class="day-sec" id="d3">
+        <div class="dh"><div class="dh-date">Monday, Jun 1</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Newport, Oregon</div></div>
+        <div class="drive-note">2 hr 43 min drive</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Tillamook Creamery</div><div class="ed">Cheese curds stop</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Neskowin Provisions</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Proposal Rock</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Sea Horsey bottle shop</div><div class="ed">Lincoln City · Quince jam & manchego</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec" data-copy="BB26040120515626"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Hotel Sylvia Newport</div><div class="ed">Conf #BB26040120515626 · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Local Oceans</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Beautiful fish dish at Local Oceans — teal/seafood tones] -->
+          <div class="photo-tiles"><div class="pt pt-ph" style="background:#3B6E72;" title="Local Oceans, Newport"></div></div>
+        </div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 4: Jun 2 Newport → Redwoods -->
+      <div class="day-sec" id="d4">
+        <div class="dh"><div class="dh-date">Tuesday, Jun 2</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>McKinleyville, California</div></div>
+        <div class="drive-note">6 hr drive · Emily's Birthday!</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Airbnb — McKinleyville, CA</div><div class="ed">4403 Chaffin Rd</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Florence, OR — Sand Dunes</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Tu Tu Tun</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/></svg></div><div class="einfo"><div class="en">Redwood National Park</div><div class="ed">Grove of Titans · Lady Bird Johnson Grove Trail (easy 1 mi)</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Arcata, CA</div><div class="ed">SALT or Campground</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 5: Jun 3 McKinleyville → Sea Ranch -->
+      <div class="day-sec" id="d5">
+        <div class="dh"><div class="dh-date">Wednesday, Jun 3</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Sea Ranch, California</div></div>
+        <div class="drive-note">5 hr drive</div>
+        <div class="ec">
+          <div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/></svg></div><div class="einfo"><div class="en">Avenue of the Giants</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div>
+          <!-- [PHOTO: Misty green forest, Avenue of the Giants — deep forest green] -->
+          <div class="photo-tiles"><div class="pt pt-ph" style="background:#1E4D2B;" title="Avenue of the Giants, CA"></div></div>
+        </div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Glass Beach</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" d="M9 21c0-4 6-3 6-7s-6-3-6-7 4-4 7-4"/></svg></div><div class="einfo"><div class="en">Drive through Mendocino</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — The Brickery</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Sierra tea & snack</div><div class="ed">Elk Country Store · Arrive Elk by 2pm</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec" data-copy="4BMNZY4AJN"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Sea Ranch Lodge</div><div class="ed">Res #4BMNZY4AJN · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Sea Ranch Lodge Bar</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 6: Jun 4 Sea Ranch -->
+      <div class="day-sec" id="d6">
+        <div class="dh"><div class="dh-date">Thursday, Jun 4</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Sea Ranch, California</div></div>
+        <div class="ec" data-copy="4BMNZY4AJN"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Sea Ranch Lodge · Night 2</div><div class="ed">Res #4BMNZY4AJN · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#F1EFE8;"><svg viewBox="0 0 24 24" style="color:#777777;"><path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/></svg></div><div class="einfo"><div class="en">Relax day</div><div class="ed">No agenda, just vibes</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — The Dining Room</div><div class="ed">Or Gama Izakaya</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- DAY 7: Jun 5 Berkeley -->
+      <div class="day-sec" id="d7">
+        <div class="dh"><div class="dh-date">Friday, Jun 5</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Berkeley, California</div></div>
+        <div class="drive-note">2.5 hr drive · 10am check out</div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">DoubleTree Berkeley Marina</div><div class="ed">Hilton · Check in</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Sol Food</div><div class="ed">Marin Redwood Area · 12:30 with Paige</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/></svg></div><div class="einfo"><div class="en">Ryan — welcome drinks</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Emily — Chez Panisse?</div><div class="ed">TBD</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="empty-state" id="el-empty">No elements match.</div>
+
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni on"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itinerary</span></a>
+      <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni" onclick="openSheet()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Share</span></a>
+      <a class="ni" onclick="toast('Settings — coming soon')"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Settings</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== CAUCASUS TRIP (blank) ======================== -->
+  <div class="screen trip-screen" id="s-caucasus">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="content">
+      <div class="hero">
+        <!-- [PHOTO: Yerevan — Caucasus Trip hero banner] -->
+        <div class="hero-bg" style="background:url('Photos/Yerevan.jpg') center/cover;"></div>
+        <div class="hero-overlay"></div>
+        <button class="hero-back" onclick="go('s-home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="hero-info">
+          <div class="hero-name">Caucasus Trip</div>
+          <div class="hero-sub">Oct 23 – Nov 3, 2026 · 12 days</div>
+        </div>
+      </div>
+
+      <div class="collab-row">
+        <div class="collab-left">
+          <div class="avatars">
+            <div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>
+            <div class="av" style="background:url('Photos/Charles.png') center/cover;"></div>
+          </div>
+          <button class="invite-btn" onclick="openSheet()">Share</button>
+        </div>
+        <div class="collab-right">
+          <span class="collab-icon" onclick="openThemeSheet()" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></span>
+          <span class="collab-icon" onclick="openMap()" aria-label="Map"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
+          <span class="collab-icon" onclick="openTripFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
+          <span class="collab-icon" onclick="toggleTripSearch()" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+          <button class="collab-add" onclick="openAddMenu()" aria-label="Add element"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+      </div>
+
+      <div class="days-nav">
+        <div class="dc on" onclick="sd(0,this)">Oct 23</div>
+        <div class="dc" onclick="sd(1,this)">Oct 24</div>
+        <div class="dc" onclick="sd(2,this)">Oct 25</div>
+        <div class="dc" onclick="sd(3,this)">Oct 26</div>
+        <div class="dc" onclick="sd(4,this)">Oct 27</div>
+        <div class="dc" onclick="sd(5,this)">Oct 28</div>
+        <div class="dc" onclick="sd(6,this)">Oct 29</div>
+        <div class="dc" onclick="sd(7,this)">Oct 30</div>
+        <div class="dc" onclick="sd(8,this)">Oct 31</div>
+        <div class="dc" onclick="sd(9,this)">Nov 1</div>
+        <div class="dc" onclick="sd(10,this)">Nov 2</div>
+        <div class="dc" onclick="sd(11,this)">Nov 3</div>
+      </div>
+
+      <div class="day-sec on">
+        <div class="dh"><div class="dh-date">Friday, Oct 23</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Washington, D.C.</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Saturday, Oct 24</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Sunday, Oct 25</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Monday, Oct 26</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Tuesday, Oct 27</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Wednesday, Oct 28</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Thursday, Oct 29</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Friday, Oct 30</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Saturday, Oct 31</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Sunday, Nov 1</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Monday, Nov 2</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+      <div class="day-sec">
+        <div class="dh"><div class="dh-date">Tuesday, Nov 3</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Washington, D.C.</div></div>
+        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
+        <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notes</div><textarea class="day-notes-input" placeholder="Add notes for this day…" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <div class="spacer"></div>
+      </div>
+
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni on"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itinerary</span></a>
+      <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni" onclick="openSheet()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Share</span></a>
+      <a class="ni" onclick="toast('Settings — coming soon')"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Settings</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== PROFILE SCREEN ======================== -->
+  <div class="screen" id="s-profile">
+    <div class="sbar" style="position:absolute;top:0;left:0;right:0;z-index:3;background:transparent;"><span class="sbar-t" style="color:#fff;">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#fff" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-opacity="0.5"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#fff"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#fff" stroke-opacity="0.5" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="content">
+      <div class="prof-hero" style="background-image:url('Photos/Australia.jpg');">
+        <div class="prof-hero-overlay"></div>
+        <button class="prof-edit" onclick="toast('Edit profile — coming soon')">Edit profile</button>
+      </div>
+      <div class="prof-ava" style="background-image:url('Photos/Ryan%20Profile%20Pic.jpg');"></div>
+      <div class="prof-head">
+        <div class="prof-name">Ryan Ladd</div>
+        <div class="prof-handle">@ryanladd</div>
+        <div class="prof-bio">Road trips, ramen, and chasing good light. Always planning the next one.</div>
+        <div class="prof-stats">
+          <div class="prof-stat"><div class="prof-stat-n">12</div><div class="prof-stat-l">Countries</div></div>
+          <div class="prof-stat"><div class="prof-stat-n">18</div><div class="prof-stat-l">Trips</div></div>
+          <div class="prof-stat"><div class="prof-stat-n">2</div><div class="prof-stat-l">Published</div></div>
+        </div>
+      </div>
+      <div class="prof-section-title">Countries visited</div>
+      <div class="country-grid" id="prof-countries"></div>
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itins</span></a>
+      <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
+      <a class="ni on"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== SAVED (STAR) SCREEN ======================== -->
+  <div class="screen" id="s-saved">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="content">
+      <div class="saved-hdr">
+        <div class="saved-title">Saved</div>
+        <div class="saved-sub">Published itins you've starred</div>
+      </div>
+      <div class="saved-list" id="saved-list"></div>
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itins</span></a>
+      <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni on"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
+      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== NEW ITIN CREATE SCREEN ======================== -->
+  <div class="screen" id="s-new">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="new-hdr">
+      <button class="new-hdr-btn cancel" onclick="go('s-home')">Cancel</button>
+      <div class="new-hdr-title">New itin</div>
+      <button class="new-hdr-btn create" id="new-create" onclick="createItin()">Create</button>
+    </div>
+    <div class="content">
+      <div class="new-form">
+        <div class="ef-label">Trip name</div>
+        <input class="ef-input" id="ni-name" type="text" placeholder="e.g. Pacific Coast Road Trip" oninput="refreshCreateBtn()">
+
+        <div class="ef-label">Travelers</div>
+        <div class="ni-avatars" id="ni-people"></div>
+
+        <div class="ef-row" style="margin-top:2px;">
+          <div class="ef-col">
+            <div class="ef-label">Start date</div>
+            <input class="ef-input" id="ni-start" type="date">
+          </div>
+          <div class="ef-col">
+            <div class="ef-label">End date</div>
+            <input class="ef-input" id="ni-end" type="date">
+          </div>
+        </div>
+
+        <div class="ef-label">Locations</div>
+        <input class="ef-input" id="ni-loc" type="text" placeholder="Add a city or place, press Enter" onkeydown="addLocation(event)">
+        <div class="loc-chips" id="ni-locs"></div>
+
+        <div class="ef-label">Cover photo</div>
+        <div class="cover-drop" id="ni-cover" onclick="pickCover()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span id="ni-cover-label">Add a cover photo</span>
+        </div>
+        <input type="file" id="ni-cover-file" accept="image/*" hidden>
+
+        <div class="ef-label">Trip type</div>
+        <div class="type-pills" id="ni-types">
+          <button class="chip" onclick="pickType2(this)">Vacation</button>
+          <button class="chip" onclick="pickType2(this)">Trip</button>
+          <button class="chip" onclick="pickType2(this)">Roadtrip</button>
+          <button class="chip" onclick="pickType2(this)">Backpacking</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== EXPLORE (COMPASS) SCREEN ======================== -->
+  <div class="screen" id="s-explore">
+    <div id="explore-map"></div>
+    <div class="explore-scrim-top"></div>
+    <div class="sbar" style="position:absolute;top:0;left:0;right:0;z-index:3;background:transparent;"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="explore-hdr">
+      <div class="explore-title">Explore</div>
+      <div class="explore-sub">Tap a number to see published itins in that region</div>
+    </div>
+    <div class="nav">
+      <div class="nav-indicator"></div>
+      <a class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24" style="transform:rotate(45deg);"><path d="M12 2c-.7 0-1.3 1-1.3 2.2v4.3L3 13v2l7.7-2.2V17l-2 1.5V20l3.3-1 3.3 1v-1.5l-2-1.5v-4.2L21 15v-2l-7.7-4.3V4.2C13.3 3 12.7 2 12 2z"/></svg><span>Itins</span></a>
+      <a class="ni on"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
+      <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
+      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+    </div>
+  </div>
+
+  <!-- ======================== TRIP MAP VIEW ======================== -->
+  <div class="map-view" id="map-view">
+    <div id="map-canvas"></div>
+    <div class="sbar map-sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="map-top">
+      <button class="map-back" onclick="closeMap()" aria-label="Back to itinerary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="map-chips" id="map-chips"></div>
+    </div>
+  </div>
+
+  <!-- PHOTO LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lb-img" src="" alt="">
+    <div id="lb-ph"></div>
+    <div class="lb-cap" id="lb-cap"></div>
+    <button class="lb-arrow lb-prev hidden" id="lb-prev" onclick="lbNav(event,-1)" aria-label="Previous photo"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="lb-arrow lb-next hidden" id="lb-next" onclick="lbNav(event,1)" aria-label="Next photo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+
+  <!-- TOAST + INVITE SHEET (shared, inside phone frame) -->
+  <div class="toast" id="toast"></div>
+  <div class="sheet-scrim" id="sheet-scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Invite to this trip</div>
+    <div class="sheet-sub">Anyone with the link can view and suggest edits.</div>
+    <div class="invite-people">
+      <div class="invite-person"><div class="av" style="background:url('Photos/Ryan%20Profile%20Pic.jpg') center/cover;"></div>Ryan · Owner</div>
+      <div class="invite-person"><div class="av" style="background:url('Photos/Emily%20Profile%20Pic.jpeg') center/cover;"></div>Emily · Editor</div>
+    </div>
+    <div class="link-row">
+      <div class="link-text">itin.app/t/pacific-coast-2026</div>
+      <button class="copy-link" onclick="copyInvite()">Copy link</button>
+    </div>
+  </div>
+
+  <div class="sheet-scrim" id="invite-scrim" onclick="closeInviteSheet()"></div>
+  <div class="sheet" id="invite-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Add travelers</div>
+    <div class="sheet-sub">Tap to add people you're connected with.</div>
+    <div class="pick-list" id="invite-list"></div>
+    <div class="pick-divider"></div>
+    <div class="pick-sec-label">Invite someone new</div>
+    <div class="link-row">
+      <div class="link-text">itin.app/invite/ryan</div>
+      <button class="copy-link" onclick="copyInviteLink()">Copy link</button>
+    </div>
+    <button class="filter-apply" style="width:100%;margin-top:16px;" onclick="closeInviteSheet()">Done</button>
+  </div>
+
+  <div class="sheet-scrim" id="theme-scrim" onclick="closeThemeSheet()"></div>
+  <div class="sheet" id="theme-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Customize itin</div>
+    <div class="sheet-sub">Theme this itinerary.</div>
+    <div class="pick-sec-label" style="margin-top:16px;">Palette</div>
+    <div class="pal-grid" id="theme-palettes"></div>
+    <div class="pick-sec-label" style="margin-top:18px;">Font</div>
+    <div class="font-opts" id="theme-fonts"></div>
+    <button class="filter-apply" style="width:100%;margin-top:18px;" onclick="closeThemeSheet()">Done</button>
+  </div>
+
+  <div class="sheet-scrim" id="filter-scrim" onclick="closeFilter()"></div>
+  <div class="sheet" id="filter-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Filter itins</div>
+    <div class="filter-group-label">When</div>
+    <div class="chips">
+      <button class="chip" data-group="when" data-value="upcoming">Upcoming</button>
+      <button class="chip" data-group="when" data-value="past">Past</button>
+    </div>
+    <div class="filter-group-label">People</div>
+    <div class="chips">
+      <button class="chip" data-group="people" data-value="ryan">Ryan</button>
+      <button class="chip" data-group="people" data-value="emily">Emily</button>
+      <button class="chip" data-group="people" data-value="nikki">Nikki</button>
+      <button class="chip" data-group="people" data-value="morgan">Morgan</button>
+    </div>
+    <div class="filter-group-label">Status</div>
+    <div class="chips">
+      <button class="chip" data-group="status" data-value="published">Published</button>
+    </div>
+    <div class="filter-actions">
+      <button class="filter-clear" onclick="clearFilters()">Clear all</button>
+      <button class="filter-apply" onclick="closeFilter()">Show itins</button>
+    </div>
+  </div>
+
+  <div class="sheet-scrim" id="type-scrim" onclick="closeTypeSheet()"></div>
+  <div class="sheet" id="type-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Add element</div>
+    <div class="type-grid" id="type-grid"></div>
+  </div>
+
+  <div class="sheet-scrim" id="trip-filter-scrim" onclick="closeTripFilter()"></div>
+  <div class="sheet" id="trip-filter-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Filter elements</div>
+    <div class="filter-group-label">Element</div>
+    <div class="chips">
+      <button class="chip" data-group="etype" data-value="flight">Flight</button>
+      <button class="chip" data-group="etype" data-value="car">Car</button>
+      <button class="chip" data-group="etype" data-value="drive">Drive</button>
+      <button class="chip" data-group="etype" data-value="accommodation">Accommodation</button>
+      <button class="chip" data-group="etype" data-value="restaurant">Restaurant</button>
+      <button class="chip" data-group="etype" data-value="coffee">Coffee Shop</button>
+      <button class="chip" data-group="etype" data-value="bar">Bar</button>
+      <button class="chip" data-group="etype" data-value="store">Store</button>
+      <button class="chip" data-group="etype" data-value="hike">Hike</button>
+      <button class="chip" data-group="etype" data-value="neighborhood">Neighborhood</button>
+      <button class="chip" data-group="etype" data-value="museum">Museum</button>
+      <button class="chip" data-group="etype" data-value="experience">Experience</button>
+      <button class="chip" data-group="etype" data-value="ticket">Ticket</button>
+      <button class="chip" data-group="etype" data-value="misc">Miscellaneous</button>
+    </div>
+    <div class="filter-group-label">Saved</div>
+    <div class="chips">
+      <button class="chip" data-group="saved" data-value="want">♥ Want to go</button>
+      <button class="chip" data-group="saved" data-value="fav">★ Favorites</button>
+    </div>
+    <div class="filter-actions">
+      <button class="filter-clear" onclick="clearTripFilters()">Clear all</button>
+      <button class="filter-apply" onclick="closeTripFilter()">Show elements</button>
+    </div>
+  </div>
+
+  <div class="sheet-scrim" id="edit-scrim" onclick="closeEditSheet()"></div>
+  <div class="sheet" id="edit-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Edit element</div>
+    <div class="ef-label">Name</div>
+    <input class="ef-input" id="ef-name" type="text">
+    <div class="ef-label">Details</div>
+    <input class="ef-input" id="ef-details" type="text" placeholder="Add details…">
+    <div class="ef-row">
+      <div class="ef-col">
+        <div class="ef-label">Time</div>
+        <input class="ef-input" id="ef-time" type="text" placeholder="e.g. 7:30 PM">
+      </div>
+      <div class="ef-col">
+        <div class="ef-label">Tag</div>
+        <input class="ef-input" id="ef-tag" type="text" placeholder="e.g. Paid, Walk-in">
+      </div>
+    </div>
+    <div class="ef-label">Link label</div>
+    <input class="ef-input" id="ef-link" type="text" placeholder="e.g. Menu, Website">
+    <div class="ef-label">Photos</div>
+    <div class="ef-photos" id="ef-photos"></div>
+    <input type="file" id="ef-file" accept="image/*" multiple hidden>
+    <div class="filter-actions">
+      <button class="filter-clear ef-delete" onclick="deleteElement()">Delete</button>
+      <button class="filter-apply" onclick="saveElement()">Save</button>
+    </div>
+  </div>
+
+  <div class="sheet-scrim" id="region-scrim" onclick="closeRegion()"></div>
+  <div class="sheet" id="region-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title" id="region-title"></div>
+    <div class="sheet-sub" id="region-sub"></div>
+    <div class="itin-list" id="region-list"></div>
+  </div>
+
+</div>
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// --- Screen + day navigation ---
+// The currently-visible trip detail screen (Pacific = s-trip, Caucasus = s-caucasus)
+function activeTrip(){ return document.querySelector('.screen.active.trip-screen') || document.getElementById('s-trip'); }
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const screen=document.getElementById(id);
+  screen.classList.add('active');
+  const content=screen.querySelector('.content');
+  if(content) content.scrollTop = 0;
+  if(screen.classList.contains('trip-screen')){ screen.classList.remove('scrolled'); document.querySelectorAll('.day-notes-input').forEach(autoGrow); }
+  if(id==='s-explore') showExploreMap();
+  const nav=screen.querySelector('.nav');
+  if(nav) positionIndicator(nav, nav.querySelector('.ni.on')||nav.querySelector('.ni'), false);
+}
+
+// --- Sliding nav highlight ---
+function positionIndicator(nav, ni, animate){
+  const ind=nav.querySelector('.nav-indicator');
+  if(!ind||!ni||!ni.offsetWidth) return;
+  const padX=16;
+  if(!animate) ind.style.transition='none';
+  ind.style.width=(ni.offsetWidth+padX*2)+'px';
+  ind.style.transform='translate('+(ni.offsetLeft-padX)+'px,-50%)';
+  if(!animate){ void ind.offsetWidth; ind.style.transition=''; }
+}
+function initNav(nav){
+  const items=nav.querySelectorAll('.ni');
+  const ind=nav.querySelector('.nav-indicator');
+  positionIndicator(nav, nav.querySelector('.ni.on')||items[0], false);
+  items.forEach(ni=>{
+    ni.addEventListener('click',function(){
+      items.forEach(x=>x.classList.remove('on'));
+      ni.classList.add('on');
+      if(ind) ind.classList.remove('hidden');
+      positionIndicator(nav, ni, true);
+    });
+  });
+  const addBtn=nav.querySelector('.nav-add');
+  if(addBtn) addBtn.addEventListener('click',function(){
+    items.forEach(x=>x.classList.remove('on'));
+    if(ind) ind.classList.add('hidden');
+  });
+}
+document.querySelectorAll('.nav').forEach(initNav);
+function sd(i,el){
+  const screen=el.closest('.screen');
+  screen.querySelectorAll('.dc').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  const day=screen.querySelectorAll('.day-sec')[i];
+  if(day) day.scrollIntoView({behavior:'smooth',block:'start'});
+  const nav=el.parentElement;
+  nav.scrollTo({ left: el.offsetLeft - nav.clientWidth/2 + el.clientWidth/2, behavior:'smooth' });
+}
+
+// Long-scroll itinerary: sticky day bar + scroll-spy (per trip screen)
+function initTripSpy(screen){
+  const content=screen.querySelector('.content');
+  if(!content) return;
+  let ticking=false;
+  content.addEventListener('scroll',function(){
+    if(ticking) return; ticking=true;
+    requestAnimationFrame(function(){
+      const chips=[...screen.querySelectorAll('.dc')];
+      const days=[...screen.querySelectorAll('.day-sec')];
+      const hero=content.querySelector('.hero');
+      const threshold=(hero?hero.offsetHeight:240)-58;
+      screen.classList.toggle('scrolled', content.scrollTop>threshold);
+      const contTop=content.getBoundingClientRect().top;
+      let idx=0;
+      days.forEach((d,i)=>{ if(d.getBoundingClientRect().top-contTop<=170) idx=i; });
+      chips.forEach((c,i)=>c.classList.toggle('on', i===idx));
+      ticking=false;
+    });
+  });
+}
+document.querySelectorAll('.trip-screen').forEach(initTripSpy);
+
+// --- Toast ---
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),1700);
+}
+
+// --- Heart (Want to go) + Star (Favorites) toggles (event delegation) ---
+document.addEventListener('click',function(e){
+  const hb=e.target.closest('.hb');
+  if(hb){
+    e.stopPropagation();
+    hb.classList.toggle('on');
+    hb.classList.add('pop');
+    setTimeout(()=>hb.classList.remove('pop'),140);
+    toast(hb.classList.contains('on')?'Added to Want to go':'Removed from Want to go');
+    if(elFilters.saved.size) applyElementFilters();
+    return;
+  }
+  const sb=e.target.closest('.sb');
+  if(sb){
+    e.stopPropagation();
+    sb.classList.toggle('on');
+    sb.classList.add('pop');
+    setTimeout(()=>sb.classList.remove('pop'),140);
+    toast(sb.classList.contains('on')?'Added to Favorites':'Removed from Favorites');
+    if(elFilters.saved.size) applyElementFilters();
+    return;
+  }
+});
+
+// --- Tap the "tap to copy" line on a booking card to copy its confirmation # ---
+document.querySelectorAll('.ec[data-copy]').forEach(card=>{
+  card.addEventListener('click',function(e){
+    if(!e.target.closest('.ed')) return;
+    e.stopPropagation();
+    const ref=card.getAttribute('data-copy');
+    copyText(ref, 'Copied confirmation '+ref);
+  });
+});
+
+// --- Tap any element card to edit its fields (bottom sheet) ---
+let editingCard=null, editPhotos=[];
+const TAG_COLORS={ paid:'green', free:'green', 'free tour':'green', booked:'blue', reserved:'blue', tbd:'amber' };
+
+function renderEfPhotos(){
+  const wrap=document.getElementById('ef-photos');
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  wrap.innerHTML=editPhotos.map((p,i)=>
+    '<div class="ef-pt">'+
+      (p.type==='img'
+        ?'<img src="'+esc(p.src)+'" alt="'+esc(p.alt)+'">'
+        :'<div class="ef-pt-ph" style="background:'+esc(p.bg)+';" title="'+esc(p.title)+'"></div>')+
+      '<span class="ef-pt-x" onclick="efRemovePhoto(event,'+i+')">✕</span>'+
+    '</div>').join('')+
+    (editPhotos.length<4?'<button class="ef-add" onclick="efAddPhoto()" aria-label="Add photo">+</button>':'');
+}
+function efRemovePhoto(e,i){ e.stopPropagation(); editPhotos.splice(i,1); renderEfPhotos(); }
+function efAddPhoto(){ document.getElementById('ef-file').click(); }
+document.getElementById('ef-file').addEventListener('change',function(){
+  [...this.files].slice(0,4-editPhotos.length).forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{ editPhotos.push({type:'img',src:r.result,alt:f.name.replace(/\.[^.]+$/,'')}); renderEfPhotos(); };
+    r.readAsDataURL(f);
+  });
+  this.value='';
+});
+
+document.addEventListener('click',function(e){
+  const card=e.target.closest('.trip-screen .ec');
+  if(!card) return;
+  if(e.target.closest('.ea,.hb,.sb,.drag-icon,.mc,.photo-tiles,input,textarea,button')) return;
+  openEditSheet(card);
+});
+
+function chipText(el){ return el?[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim():''; }
+
+function openEditSheet(card){
+  editingCard=card;
+  const chips=[...card.querySelectorAll('.mc')];
+  const timeChip=chips.find(c=>!c.classList.contains('link')&&c.querySelector('svg'));
+  const tagChip=chips.find(c=>!c.classList.contains('link')&&!c.querySelector('svg'));
+  const linkChipEl=chips.find(c=>c.classList.contains('link'));
+  document.getElementById('ef-name').value=(card.querySelector('.en')||{}).textContent||'';
+  document.getElementById('ef-details').value=(card.querySelector('.ed')||{}).textContent||'';
+  document.getElementById('ef-time').value=chipText(timeChip);
+  document.getElementById('ef-tag').value=tagChip?tagChip.textContent.trim():'';
+  document.getElementById('ef-link').value=chipText(linkChipEl);
+  editPhotos=[...card.querySelectorAll('.photo-tiles .pt')].map(t=>
+    t.tagName==='IMG'
+      ?{type:'img',src:t.getAttribute('src'),alt:t.alt}
+      :{type:'ph',bg:t.style.background,title:t.title});
+  renderEfPhotos();
+  document.getElementById('edit-scrim').classList.add('show');
+  document.getElementById('edit-sheet').classList.add('show');
+}
+function closeEditSheet(){
+  editingCard=null;
+  document.getElementById('edit-scrim').classList.remove('show');
+  document.getElementById('edit-sheet').classList.remove('show');
+}
+function saveElement(){
+  if(!editingCard) return closeEditSheet();
+  const card=editingCard;
+  const name=document.getElementById('ef-name').value.trim();
+  const details=document.getElementById('ef-details').value.trim();
+  const time=document.getElementById('ef-time').value.trim();
+  const tag=document.getElementById('ef-tag').value.trim();
+  const link=document.getElementById('ef-link').value.trim();
+  const info=card.querySelector('.einfo');
+  let en=card.querySelector('.en');
+  if(!en){ en=document.createElement('div'); en.className='en'; info.prepend(en); }
+  en.textContent=name||'Untitled';
+  let ed=card.querySelector('.ed');
+  if(details){
+    if(!ed){ ed=document.createElement('div'); ed.className='ed'; en.after(ed); }
+    ed.textContent=details;
+  } else if(ed) ed.remove();
+  const meta=[];
+  if(time) meta.push({k:'time',v:time});
+  if(tag) meta.push({k:TAG_COLORS[tag.toLowerCase()]||'tag',v:tag});
+  if(link) meta.push({k:'link',v:link});
+  let em=info.querySelector('.em');
+  if(meta.length){
+    if(!em){ em=document.createElement('div'); em.className='em'; info.appendChild(em); }
+    em.innerHTML=meta.map(chipHTML).join('');
+  } else if(em) em.remove();
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  let ptRow=card.querySelector('.photo-tiles');
+  if(editPhotos.length){
+    if(!ptRow){ ptRow=document.createElement('div'); ptRow.className='photo-tiles'; card.appendChild(ptRow); }
+    ptRow.innerHTML=editPhotos.map(p=>
+      p.type==='img'
+        ?'<img class="pt" src="'+esc(p.src)+'" alt="'+esc(p.alt)+'">'
+        :'<div class="pt pt-ph" style="background:'+esc(p.bg)+';" title="'+esc(p.title)+'"></div>').join('');
+  } else if(ptRow) ptRow.remove();
+  closeEditSheet();
+  toast('Element updated');
+}
+function deleteElement(){
+  if(!editingCard) return closeEditSheet();
+  editingCard.remove();
+  closeEditSheet();
+  toast('Element deleted');
+}
+
+// --- Search + filters (Home) ---
+let searchQuery='';
+const filters={ people:new Set(), when:new Set(), status:new Set() };
+
+function filterTrips(q){ searchQuery=q.trim().toLowerCase(); applyFilters(); }
+
+function applyFilters(){
+  let anyVisible=false;
+  document.querySelectorAll('#s-home .trip-card').forEach(card=>{
+    const hay=(card.getAttribute('data-search')||'').toLowerCase();
+    const people=(card.dataset.people||'').split(' ');
+    const when=card.dataset.when||'';
+    const status=card.dataset.status||'';
+    const matchSearch = !searchQuery || hay.includes(searchQuery);
+    const matchPeople = filters.people.size===0 || [...filters.people].some(p=>people.includes(p));
+    const matchWhen   = filters.when.size===0   || filters.when.has(when);
+    const matchStatus = filters.status.size===0 || filters.status.has(status);
+    const vis = matchSearch && matchPeople && matchWhen && matchStatus;
+    card.style.display = vis ? '' : 'none';
+    if(vis) anyVisible=true;
+  });
+  // hide a section heading if it has no visible trips
+  document.querySelectorAll('#s-home .section-label').forEach(label=>{
+    const sec=label.dataset.section; if(!sec) return;
+    const has=[...document.querySelectorAll('#s-home .trip-card')]
+      .some(c=>c.dataset.when===sec && c.style.display!=='none');
+    label.style.display = has ? '' : 'none';
+  });
+  document.getElementById('trip-empty').style.display = anyVisible ? 'none' : 'block';
+  const active = filters.people.size||filters.when.size||filters.status.size;
+  document.querySelector('.home-filter').classList.toggle('active', !!active);
+}
+
+function openFilter(){ document.getElementById('filter-scrim').classList.add('show'); document.getElementById('filter-sheet').classList.add('show'); }
+function closeFilter(){ document.getElementById('filter-scrim').classList.remove('show'); document.getElementById('filter-sheet').classList.remove('show'); }
+function clearFilters(){
+  Object.values(filters).forEach(s=>s.clear());
+  document.querySelectorAll('#filter-sheet .chip').forEach(c=>c.classList.remove('on'));
+  applyFilters();
+}
+document.querySelectorAll('#filter-sheet .chip').forEach(chip=>{
+  chip.addEventListener('click',function(){
+    const g=chip.dataset.group, v=chip.dataset.value;
+    if(filters[g].has(v)){ filters[g].delete(v); chip.classList.remove('on'); }
+    else { filters[g].add(v); chip.classList.add('on'); }
+    applyFilters();
+  });
+});
+
+// --- Add element (inline, nameable) ---
+// A day's "+ Add element" opens the same type-picker menu as the itin's + button,
+// remembering which day was clicked so the new element lands in that day.
+let pendingAddBtn=null;
+function addElement(btn){ pendingAddBtn=btn; openTypeSheet(); }
+
+// --- Invite / Share bottom sheet ---
+function openSheet(){
+  document.getElementById('sheet-scrim').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+function closeSheet(){
+  document.getElementById('sheet-scrim').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+}
+function addNewElement(){
+  const screen=activeTrip();
+  const chips=[...screen.querySelectorAll('.dc')];
+  let idx=chips.indexOf(screen.querySelector('.dc.on')); if(idx<0) idx=0;
+  const day=screen.querySelectorAll('.day-sec')[idx];
+  const btn=day&&day.querySelector('.add-btn');
+  if(btn) addElement(btn);
+}
+function copyInvite(){ copyText('itin.app/t/pacific-coast-2026','Invite link copied'); }
+
+// --- Clipboard helper (with fallback) ---
+function copyText(text,msg){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast(msg)).catch(()=>toast(msg));
+  }else{
+    const ta=document.createElement('textarea');
+    ta.value=text; document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta); toast(msg);
+  }
+}
+
+// --- Drag-to-reorder within each day ---
+// --- Add-element type picker ---
+const ELEMENT_TYPES=[
+  {key:'city',label:'City',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>'},
+  {key:'accommodation',label:'Accommodation',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/>'},
+  {key:'flight',label:'Flight',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/>'},
+  {key:'car',label:'Car',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M18.9 6c-.2-.6-.7-1-1.4-1h-11c-.6 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16c-.8 0-1.5-.7-1.5-1.5S5.7 13 6.5 13s1.5.7 1.5 1.5S7.3 16 6.5 16zm11 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>'},
+  {key:'restaurant',label:'Restaurant',bg:'#FBEAF0',fg:'#993556',icon:'<path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/>'},
+  {key:'coffee',label:'Coffee Shop',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>'},
+  {key:'bar',label:'Bar',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/>'},
+  {key:'store',label:'Store',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/>'},
+  {key:'hike',label:'Hike',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/>'},
+  {key:'neighborhood',label:'Neighborhood',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/>'},
+  {key:'museum',label:'Museum',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M12 2L2 7v1.5h20V7L12 2zM4 10h2v8H4zm4.7 0h2v8h-2zm4.6 0h2v8h-2zm4.7 0h2v8h-2zM2 19h20v3H2z"/>'},
+  {key:'experience',label:'Experience',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M13 3v10H5L13 3zm2 4l4.5 6H15V7zM3.3 15h17.4l-1.8 3c-.4.6-1 1-1.7 1H6.8c-.7 0-1.3-.4-1.7-1l-1.8-3z"/>'},
+  {key:'ticket',label:'Ticket',bg:'#FBEAF0',fg:'#993556',icon:'<path fill-rule="evenodd" d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zM15 6.3h1v2.2h-1zm0 3.6h1v2.2h-1zm0 3.6h1v2.2h-1z"/>'},
+  {key:'drive',label:'Drive',bg:'#E6F1FB',fg:'#185FA5',icon:'<path style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" d="M9 21c0-4 6-3 6-7s-6-3-6-7 4-4 7-4"/>'},
+  {key:'misc',label:'Miscellaneous',bg:'#F1EFE8',fg:'#777',icon:'<path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/>'}
+];
+function buildTypeSheet(){
+  const g=document.getElementById('type-grid');
+  if(!g) return;
+  const item=t=>'<div class="type-item" onclick="pickType(\''+t.key+'\')"><div class="type-ic" style="background:'+t.bg+';color:'+t.fg+';"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div><div class="type-name">'+t.label+'</div></div>';
+  // City + Accommodation on the first row, then a divider, then the rest
+  g.innerHTML=ELEMENT_TYPES.slice(0,2).map(item).join('')+'<div class="type-divider"></div>'+ELEMENT_TYPES.slice(2).map(item).join('');
+}
+function openAddMenu(){ pendingAddBtn=null; openTypeSheet(); } // itin + button → active day
+function openTypeSheet(){ document.getElementById('type-scrim').classList.add('show'); document.getElementById('type-sheet').classList.add('show'); }
+function closeTypeSheet(){ document.getElementById('type-scrim').classList.remove('show'); document.getElementById('type-sheet').classList.remove('show'); pendingAddBtn=null; }
+function pickType(key){
+  const t=ELEMENT_TYPES.find(x=>x.key===key); if(!t) return;
+  let btn=pendingAddBtn;
+  if(!btn){
+    const screen=activeTrip();
+    const chips=[...screen.querySelectorAll('.dc')];
+    let idx=chips.indexOf(screen.querySelector('.dc.on')); if(idx<0) idx=0;
+    const day=screen.querySelectorAll('.day-sec')[idx];
+    btn=day&&day.querySelector('.add-btn');
+  }
+  closeTypeSheet();
+  if(!btn) return;
+  const card=document.createElement('div');
+  card.className='ec';
+  card.innerHTML='<div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div><div class="einfo"><input class="new-el-input" type="text" placeholder="Name this '+t.label.toLowerCase()+'…"></div><div class="ea"><span class="hb"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>';
+  btn.parentNode.insertBefore(card,btn);
+  const input=card.querySelector('.new-el-input');
+  input.focus();
+  function commit(){ const v=input.value.trim(); if(!v){ card.remove(); return; } const info=card.querySelector('.einfo'); info.innerHTML='<div class="en"></div><div class="ed">'+t.label+'</div>'; info.querySelector('.en').textContent=v; }
+  input.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ev.preventDefault(); input.blur();} });
+  input.addEventListener('blur',commit);
+  card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+buildTypeSheet();
+
+// --- ELEMENT META CHIPS ---
+// Chip kinds: time (clock icon) · tag/green/blue/amber (status pills) · link (tappable, demo)
+const CARD_META={
+  'Ryan — Alaska 557':[{k:'time',v:'Lands 7:02 PM'},{k:'blue',v:'Booked'},{k:'link',v:'Alaska Air'}],
+  'Emily — Delta 2459':[{k:'time',v:'Lands 7:23 PM'},{k:'blue',v:'Booked'},{k:'link',v:'Delta'}],
+  'The Hoxton':[{k:'time',v:'Check-in 3:00 PM'},{k:'green',v:'Paid'},{k:'link',v:'Website'}],
+  'Oscar Food & Wine':[{k:'time',v:'5:30 PM'},{k:'tag',v:'Walk-in'},{k:'link',v:'Menu'}],
+  'Dinner — Fantino':[{k:'time',v:'7:30 PM'},{k:'blue',v:'Reserved'},{k:'link',v:'Menu'}],
+  'Never Coffee':[{k:'time',v:'Opens 8 AM'},{k:'link',v:'Website'}],
+  "Powell's Books":[{k:'tag',v:'Downtown'},{k:'link',v:'Website'}],
+  'Tender Loving Empire':[{k:'tag',v:'Downtown'}],
+  'Woonwinkel':[{k:'tag',v:'Downtown'}],
+  'Lunch — Annam VL':[{k:'time',v:'12:30 PM'},{k:'tag',v:'Walk-in'}],
+  'Pinolo Gelato':[{k:'tag',v:'Division St.'}],
+  'Vintage Club':[{k:'tag',v:'Division St.'}],
+  'Well Spent Market':[{k:'tag',v:'Division St.'}],
+  'Caseus Diem Cheese Shop':[{k:'tag',v:'Division St.'}],
+  'Bonita Bodega':[{k:'tag',v:'Division St.'}],
+  'Providore Fine Foods':[{k:'tag',v:'Kerns'}],
+  'Collector Bar':[{k:'time',v:'4:30 PM'},{k:'tag',v:'Kerns'}],
+  'Dinner — Eem Thai BBQ':[{k:'time',v:'7:00 PM'},{k:'tag',v:'Walk-in'},{k:'link',v:'Menu'}],
+  'Sincerely, Bagel':[{k:'time',v:'9:00 AM'},{k:'tag',v:'Walk-in'}],
+  'Pittock Mansion Viewpoint':[{k:'green',v:'Free'},{k:'link',v:'Directions'}],
+  'Lunch — Face Plant':[{k:'time',v:'12:00 PM'}],
+  'Sixt Rental Car Pickup':[{k:'time',v:'2:00 PM'},{k:'blue',v:'Booked'},{k:'link',v:'Sixt'}],
+  'Ecola State Park':[{k:'tag',v:'$5 day pass'},{k:'link',v:'Park info'}],
+  'Drifthaven':[{k:'time',v:'Check-in 4:00 PM'},{k:'green',v:'Paid'},{k:'link',v:'Website'}],
+  'Dinner — The Wayfarer':[{k:'time',v:'7:45 PM'},{k:'blue',v:'Reserved'},{k:'link',v:'Menu'}],
+  'Tillamook Creamery':[{k:'time',v:'Opens 10 AM'},{k:'green',v:'Free tour'},{k:'link',v:'Website'}],
+  'Neskowin Provisions':[{k:'tag',v:'Neskowin'}],
+  'Proposal Rock':[{k:'tag',v:'Neskowin'}],
+  'Sea Horsey bottle shop':[{k:'tag',v:'Lincoln City'}],
+  'Hotel Sylvia Newport':[{k:'time',v:'Check-in 4:00 PM'},{k:'blue',v:'Booked'},{k:'link',v:'Website'}],
+  'Dinner — Local Oceans':[{k:'time',v:'7:00 PM'},{k:'tag',v:'Walk-in'},{k:'link',v:'Menu'}],
+  'Airbnb — McKinleyville, CA':[{k:'green',v:'Paid'},{k:'link',v:'Airbnb'}],
+  'Florence, OR — Sand Dunes':[{k:'tag',v:'Photo stop'}],
+  'Lunch — Tu Tu Tun':[{k:'time',v:'1:00 PM'},{k:'blue',v:'Reserved'},{k:'link',v:'Website'}],
+  'Redwood National Park':[{k:'green',v:'Free'},{k:'link',v:'Trail map'}],
+  'Dinner — Arcata, CA':[{k:'time',v:'7:30 PM'},{k:'amber',v:'TBD'}],
+  'Avenue of the Giants':[{k:'tag',v:'Scenic drive'},{k:'link',v:'Route'}],
+  'Glass Beach':[{k:'tag',v:'Fort Bragg'}],
+  'Drive through Mendocino':[{k:'tag',v:'Scenic'}],
+  'Lunch — The Brickery':[{k:'time',v:'12:30 PM'}],
+  'Sierra tea & snack':[{k:'time',v:'By 2:00 PM'}],
+  'Sea Ranch Lodge':[{k:'time',v:'Check-in 4:00 PM'},{k:'green',v:'Paid'},{k:'link',v:'Website'}],
+  'Dinner — Sea Ranch Lodge Bar':[{k:'time',v:'7:00 PM'},{k:'tag',v:'Walk-in'}],
+  'Sea Ranch Lodge · Night 2':[{k:'green',v:'Paid'}],
+  'Dinner — The Dining Room':[{k:'time',v:'7:30 PM'},{k:'amber',v:'TBD'},{k:'link',v:'Menu'}],
+  'DoubleTree Berkeley Marina':[{k:'time',v:'Check-in 4:00 PM'},{k:'blue',v:'Booked'},{k:'link',v:'Hilton'}],
+  'Lunch — Sol Food':[{k:'time',v:'12:30 PM'},{k:'tag',v:'With Paige'}],
+  'Ryan — welcome drinks':[{k:'time',v:'5:00 PM'}],
+  'Emily — Chez Panisse?':[{k:'amber',v:'TBD'},{k:'link',v:'Menu'}]
+};
+const CHIP_CLOCK='<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>';
+const CHIP_LINK='<svg viewBox="0 0 24 24"><path d="M3.9 12A3.1 3.1 0 017 8.9h4V7H7a5 5 0 000 10h4v-1.9H7A3.1 3.1 0 013.9 12zM8 13h8v-2H8v2zm9-6h-4v1.9h4a3.1 3.1 0 010 6.2h-4V17h4a5 5 0 000-10z"/></svg>';
+function chipHTML(c){
+  if(c.k==='time') return '<span class="mc">'+CHIP_CLOCK+c.v+'</span>';
+  if(c.k==='link') return '<span class="mc link" onclick="linkChip(event,\''+c.v+'\')">'+CHIP_LINK+c.v+'</span>';
+  return '<span class="mc '+(c.k==='tag'?'':c.k)+'">'+c.v+'</span>';
+}
+function linkChip(e,label){ e.stopPropagation(); toast('Opening '+label+' — demo link'); }
+document.querySelectorAll('#s-trip .ec .en').forEach(en=>{
+  const meta=CARD_META[en.textContent.trim()];
+  if(!meta) return;
+  const info=en.closest('.einfo');
+  if(!info||info.querySelector('.em')) return;
+  const row=document.createElement('div');
+  row.className='em';
+  row.innerHTML=meta.map(chipHTML).join('');
+  info.appendChild(row);
+});
+
+// --- PHOTO LIGHTBOX ---
+let lbList=[], lbIdx=0;
+document.addEventListener('click',function(e){
+  const pt=e.target.closest('.pt');
+  if(!pt) return;
+  const row=pt.closest('.photo-tiles');
+  if(!row) return;
+  lbList=[...row.querySelectorAll('.pt')].filter(t=>getComputedStyle(t).display!=='none');
+  lbIdx=Math.max(0,lbList.indexOf(pt));
+  showLightbox();
+});
+function showLightbox(){
+  const t=lbList[lbIdx];
+  const img=document.getElementById('lb-img'), ph=document.getElementById('lb-ph'), cap=document.getElementById('lb-cap');
+  if(t.tagName==='IMG'){
+    img.style.display='block'; ph.style.display='none';
+    img.src=t.src; img.alt=t.alt;
+    cap.textContent=t.alt||'';
+  } else {
+    img.style.display='none'; ph.style.display='flex';
+    ph.style.background=t.style.background;
+    ph.textContent=(t.title||'')+' — photo coming soon';
+    cap.textContent='';
+  }
+  document.getElementById('lb-prev').classList.toggle('hidden', lbIdx===0);
+  document.getElementById('lb-next').classList.toggle('hidden', lbIdx>=lbList.length-1);
+  document.getElementById('lightbox').classList.add('show');
+}
+function lbNav(e,d){
+  e.stopPropagation();
+  lbIdx=Math.max(0,Math.min(lbList.length-1,lbIdx+d));
+  showLightbox();
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('show'); }
+
+// --- TRIP SEARCH + FILTER (trip view) ---
+let elSearchQuery='';
+const elFilters={ etype:new Set(), saved:new Set() };
+
+// Classify a card by its icon's SVG path (same icons the itinerary list uses)
+const ETYPE_PREFIX=[
+  ['M12 2c-','flight'],['M18.9 6','car'],['M9 2h6l3 20','drive'],['M9 21c','drive'],
+  ['M7 13c','accommodation'],
+  ['M11 9H','restaurant'],['M6 2v6','restaurant'],
+  ['M20 3H','coffee'],
+  ['M7 3l','bar'],['M7.5 3.5','bar'],
+  ['M16 2c','store'],['M15 2.5','store'],
+  ['M14 6l','hike'],['M2 20L9','hike'],
+  ['M12 2L6 11','neighborhood'],
+  ['M12 2L2 7','museum'],['M13 3v10','experience'],['M22 10V6','ticket']
+];
+function elType(ec){
+  const p=ec.querySelector('.ei path');
+  const d=p?(p.getAttribute('d')||''):'';
+  const hit=ETYPE_PREFIX.find(pair=>d.startsWith(pair[0]));
+  return hit?hit[1]:'misc';
+}
+
+// Day notes: textarea grows with its content
+function autoGrow(t){ t.style.height='auto'; if(t.scrollHeight) t.style.height=t.scrollHeight+'px'; }
+
+function toggleTripSearch(){
+  if(activeTrip().id!=='s-trip'){ toast('Add stops first to search this itin'); return; }
+  const scr=document.getElementById('s-trip');
+  if(scr.classList.contains('searching')){ closeTripSearch(); return; }
+  scr.classList.add('searching');
+  setTimeout(()=>document.getElementById('el-search').focus(),60);
+}
+function closeTripSearch(){
+  document.getElementById('s-trip').classList.remove('searching');
+  const inp=document.getElementById('el-search');
+  inp.value=''; elSearchQuery='';
+  applyElementFilters();
+}
+function filterElements(q){ elSearchQuery=q.trim().toLowerCase(); applyElementFilters(); }
+
+function openTripFilter(){ if(activeTrip().id!=='s-trip'){ toast('Add stops first to filter this itin'); return; } document.getElementById('trip-filter-scrim').classList.add('show'); document.getElementById('trip-filter-sheet').classList.add('show'); }
+function closeTripFilter(){ document.getElementById('trip-filter-scrim').classList.remove('show'); document.getElementById('trip-filter-sheet').classList.remove('show'); }
+function clearTripFilters(){
+  Object.values(elFilters).forEach(s=>s.clear());
+  document.querySelectorAll('#trip-filter-sheet .chip').forEach(c=>c.classList.remove('on'));
+  applyElementFilters();
+}
+document.querySelectorAll('#trip-filter-sheet .chip').forEach(chip=>{
+  chip.addEventListener('click',function(){
+    const g=chip.dataset.group, v=chip.dataset.value;
+    if(elFilters[g].has(v)){ elFilters[g].delete(v); chip.classList.remove('on'); }
+    else { elFilters[g].add(v); chip.classList.add('on'); }
+    applyElementFilters();
+  });
+});
+
+function applyElementFilters(){
+  const active=!!(elSearchQuery||elFilters.etype.size||elFilters.saved.size);
+  let any=false;
+  document.querySelectorAll('#s-trip .day-sec').forEach(sec=>{
+    const dh=sec.querySelector('.dh');
+    const dayTxt=dh?dh.textContent.toLowerCase():'';
+    let dayHas=false;
+    sec.querySelectorAll('.ec').forEach(ec=>{
+      const hay=(ec.textContent+' '+dayTxt).toLowerCase();
+      const okSearch=!elSearchQuery||hay.includes(elSearchQuery);
+      const okType=!elFilters.etype.size||elFilters.etype.has(elType(ec));
+      const okSaved=!elFilters.saved.size||
+        (elFilters.saved.has('want')&&ec.querySelector('.hb.on'))||
+        (elFilters.saved.has('fav')&&ec.querySelector('.sb.on'));
+      const vis=okSearch&&okType&&okSaved;
+      ec.style.display=vis?'':'none';
+      if(vis){ dayHas=true; any=true; }
+    });
+    // hide sub-area labels (Downtown, Division St., ...) with no visible cards
+    sec.querySelectorAll('.subhead').forEach(sh=>{
+      let n=sh.nextElementSibling, show=false;
+      while(n&&!n.classList.contains('subhead')){
+        if(n.classList.contains('ec')&&n.style.display!=='none'){ show=true; break; }
+        n=n.nextElementSibling;
+      }
+      sh.style.display=(!active||show)?'':'none';
+    });
+    sec.style.display=(!active||dayHas)?'':'none';
+    const ab=sec.querySelector('.add-btn'); if(ab) ab.style.display=active?'none':'';
+    const dn=sec.querySelector('.drive-note'); if(dn) dn.style.display=active?'none':'';
+    const nb=sec.querySelector('.day-notes'); if(nb) nb.style.display=active?'none':'';
+  });
+  document.getElementById('el-empty').style.display=(active&&!any)?'block':'none';
+  document.getElementById('trip-filter-icon').classList.toggle('active', !!(elFilters.etype.size||elFilters.saved.size));
+}
+
+// --- EXPLORE (compass) MAP ---
+// Published itineraries by region. US regions are states; elsewhere whole countries.
+// [lat, lng] positions the number badge (US state positions are spread apart a
+// touch so the badges stay legible at world zoom). Covers use the element palette.
+const EXPLORE_REGIONS=[
+  { key:'japan', name:'Japan', flag:'🇯🇵', lat:37.6, lng:138.5, itins:[
+    { name:'Tokyo in 5 Days', by:'Nikki R.', days:5, cover:'Photos/Japan.jpg' },
+    { name:'Kyoto Temples & Gardens', by:'Ryan L.', days:4, cover:'#993556' },
+    { name:'Osaka Food Crawl', by:'Morgan T.', days:3, cover:'#854F0B' }
+  ]},
+  { key:'italy', name:'Italy', flag:'🇮🇹', lat:42.8, lng:12.6, itins:[
+    { name:'Amalfi Coast Escape', by:'Emily C.', days:6, cover:'#185FA5' },
+    { name:'Rome Classics', by:'Ryan L.', days:4, cover:'#993556' },
+    { name:'Tuscany Wine Country', by:'Nikki R.', days:5, cover:'#0F6E56' },
+    { name:'Venice & Florence', by:'Morgan T.', days:7, cover:'#533AB7' }
+  ]},
+  { key:'montana', name:'Montana', flag:'🏔️', lat:49.5, lng:-101, itins:[
+    { name:'Glacier National Park Loop', by:'Ryan L.', days:6, cover:'#0F6E56' }
+  ]},
+  { key:'california', name:'California', flag:'🌉', lat:32, lng:-123, itins:[
+    { name:'Pacific Coast Highway', by:'Ryan & Emily', days:8, cover:'Photos/Cannon%20Beach.jpg' },
+    { name:'Yosemite & Big Sur', by:'Nikki R.', days:5, cover:'#0F6E56' }
+  ]},
+  { key:'southafrica', name:'South Africa', flag:'🇿🇦', lat:-30.0, lng:23.5, itins:[
+    { name:'Cape Town Highlights', by:'Morgan T.', days:5, cover:'#185FA5' },
+    { name:'Garden Route Drive', by:'Ryan L.', days:6, cover:'#0F6E56' },
+    { name:'Kruger Safari', by:'Nikki R.', days:4, cover:'#854F0B' },
+    { name:'Winelands Weekend', by:'Emily C.', days:3, cover:'#993556' },
+    { name:'Jo’burg to Durban', by:'Morgan T.', days:7, cover:'#533AB7' }
+  ]}
+];
+
+let exploreMap=null, exploreDone=false;
+// Initial framing: zoomed in to fill the screen; pan/zoom to reach the rest.
+const EXPLORE_VIEW={ center:[14,-45], zoom:1.6 };
+function showExploreMap(){
+  if(!window.L){ return; }
+  if(!exploreMap){ setTimeout(initExploreMap,120); }
+  else{ setTimeout(()=>exploreMap.invalidateSize(),120); }
+}
+function initExploreMap(){
+  exploreMap=L.map('explore-map',{zoomControl:false,attributionControl:true,worldCopyJump:true,zoomSnap:0,minZoom:1});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'
+  }).addTo(exploreMap);
+  EXPLORE_REGIONS.forEach(r=>{
+    const icon=L.divIcon({className:'',iconSize:[44,44],iconAnchor:[22,22],
+      html:'<div class="reg-badge"><div class="reg-count">'+r.itins.length+'</div></div>'});
+    const m=L.marker([r.lat,r.lng],{icon:icon}).addTo(exploreMap);
+    m.on('click',()=>openRegion(r.key));
+  });
+  exploreMap.setView(EXPLORE_VIEW.center, EXPLORE_VIEW.zoom);
+  exploreDone=true;
+  // container just became visible — recompute size, then re-apply the view
+  setTimeout(()=>{ exploreMap.invalidateSize(); exploreMap.setView(EXPLORE_VIEW.center, EXPLORE_VIEW.zoom); },260);
+}
+function openRegion(key){
+  const r=EXPLORE_REGIONS.find(x=>x.key===key); if(!r) return;
+  document.getElementById('region-title').innerHTML='<span class="region-flag">'+r.flag+'</span>'+r.name;
+  document.getElementById('region-sub').textContent=r.itins.length+' published '+(r.itins.length===1?'itin':'itins');
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  document.getElementById('region-list').innerHTML=r.itins.map((it,i)=>{
+    const id=r.key+'-'+i;
+    const cover=it.cover.charAt(0)==='#'
+      ? 'style="background:'+it.cover+';">'+r.flag
+      : 'style="background-image:url(\''+esc(it.cover)+'\');">';
+    const saved=savedItins.has(id)?' on':'';
+    return '<div class="itin-item" onclick="toast(\'Itin preview — coming soon\')">'+
+      '<div class="itin-cover" '+cover+'</div>'+
+      '<div class="itin-meta"><div class="itin-name">'+it.name+'</div><div class="itin-by">'+it.by+' · '+it.days+' days</div></div>'+
+      '<span class="itin-save'+saved+'" data-id="'+id+'" onclick="toggleSaveItin(event,\''+id+'\')">★</span>'+
+    '</div>';
+  }).join('');
+  document.getElementById('region-scrim').classList.add('show');
+  document.getElementById('region-sheet').classList.add('show');
+}
+function closeRegion(){
+  document.getElementById('region-scrim').classList.remove('show');
+  document.getElementById('region-sheet').classList.remove('show');
+}
+
+// --- PROFILE ---
+const PROFILE_COUNTRIES=[
+  ['🇺🇸','United States'],['🇯🇵','Japan'],['🇦🇺','Australia'],['🇮🇹','Italy'],
+  ['🇿🇦','South Africa'],['🇫🇷','France'],['🇬🇧','United Kingdom'],['🇲🇽','Mexico'],
+  ['🇨🇦','Canada'],['🇪🇸','Spain'],['🇹🇭','Thailand'],['🇮🇸','Iceland']
+];
+function openProfile(){
+  const grid=document.getElementById('prof-countries');
+  if(grid && !grid.childElementCount){
+    grid.innerHTML=PROFILE_COUNTRIES.map(c=>
+      '<span class="country-chip"><span class="cf">'+c[0]+'</span>'+c[1]+'</span>').join('');
+  }
+  go('s-profile');
+}
+
+// --- SAVED (favorited published itins) ---
+// Seed one favorite so the Saved tab is populated by default (Tokyo in 5 Days).
+let savedItins=new Set(['japan-0']);
+function itinById(id){
+  const dash=id.lastIndexOf('-');
+  const key=id.slice(0,dash), i=+id.slice(dash+1);
+  const r=EXPLORE_REGIONS.find(x=>x.key===key);
+  return r?{region:r,itin:r.itins[i],id:id}:null;
+}
+function toggleSaveItin(e,id){
+  if(e){ e.stopPropagation(); }
+  const nowSaved=!savedItins.has(id);
+  if(nowSaved) savedItins.add(id); else savedItins.delete(id);
+  // update the star in the region sheet, if visible
+  const star=document.querySelector('.itin-save[data-id="'+id+'"]');
+  if(star){ star.classList.toggle('on',nowSaved); star.classList.add('pop'); setTimeout(()=>star.classList.remove('pop'),140); }
+  renderSaved();
+  toast(nowSaved?'Saved to your list':'Removed from Saved');
+}
+function openSaved(){ renderSaved(); go('s-saved'); }
+function renderSaved(){
+  const wrap=document.getElementById('saved-list');
+  if(!wrap) return;
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  const ids=[...savedItins];
+  if(!ids.length){
+    wrap.innerHTML='<div class="saved-empty"><span class="star-hint">★</span>No saved itins yet.<br>Open a region on Explore and tap the star on a published itin to save it here.</div>';
+    return;
+  }
+  wrap.innerHTML=ids.map(id=>{
+    const rec=itinById(id); if(!rec) return '';
+    const it=rec.itin, r=rec.region;
+    const cover=it.cover.charAt(0)==='#'
+      ? 'style="background:'+it.cover+';">'+r.flag
+      : 'style="background-image:url(\''+esc(it.cover)+'\');">';
+    return '<div class="saved-row" onclick="toast(\'Itin preview — coming soon\')">'+
+      '<div class="saved-cover" '+cover+'</div>'+
+      '<div class="saved-meta"><div class="saved-name">'+it.name+'</div>'+
+      '<div class="saved-by">'+r.flag+' '+r.name+' · '+it.days+' days · '+it.by+'</div></div>'+
+      '<span class="itin-save on" data-id="'+id+'" onclick="toggleSaveItin(event,\''+id+'\')">★</span>'+
+    '</div>';
+  }).join('');
+}
+
+// --- NEW ITIN CREATE ---
+const NI_PEOPLE=[
+  { key:'ryan', name:'Ryan', pic:'Photos/Ryan%20Profile%20Pic.jpg', owner:true },
+  { key:'emily', name:'Emily', pic:'Photos/Emily%20Profile%20Pic.jpeg' },
+  { key:'nikki', name:'Nikki', pic:'Photos/Nikki.jpg' },
+  { key:'morgan', name:'Morgan', pic:'Photos/Morgan.jpeg' },
+  { key:'charles', name:'Charles', pic:'Photos/Charles.png' },
+  { key:'sofia', name:'Sofia', color:'#0F6E56' },
+  { key:'marcus', name:'Marcus', color:'#185FA5' },
+  { key:'priya', name:'Priya', color:'#993556' },
+  { key:'daniel', name:'Daniel', color:'#854F0B' }
+];
+let niSelected=new Set(['ryan']), niLocations=[], niCover=null, niType=null;
+
+function openNewItin(){
+  niSelected=new Set(['ryan']); niLocations=[]; niCover=null; niType=null;
+  document.getElementById('ni-name').value='';
+  document.getElementById('ni-start').value='';
+  document.getElementById('ni-end').value='';
+  document.getElementById('ni-loc').value='';
+  document.getElementById('ni-locs').innerHTML='';
+  const cover=document.getElementById('ni-cover');
+  cover.classList.remove('has'); cover.style.backgroundImage='';
+  document.getElementById('ni-cover-label').textContent='Add a cover photo';
+  document.querySelectorAll('#ni-types .chip').forEach(c=>c.classList.remove('on'));
+  renderNiPeople();
+  refreshCreateBtn();
+  go('s-new');
+}
+function avaFill(p){ // background style + optional initial glyph for a round avatar
+  if(p.pic) return { style:"background-image:url('"+p.pic+"')", inner:'' };
+  return { style:"background-color:"+(p.color||'#777'), inner:'<span class="init-txt">'+p.name.trim().charAt(0).toUpperCase()+'</span>' };
+}
+function renderNiPeople(){
+  const wrap=document.getElementById('ni-people');
+  const sel=NI_PEOPLE.filter(p=>niSelected.has(p.key)); // owner is always selected
+  const MAX_AVATARS=4; // leave the 5th circle for the Invite button
+  let shown=sel, overflow=0;
+  if(sel.length>MAX_AVATARS){ shown=sel.slice(0,MAX_AVATARS-1); overflow=sel.length-(MAX_AVATARS-1); }
+  let html=shown.map(p=>{
+    const cls=p.owner?'ni-person owner':'ni-person on';
+    const a=avaFill(p);
+    return '<div class="'+cls+'" onclick="toggleParticipant(\''+p.key+'\')"><div class="ni-ava" style="'+a.style+'">'+a.inner+'</div><div class="ni-pname">'+(p.owner?p.name+' · you':p.name)+'</div></div>';
+  }).join('');
+  if(overflow>0){
+    html+='<div class="ni-person ni-more" onclick="openInviteSheet()"><div class="ni-ava">+'+overflow+'</div><div class="ni-pname">More</div></div>';
+  }
+  html+='<div class="ni-person ni-add" onclick="openInviteSheet()"><div class="ni-ava">+</div><div class="ni-pname">Invite</div></div>';
+  wrap.innerHTML=html;
+}
+function toggleParticipant(key){
+  const p=NI_PEOPLE.find(x=>x.key===key);
+  if(!p||p.owner) return;
+  if(niSelected.has(key)) niSelected.delete(key); else niSelected.add(key);
+  renderNiPeople();
+  if(document.getElementById('invite-sheet').classList.contains('show')) renderInviteList();
+}
+function renderInviteList(){
+  document.getElementById('invite-list').innerHTML=NI_PEOPLE.map(p=>{
+    const on=niSelected.has(p.key);
+    const a=avaFill(p);
+    const rowCls='pick-row'+(on?' on':'')+(p.owner?' owner':'');
+    const click=p.owner?'':' onclick="toggleParticipant(\''+p.key+'\')"';
+    const tag=p.owner?'<span class="pick-tag">You · owner</span>':'';
+    return '<div class="'+rowCls+'"'+click+'><div class="pick-av" style="'+a.style+'">'+a.inner+'</div><div class="pick-name">'+p.name+tag+'</div><div class="pick-check">'+(on?'✓':'')+'</div></div>';
+  }).join('');
+}
+function openInviteSheet(){
+  renderInviteList();
+  document.getElementById('invite-scrim').classList.add('show');
+  document.getElementById('invite-sheet').classList.add('show');
+}
+function closeInviteSheet(){
+  document.getElementById('invite-scrim').classList.remove('show');
+  document.getElementById('invite-sheet').classList.remove('show');
+}
+function copyInviteLink(){ toast('Invite link copied'); }
+
+// --- Customize itin: palette picker ---
+const PALETTES=[
+  { key:'classic',    name:'Classic',    bg:'#ffffff', text:'#1a1a1a', city:'#31E981' },
+  { key:'wanderlust', name:'Wanderlust', bg:'#2A1342', text:'#D2E8FF', city:'#FFEFFE' },
+  { key:'cozy',       name:'Cozy',       bg:'#F7F2B6', text:'#4C2719', city:'#26BEFF' },
+  { key:'nature',     name:'Nature',     bg:'#454F2A', text:'#F0F5CE', city:'#F0F5CE' }
+];
+function currentPaletteKey(){
+  const c=[...activeTrip().classList].find(x=>x.startsWith('pal-'));
+  return c?c.slice(4):'classic';
+}
+function renderThemeSheet(){
+  const cur=currentPaletteKey();
+  document.getElementById('theme-palettes').innerHTML=PALETTES.map(p=>{
+    const sel=p.key===cur;
+    return '<div class="pal-opt'+(sel?' on':'')+'" onclick="setPalette(\''+p.key+'\')">'+
+        '<div class="pal-swatch" style="background:'+p.bg+';">'+
+          '<span class="pal-letter" style="color:'+p.text+';">Aa</span>'+
+          '<span class="pal-city" style="background:'+p.city+';color:'+p.bg+';">City</span>'+
+          '<span class="pal-check">✓</span>'+
+        '</div>'+
+        '<div class="pal-name">'+p.name+'</div>'+
+      '</div>';
+  }).join('');
+}
+const ITIN_FONTS=[
+  { key:'clean',      name:'Classic Clean',      stack:"'Cal Sans','Helvetica Neue',Helvetica,Arial,sans-serif", tag:'Default' },
+  { key:'elegant',    name:'Elegant Serif',      stack:"'Instrument Serif',Georgia,serif" },
+  { key:'typewriter', name:'Vintage Typewriter', stack:"'Courier Prime','Courier New',monospace" }
+];
+function currentFontKey(){
+  const c=[...activeTrip().classList].find(x=>x.startsWith('font-'));
+  return c?c.slice(5):'clean';
+}
+function renderThemeFonts(){
+  const cur=currentFontKey();
+  document.getElementById('theme-fonts').innerHTML=ITIN_FONTS.map(f=>{
+    const sel=f.key===cur;
+    return '<div class="font-opt'+(sel?' on':'')+'" onclick="setFont(\''+f.key+'\')">'+
+        '<span class="font-opt-name" style="font-family:'+f.stack+';">'+f.name+
+          (f.tag?'<span class="font-opt-tag">'+f.tag+'</span>':'')+'</span>'+
+        '<span class="font-opt-check">✓</span>'+
+      '</div>';
+  }).join('');
+}
+function setFont(key){
+  const scr=activeTrip();
+  [...scr.classList].filter(c=>c.startsWith('font-')).forEach(c=>scr.classList.remove(c));
+  if(key!=='clean') scr.classList.add('font-'+key);
+  renderThemeFonts();
+}
+function openThemeSheet(){
+  renderThemeSheet();
+  renderThemeFonts();
+  document.getElementById('theme-scrim').classList.add('show');
+  document.getElementById('theme-sheet').classList.add('show');
+}
+function closeThemeSheet(){
+  document.getElementById('theme-scrim').classList.remove('show');
+  document.getElementById('theme-sheet').classList.remove('show');
+}
+function setPalette(key){
+  const scr=activeTrip();
+  [...scr.classList].filter(c=>c.startsWith('pal-')).forEach(c=>scr.classList.remove(c));
+  if(key!=='classic') scr.classList.add('pal-'+key);
+  renderThemeSheet();
+}
+function addLocation(e){
+  if(e.key!=='Enter') return;
+  e.preventDefault();
+  const inp=e.target, v=inp.value.trim();
+  if(!v) return;
+  niLocations.push(v); inp.value='';
+  renderLocations();
+}
+function renderLocations(){
+  const esc=s=>(s||'').replace(/</g,'&lt;');
+  document.getElementById('ni-locs').innerHTML=niLocations.map((l,i)=>
+    '<span class="loc-chip">'+esc(l)+'<span class="x" onclick="removeLocation('+i+')">✕</span></span>').join('');
+}
+function removeLocation(i){ niLocations.splice(i,1); renderLocations(); }
+function pickCover(){ document.getElementById('ni-cover-file').click(); }
+document.getElementById('ni-cover-file').addEventListener('change',function(){
+  const f=this.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    niCover=r.result;
+    const cover=document.getElementById('ni-cover');
+    cover.classList.add('has');
+    cover.style.backgroundImage='linear-gradient(rgba(0,0,0,0.15),rgba(0,0,0,0.15)),url('+niCover+')';
+    document.getElementById('ni-cover-label').textContent='Change cover photo';
+  };
+  r.readAsDataURL(f);
+  this.value='';
+});
+function pickType2(el){
+  const on=el.classList.contains('on');
+  document.querySelectorAll('#ni-types .chip').forEach(c=>c.classList.remove('on'));
+  if(!on){ el.classList.add('on'); niType=el.textContent; } else niType=null;
+}
+function refreshCreateBtn(){
+  document.getElementById('new-create').disabled = !document.getElementById('ni-name').value.trim();
+}
+function fmtDate(v){ // "2026-08-10" -> {mon:'Aug', day:10, year:2026}
+  if(!v) return null;
+  const [y,m,d]=v.split('-').map(Number);
+  const mons=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return { mon:mons[m-1], day:d, year:y };
+}
+function niDateLabel(){
+  const s=fmtDate(document.getElementById('ni-start').value);
+  const e=fmtDate(document.getElementById('ni-end').value);
+  if(!s&&!e) return 'Dates TBD';
+  if(s&&!e) return s.mon+' '+s.day+', '+s.year;
+  if(!s&&e) return e.mon+' '+e.day+', '+e.year;
+  const days=Math.round((new Date(document.getElementById('ni-end').value)-new Date(document.getElementById('ni-start').value))/86400000)+1;
+  const range = s.year===e.year ? s.mon+' '+s.day+' – '+e.mon+' '+e.day+', '+e.year
+                                : s.mon+' '+s.day+', '+s.year+' – '+e.mon+' '+e.day+', '+e.year;
+  return range+(days>0?' · '+days+' day'+(days>1?'s':''):'');
+}
+function createItin(){
+  const name=document.getElementById('ni-name').value.trim();
+  if(!name){ toast('Add a trip name first'); return; }
+  const dates=niDateLabel();
+  const people=NI_PEOPLE.filter(p=>niSelected.has(p.key));
+  const avatars=people.map(p=>'<div class="av" style="background:url(\''+p.pic+'\') center/cover;"></div>').join('');
+  const coverCSS=niCover?'background:url('+niCover+') center/cover;':'background:linear-gradient(135deg,#0F6E56,#185FA5);';
+  const search=(name+' '+niLocations.join(' ')+' '+(niType||'')).toLowerCase();
+  const card=document.createElement('div');
+  card.className='trip-card';
+  card.setAttribute('data-search',search);
+  card.setAttribute('data-people',[...niSelected].join(' '));
+  card.setAttribute('data-when','upcoming');
+  card.setAttribute('data-status','draft');
+  card.setAttribute('onclick',"toast('Opening your new itin — coming soon')");
+  card.innerHTML='<div class="trip-cover"><div class="trip-cover-bg" style="'+coverCSS+'"></div>'+
+    '<div class="avatars trip-cover-avatars">'+avatars+'</div></div>'+
+    '<div class="trip-body"><div class="trip-name">'+name+'</div><div class="trip-dates">'+dates+'</div></div>';
+  const label=document.querySelector('#s-home .section-label[data-section="upcoming"]');
+  label.insertAdjacentElement('afterend',card);
+  go('s-home');
+  toast('Itin created');
+}
+
+// --- TRIP MAP ---
+// Pin categories: color + white glyph, matched to the element icons in the itinerary list
+const PIN_TYPES={
+  flight:{c:'#185FA5',p:'M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z'},
+  car:{c:'#185FA5',p:'M18.9 6c-.2-.6-.7-1-1.4-1h-11c-.6 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16c-.8 0-1.5-.7-1.5-1.5S5.7 13 6.5 13s1.5.7 1.5 1.5S7.3 16 6.5 16zm11 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'},
+  stay:{c:'#533AB7',p:'M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z'},
+  shop:{c:'#533AB7',p:'M16 2c0 1.1-1.8 2-4 2S8 3.1 8 2L4 4.5l2 4 2-1V22h8V7.5l2 1 2-4L16 2z'},
+  food:{c:'#993556',p:'M11 9H9V2H7v7H5V2H3v7c0 2.1 1.7 3.8 3.8 4V22h2.5v-9C11.3 12.8 13 11.1 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.8 0-5 2.2-5 4z'},
+  drink:{c:'#854F0B',p:'M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z'},
+  park:{c:'#0F6E56',p:'M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z'},
+  view:{c:'#0F6E56',p:'M14 6l-4.2 5.6 1.3 1.7L14 9.3 19 16h-8.5L6.5 10.6 1 18h22L14 6zM5 16l1.5-2 1.5 2H5z'},
+  misc:{c:'#777777',p:'M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z'}
+};
+const MAP_DAY_LABELS=['May 29','May 30','May 31','Jun 1','Jun 2','Jun 3','Jun 4','Jun 5'];
+// [day index, type, name, place note, lat, lng] — every location-based element in the itinerary
+const MAP_PINS=[
+  [0,'flight','Ryan — Alaska 557','Arrives PDX 7:02 PM',45.5898,-122.5951],
+  [0,'flight','Emily — Delta 2459','Arrives PDX 7:23 PM',45.5875,-122.5993],
+  [0,'stay','The Hoxton','Portland',45.5236,-122.6749],
+  [0,'drink','Oscar Food & Wine','Pre-dinner drinks',45.5342,-122.6605],
+  [0,'food','Dinner — Fantino','Portland',45.5228,-122.6540],
+  [1,'drink','Never Coffee','Downtown',45.5163,-122.6858],
+  [1,'shop',"Powell's Books",'Downtown',45.5232,-122.6812],
+  [1,'shop','Tender Loving Empire','Downtown',45.5227,-122.6797],
+  [1,'shop','Woonwinkel','Downtown',45.5199,-122.6790],
+  [1,'food','Lunch — Annam VL','Downtown',45.5186,-122.6746],
+  [1,'misc','Pinolo Gelato','Division St.',45.5048,-122.6262],
+  [1,'shop','Vintage Club','Division St.',45.5050,-122.6300],
+  [1,'shop','Well Spent Market','Division St.',45.5046,-122.6228],
+  [1,'shop','Caseus Diem Cheese Shop','Division St.',45.5045,-122.6185],
+  [1,'shop','Bonita Bodega','Division St.',45.5043,-122.6150],
+  [1,'shop','Providore Fine Foods','Kerns',45.5265,-122.6420],
+  [1,'drink','Collector Bar','Kerns',45.5232,-122.6382],
+  [1,'food','Dinner — Eem Thai BBQ','N Williams',45.5504,-122.6667],
+  [2,'drink','Sincerely, Bagel','Portland',45.5122,-122.6520],
+  [2,'view','Pittock Mansion Viewpoint','Portland',45.5252,-122.7163],
+  [2,'food','Lunch — Face Plant','Portland',45.5480,-122.6610],
+  [2,'car','Sixt Rental Car Pickup','Portland',45.5190,-122.6785],
+  [2,'park','Ecola State Park','Cannon Beach',45.9195,-123.9745],
+  [2,'stay','Drifthaven','Gearhart',46.0244,-123.9179],
+  [2,'food','Dinner — The Wayfarer','Cannon Beach',45.8930,-123.9640],
+  [3,'shop','Tillamook Creamery','Tillamook',45.4837,-123.8440],
+  [3,'shop','Neskowin Provisions','Neskowin',45.1042,-123.9646],
+  [3,'view','Proposal Rock','Neskowin',45.0999,-123.9702],
+  [3,'shop','Sea Horsey bottle shop','Lincoln City',44.9582,-124.0170],
+  [3,'stay','Hotel Sylvia Newport','Nye Beach',44.6437,-124.0625],
+  [3,'food','Dinner — Local Oceans','Newport Bayfront',44.6312,-124.0512],
+  [4,'view','Florence, OR — Sand Dunes','Florence',43.9550,-124.1210],
+  [4,'food','Lunch — Tu Tu Tun','Gold Beach',42.4903,-124.3300],
+  [4,'park','Redwood National Park','Lady Bird Johnson Grove',41.3040,-124.0190],
+  [4,'stay','Airbnb — McKinleyville','4403 Chaffin Rd',40.9465,-124.1005],
+  [4,'food','Dinner — Arcata','SALT or Campground',40.8665,-124.0828],
+  [5,'park','Avenue of the Giants','Humboldt Redwoods',40.3080,-123.9110],
+  [5,'view','Glass Beach','Fort Bragg',39.4527,-123.8143],
+  [5,'car','Drive through Mendocino','Mendocino',39.3057,-123.7996],
+  [5,'food','Lunch — The Brickery','Mendocino',39.3095,-123.7955],
+  [5,'drink','Sierra tea & snack','Elk Country Store',39.1290,-123.7180],
+  [5,'stay','Sea Ranch Lodge','Sea Ranch',38.7156,-123.4547],
+  [5,'food','Dinner — Sea Ranch Lodge Bar','Sea Ranch',38.7168,-123.4530],
+  [6,'stay','Sea Ranch Lodge · Night 2','Sea Ranch',38.7150,-123.4555],
+  [6,'food','Dinner — The Dining Room','Sea Ranch Lodge',38.7146,-123.4570],
+  [7,'stay','DoubleTree Berkeley Marina','Berkeley',37.8664,-122.3134],
+  [7,'food','Lunch — Sol Food','San Rafael',37.9735,-122.5311],
+  [7,'food','Emily — Chez Panisse?','Berkeley',37.8796,-122.2690]
+];
+// Drive route down the coast (dashed line, shown on "All days")
+const MAP_ROUTE=[[45.589,-122.597],[45.523,-122.675],[45.919,-123.974],[46.024,-123.918],[45.893,-123.962],[45.484,-123.844],[45.104,-123.965],[44.958,-124.017],[44.632,-124.052],[43.974,-124.105],[43.12,-124.42],[42.49,-124.33],[41.304,-124.019],[40.947,-124.100],[40.308,-123.911],[39.453,-123.814],[39.306,-123.800],[39.129,-123.718],[38.716,-123.455],[37.974,-122.531],[37.866,-122.313]];
+
+let tripMap=null, mapMarkers=[], mapRouteLine=null, mapDayFilter=-1;
+
+function openMap(){
+  if(activeTrip().id!=='s-trip'){ toast('Add stops to see them on the map'); return; }
+  if(!window.L){ toast('Map needs an internet connection'); return; }
+  document.getElementById('map-view').classList.add('show');
+  if(!tripMap){ setTimeout(initTripMap,370); }
+  else{ setTimeout(()=>tripMap.invalidateSize(),370); }
+}
+function closeMap(){ document.getElementById('map-view').classList.remove('show'); }
+
+function initTripMap(){
+  tripMap=L.map('map-canvas',{zoomControl:false,attributionControl:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'
+  }).addTo(tripMap);
+  mapRouteLine=L.polyline(MAP_ROUTE,{color:'#E34234',weight:2.5,opacity:0.75,dashArray:'1 7',lineCap:'round'}).addTo(tripMap);
+  mapMarkers=MAP_PINS.map(pin=>{
+    const[day,type,name,note,lat,lng]=pin;
+    const t=PIN_TYPES[type];
+    const icon=L.divIcon({className:'',html:'<div class="map-pin" style="background:'+t.c+';"><svg viewBox="0 0 24 24"><path d="'+t.p+'"/></svg></div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+    const m=L.marker([lat,lng],{icon:icon});
+    m.bindPopup('<div class="map-pop-name">'+name+'</div><div class="map-pop-day">'+MAP_DAY_LABELS[day]+' · '+note+'</div>',{closeButton:false});
+    m._day=day;
+    return m;
+  });
+  buildMapChips();
+  setMapDay(-1);
+}
+
+function buildMapChips(){
+  const wrap=document.getElementById('map-chips');
+  wrap.innerHTML='';
+  const all=document.createElement('button');
+  all.className='map-chip on'; all.textContent='All days';
+  all.onclick=()=>setMapDay(-1);
+  wrap.appendChild(all);
+  MAP_DAY_LABELS.forEach((label,i)=>{
+    const c=document.createElement('button');
+    c.className='map-chip'; c.textContent=label;
+    c.onclick=()=>setMapDay(i);
+    wrap.appendChild(c);
+  });
+}
+
+function setMapDay(day){
+  mapDayFilter=day;
+  [...document.querySelectorAll('.map-chip')].forEach((c,i)=>c.classList.toggle('on', i===day+1));
+  tripMap.closePopup();
+  const visible=[];
+  mapMarkers.forEach(m=>{
+    const show=(day===-1||m._day===day);
+    if(show){ m.addTo(tripMap); visible.push(m.getLatLng()); }
+    else tripMap.removeLayer(m);
+  });
+  if(day===-1) mapRouteLine.addTo(tripMap); else tripMap.removeLayer(mapRouteLine);
+  const bounds=day===-1?L.latLngBounds(MAP_ROUTE):L.latLngBounds(visible);
+  tripMap.invalidateSize();
+  tripMap.fitBounds(bounds,{paddingTopLeft:[40,110],paddingBottomRight:[40,40],maxZoom:14});
+}
+
+if(window.Sortable){
+  document.querySelectorAll('.day-sec').forEach(sec=>{
+    Sortable.create(sec,{
+      draggable:'.ec',
+      handle:'.drag-icon',
+      animation:160,
+      ghostClass:'drag-ghost',
+      chosenClass:'drag-chosen',
+      onEnd:()=>toast('Reordered')
+    });
+  });
+}
+</script>
+</body>
+</html>
