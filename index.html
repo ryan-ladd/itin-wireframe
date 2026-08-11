@@ -361,7 +361,7 @@
   /* BOTTOM SHEET (Invite) */
   .sheet-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 60; }
   .sheet-scrim.show { opacity: 1; pointer-events: auto; }
-  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 10px 20px 26px; transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); z-index: 61; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 10px 20px 26px; transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); z-index: 61; max-height: 86%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .sheet.show { transform: translateY(0); }
   .sheet-grab { width: 38px; height: 4px; border-radius: 2px; background: #e0e0e0; margin: 4px auto 16px; }
   .sheet-title { font-size: 16px; font-weight: 800; color: #1a1a1a; }
@@ -1269,22 +1269,48 @@
     <div id="add-fields" style="display:none;">
       <div class="ef-label">Day</div>
       <select class="ef-input ef-select" id="af-day"></select>
-      <div class="ef-label" id="af-name-label">Name</div>
+      <div class="ef-label">Name</div>
       <input class="ef-input" id="af-name" type="text">
-      <div class="ef-label" id="af-details-label">Details</div>
-      <input class="ef-input" id="af-details" type="text">
+      <div class="ef-label">Details</div>
+      <input class="ef-input" id="af-details" type="text" placeholder="Add details…">
+      <div id="af-type-fields"></div>
       <div class="ef-row">
         <div class="ef-col">
-          <div class="ef-label" id="af-time-label">Time</div>
-          <input class="ef-input" id="af-time" type="text">
+          <div class="ef-label">Location Name</div>
+          <input class="ef-input" id="af-location" type="text">
         </div>
         <div class="ef-col">
-          <div class="ef-label" id="af-tag-label">Tag</div>
-          <input class="ef-input" id="af-tag" type="text">
+          <div class="ef-label">Address</div>
+          <input class="ef-input" id="af-address" type="text">
         </div>
       </div>
-      <div class="ef-label" id="af-link-label">Link label</div>
-      <input class="ef-input" id="af-link" type="text">
+      <div class="ef-row">
+        <div class="ef-col">
+          <div class="ef-label">Booking Status</div>
+          <select class="ef-input ef-select" id="af-status">
+            <option value="">—</option>
+            <option value="idea">Idea</option>
+            <option value="planned">Planned</option>
+            <option value="booked">Booked</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="ef-col">
+          <div class="ef-label">Confirmation Number</div>
+          <input class="ef-input" id="af-confirm" type="text">
+        </div>
+      </div>
+      <div class="ef-row">
+        <div class="ef-col">
+          <div class="ef-label">Cost</div>
+          <input class="ef-input" id="af-cost" type="text">
+        </div>
+        <div class="ef-col">
+          <div class="ef-label">Link</div>
+          <input class="ef-input" id="af-link" type="text">
+        </div>
+      </div>
       <div class="ef-label">Photos</div>
       <div class="ef-photos" id="af-photos"></div>
       <input type="file" id="af-file" accept="image/*" multiple hidden>
@@ -1330,23 +1356,49 @@
   <div class="sheet-scrim" id="edit-scrim" onclick="closeEditSheet()"></div>
   <div class="sheet" id="edit-sheet">
     <div class="sheet-grab"></div>
-    <div class="sheet-title">Edit element</div>
+    <div class="sheet-title" id="edit-sheet-title">Edit element</div>
     <div class="ef-label">Name</div>
     <input class="ef-input" id="ef-name" type="text">
     <div class="ef-label">Details</div>
     <input class="ef-input" id="ef-details" type="text" placeholder="Add details…">
+    <div id="ef-type-fields"></div>
     <div class="ef-row">
       <div class="ef-col">
-        <div class="ef-label">Time</div>
-        <input class="ef-input" id="ef-time" type="text" placeholder="e.g. 7:30 PM">
+        <div class="ef-label">Location Name</div>
+        <input class="ef-input" id="ef-location" type="text">
       </div>
       <div class="ef-col">
-        <div class="ef-label">Tag</div>
-        <input class="ef-input" id="ef-tag" type="text" placeholder="e.g. Paid, Walk-in">
+        <div class="ef-label">Address</div>
+        <input class="ef-input" id="ef-address" type="text">
       </div>
     </div>
-    <div class="ef-label">Link label</div>
-    <input class="ef-input" id="ef-link" type="text" placeholder="e.g. Menu, Website">
+    <div class="ef-row">
+      <div class="ef-col">
+        <div class="ef-label">Booking Status</div>
+        <select class="ef-input ef-select" id="ef-status">
+          <option value="">—</option>
+          <option value="idea">Idea</option>
+          <option value="planned">Planned</option>
+          <option value="booked">Booked</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="ef-col">
+        <div class="ef-label">Confirmation Number</div>
+        <input class="ef-input" id="ef-confirm" type="text">
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-col">
+        <div class="ef-label">Cost</div>
+        <input class="ef-input" id="ef-cost" type="text">
+      </div>
+      <div class="ef-col">
+        <div class="ef-label">Link</div>
+        <input class="ef-input" id="ef-link" type="text">
+      </div>
+    </div>
     <div class="ef-label">Photos</div>
     <div class="ef-photos" id="ef-photos"></div>
     <input type="file" id="ef-file" accept="image/*" multiple hidden>
@@ -1512,7 +1564,6 @@ document.querySelectorAll('.ec[data-copy]').forEach(card=>{
 
 // --- Tap any element card to edit its fields (bottom sheet) ---
 let editingCard=null, editPhotos=[];
-const TAG_COLORS={ paid:'green', free:'green', 'free tour':'green', booked:'blue', reserved:'blue', tbd:'amber' };
 
 function renderEfPhotos(){
   const wrap=document.getElementById('ef-photos');
@@ -1544,19 +1595,22 @@ document.addEventListener('click',function(e){
   openEditSheet(card);
 });
 
-function chipText(el){ return el?[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim():''; }
-
+let editingType=null;
 function openEditSheet(card){
   editingCard=card;
-  const chips=[...card.querySelectorAll('.mc')];
-  const timeChip=chips.find(c=>!c.classList.contains('link')&&c.querySelector('svg'));
-  const tagChip=chips.find(c=>!c.classList.contains('link')&&!c.querySelector('svg'));
-  const linkChipEl=chips.find(c=>c.classList.contains('link'));
+  editingType=card.dataset.type||elType(card);
+  const typeMeta=ELEMENT_TYPES.find(t=>t.key===editingType);
+  document.getElementById('edit-sheet-title').textContent='Edit '+(typeMeta?typeMeta.label:'element');
+  const stored=JSON.parse(card.dataset.fields||'{}');
   document.getElementById('ef-name').value=(card.querySelector('.en')||{}).textContent||'';
   document.getElementById('ef-details').value=(card.querySelector('.ed')||{}).textContent||'';
-  document.getElementById('ef-time').value=chipText(timeChip);
-  document.getElementById('ef-tag').value=tagChip?tagChip.textContent.trim():'';
-  document.getElementById('ef-link').value=chipText(linkChipEl);
+  document.getElementById('ef-type-fields').innerHTML=renderTypeFieldsHTML(editingType,'ef',stored);
+  document.getElementById('ef-location').value=stored.location_name||'';
+  document.getElementById('ef-address').value=stored.address||'';
+  document.getElementById('ef-status').value=stored.booking_status||'';
+  document.getElementById('ef-confirm').value=stored.confirmation_number||'';
+  document.getElementById('ef-cost').value=stored.cost_amount||'';
+  document.getElementById('ef-link').value=stored.url||'';
   editPhotos=[...card.querySelectorAll('.photo-tiles .pt')].map(t=>
     t.tagName==='IMG'
       ?{type:'img',src:t.getAttribute('src'),alt:t.alt}
@@ -1573,10 +1627,15 @@ function closeEditSheet(){
 function saveElement(){
   if(!editingCard) return closeEditSheet();
   const card=editingCard;
+  const typeKey=editingType;
   const name=document.getElementById('ef-name').value.trim();
   const details=document.getElementById('ef-details').value.trim();
-  const time=document.getElementById('ef-time').value.trim();
-  const tag=document.getElementById('ef-tag').value.trim();
+  const typeValues=readTypeFieldValues(typeKey,'ef');
+  const location=document.getElementById('ef-location').value.trim();
+  const address=document.getElementById('ef-address').value.trim();
+  const status=document.getElementById('ef-status').value;
+  const confirm=document.getElementById('ef-confirm').value.trim();
+  const cost=document.getElementById('ef-cost').value.trim();
   const link=document.getElementById('ef-link').value.trim();
   const info=card.querySelector('.einfo');
   let en=card.querySelector('.en');
@@ -1588,14 +1647,18 @@ function saveElement(){
     ed.textContent=details;
   } else if(ed) ed.remove();
   const meta=[];
+  const time=primaryTimeValue(typeKey,typeValues);
   if(time) meta.push({k:'time',v:time});
-  if(tag) meta.push({k:TAG_COLORS[tag.toLowerCase()]||'tag',v:tag});
+  if(status) meta.push({k:STATUS_COLORS[status]||'tag',v:STATUS_LABELS[status]||status});
   if(link) meta.push({k:'link',v:link});
   let em=info.querySelector('.em');
   if(meta.length){
     if(!em){ em=document.createElement('div'); em.className='em'; info.appendChild(em); }
     em.innerHTML=meta.map(chipHTML).join('');
   } else if(em) em.remove();
+  card.dataset.type=typeKey;
+  card.dataset.fields=JSON.stringify(Object.assign({},typeValues,{location_name:location,address:address,booking_status:status,confirmation_number:confirm,cost_amount:cost,url:link}));
+  if(confirm) card.dataset.copy=confirm; else delete card.dataset.copy;
   const esc=s=>(s||'').replace(/"/g,'&quot;');
   let ptRow=card.querySelector('.photo-tiles');
   if(editPhotos.length){
@@ -1739,24 +1802,192 @@ const ELEMENT_TYPES=[
   {key:'misc',label:'Miscellaneous',bg:'#F1EFE8',fg:'#777',icon:'<path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/>'}
 ];
 
-// Best-guess field labels/placeholders per element type, shown in the "Add element" detail sheet.
-const FIELD_CONFIG={
-  city:          { nameLabel:'City',                    detailsLabel:'Notes',                 timeLabel:'Arrival time',         tagLabel:'Tag',               linkLabel:'Link label' },
-  accommodation: { nameLabel:'Property name',            detailsLabel:'Address',               timeLabel:'Check-in time',        tagLabel:'Booking status',    linkLabel:'Link label' },
-  flight:        { nameLabel:'Airline & flight #',       detailsLabel:'Route',                 timeLabel:'Departure time',       tagLabel:'Confirmation code', linkLabel:'Link label' },
-  car:           { nameLabel:'Rental company / vehicle', detailsLabel:'Pickup location',        timeLabel:'Pickup time',          tagLabel:'Confirmation #',    linkLabel:'Link label' },
-  restaurant:    { nameLabel:'Restaurant',                detailsLabel:'What to order',         timeLabel:'Reservation time',     tagLabel:'Status',            linkLabel:'Link label' },
-  coffee:        { nameLabel:'Coffee shop',               detailsLabel:'Order / notes',         timeLabel:'Time',                 tagLabel:'Status',            linkLabel:'Link label' },
-  bar:           { nameLabel:'Bar',                       detailsLabel:'What to try',           timeLabel:'Time',                 tagLabel:'Status',            linkLabel:'Link label' },
-  store:         { nameLabel:'Store',                     detailsLabel:'What to pick up',       timeLabel:'Hours',                tagLabel:'Tag',               linkLabel:'Link label' },
-  hike:          { nameLabel:'Trail name',                detailsLabel:'Distance & difficulty', timeLabel:'Start time',           tagLabel:'Tag',               linkLabel:'Link label' },
-  neighborhood:  { nameLabel:'Neighborhood',              detailsLabel:'Notes',                 timeLabel:'Time',                 tagLabel:'Tag',               linkLabel:'Link label' },
-  museum:        { nameLabel:'Museum',                    detailsLabel:'Exhibit / notes',       timeLabel:'Entry time',           tagLabel:'Ticket status',     linkLabel:'Link label' },
-  experience:    { nameLabel:'Experience',                detailsLabel:'Notes',                 timeLabel:'Start time',           tagLabel:'Status',            linkLabel:'Link label' },
-  ticket:        { nameLabel:'Event',                     detailsLabel:'Seats',                 timeLabel:'Start time',           tagLabel:'Confirmation #',    linkLabel:'Link label' },
-  drive:         { nameLabel:'Drive',                     detailsLabel:'Route notes',           timeLabel:'Duration / departure', tagLabel:'Tag',               linkLabel:'Link label' },
-  misc:          { nameLabel:'Name',                      detailsLabel:'Details',               timeLabel:'Time',                 tagLabel:'Tag',               linkLabel:'Link label' }
+// Type-specific fields, sourced from the ITIN_Element_Data_Structure spreadsheet's Field Dictionary
+// tab (one row per field: element type, field name, data type, required?, description, example value).
+// `primaryTime:true` marks the one field (if any) whose value is mirrored onto the card as its clock chip.
+const TYPE_FIELDS={
+  city:[
+    {key:'country',label:'Country',required:true,placeholder:'e.g. France'},
+    {key:'state_region',label:'State / Region',placeholder:'e.g. Île-de-France'},
+    {key:'timezone',label:'Timezone',placeholder:'e.g. Europe/Paris'},
+    {key:'arrival_date',label:'Arrival Date',placeholder:'e.g. 2026-09-14'},
+    {key:'departure_date',label:'Departure Date',placeholder:'e.g. 2026-09-18'},
+    {key:'description',label:'Description',placeholder:'e.g. Known for the Louvre and river cruises'}
+  ],
+  accommodation:[
+    {key:'property_name',label:'Property Name',required:true,placeholder:'e.g. Hotel Le Marais'},
+    {key:'accommodation_type',label:'Accommodation Type',type:'select',options:['hotel','vacation_rental','hostel','resort','other']},
+    {key:'check_in_date',label:'Check-in Date',required:true,placeholder:'e.g. 2026-09-14'},
+    {key:'check_in_time',label:'Check-in Time',placeholder:'e.g. 3:00 PM',primaryTime:true},
+    {key:'check_out_date',label:'Check-out Date',required:true,placeholder:'e.g. 2026-09-18'},
+    {key:'check_out_time',label:'Check-out Time',placeholder:'e.g. 11:00 AM'},
+    {key:'num_guests',label:'Number of Guests',placeholder:'e.g. 2'},
+    {key:'num_rooms',label:'Number of Rooms',placeholder:'e.g. 1'},
+    {key:'room_type',label:'Room Type',placeholder:'e.g. Deluxe Queen'},
+    {key:'booking_platform',label:'Booking Platform',placeholder:'e.g. Booking.com'},
+    {key:'price_per_night',label:'Price per Night',placeholder:'e.g. 180.00'},
+    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 23 45 67 89'},
+    {key:'cancellation_policy',label:'Cancellation Policy',placeholder:'e.g. Free cancellation until Sep 10'}
+  ],
+  flight:[
+    {key:'airline',label:'Airline',required:true,placeholder:'e.g. Delta'},
+    {key:'flight_number',label:'Flight Number',required:true,placeholder:'e.g. DL1234'},
+    {key:'departure_airport',label:'Departure Airport',required:true,placeholder:'e.g. SFO'},
+    {key:'arrival_airport',label:'Arrival Airport',required:true,placeholder:'e.g. CDG'},
+    {key:'departure_datetime',label:'Departure Time',required:true,placeholder:'e.g. 2026-09-14T08:30:00-07:00',primaryTime:true},
+    {key:'arrival_datetime',label:'Arrival Time',required:true,placeholder:'e.g. 2026-09-15T04:10:00+02:00'},
+    {key:'terminal',label:'Terminal',placeholder:'e.g. International Terminal G'},
+    {key:'gate',label:'Gate',placeholder:'e.g. G8'},
+    {key:'seat_number',label:'Seat Number',placeholder:'e.g. 14A'},
+    {key:'cabin_class',label:'Cabin Class',type:'select',options:['economy','premium_economy','business','first']},
+    {key:'num_passengers',label:'Number of Passengers',placeholder:'e.g. 2'},
+    {key:'layover_count',label:'Layovers',placeholder:'e.g. 0'},
+    {key:'pnr',label:'PNR / Record Locator',placeholder:'e.g. XZQ8RT'},
+    {key:'baggage_info',label:'Baggage Info',placeholder:'e.g. 2 checked bags included'}
+  ],
+  car:[
+    {key:'rental_company',label:'Rental Company',required:true,placeholder:'e.g. Hertz'},
+    {key:'car_type',label:'Vehicle Type',placeholder:'e.g. Midsize SUV'},
+    {key:'pickup_location',label:'Pickup Location',required:true,placeholder:'e.g. CDG Airport Rental Center'},
+    {key:'pickup_datetime',label:'Pickup Time',required:true,placeholder:'e.g. 2026-09-15T09:00:00+02:00',primaryTime:true},
+    {key:'dropoff_location',label:'Drop-off Location',required:true,placeholder:'e.g. Nice Airport Rental Center'},
+    {key:'dropoff_datetime',label:'Drop-off Time',required:true,placeholder:'e.g. 2026-09-20T12:00:00+02:00'},
+    {key:'driver_name',label:'Driver Name',placeholder:'e.g. Emily Carter'},
+    {key:'insurance_included',label:'Insurance Included',type:'bool'},
+    {key:'mileage_policy',label:'Mileage Policy',placeholder:'e.g. Unlimited mileage'}
+  ],
+  restaurant:[
+    {key:'cuisine_type',label:'Cuisine Type',placeholder:'e.g. Italian'},
+    {key:'reservation_datetime',label:'Reservation Time',placeholder:'e.g. 2026-09-16T19:30:00+02:00',primaryTime:true},
+    {key:'party_size',label:'Party Size',placeholder:'e.g. 4'},
+    {key:'price_range',label:'Price Range',type:'select',options:['$','$$','$$$','$$$$']},
+    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 98 76 54 32'},
+    {key:'rating',label:'Rating',placeholder:'e.g. 4.5'},
+    {key:'dietary_notes',label:'Dietary Notes',placeholder:'e.g. Vegetarian menu available'}
+  ],
+  coffee:[
+    {key:'specialty',label:'Specialty',placeholder:'e.g. Pour-over and pastries'},
+    {key:'hours',label:'Hours',placeholder:'e.g. 7:00am–4:00pm'},
+    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 22 33 44 55'},
+    {key:'rating',label:'Rating',placeholder:'e.g. 4.7'},
+    {key:'wifi_available',label:'Wifi Available',type:'bool'}
+  ],
+  bar:[
+    {key:'bar_type',label:'Bar Type',type:'select',options:['cocktail','wine','brewery','pub','speakeasy','other']},
+    {key:'hours',label:'Hours',placeholder:'e.g. 5:00pm–2:00am'},
+    {key:'reservation_datetime',label:'Reservation Time',placeholder:'e.g. 2026-09-17T21:00:00+02:00',primaryTime:true},
+    {key:'cover_charge',label:'Cover Charge',placeholder:'e.g. 20.00'},
+    {key:'rating',label:'Rating',placeholder:'e.g. 4.3'},
+    {key:'dress_code',label:'Dress Code',placeholder:'e.g. Smart casual'}
+  ],
+  store:[
+    {key:'store_category',label:'Store Category',placeholder:'e.g. Souvenirs / Market'},
+    {key:'hours',label:'Hours',placeholder:'e.g. 10:00am–7:00pm'},
+    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 11 22 33 44'},
+    {key:'items_of_interest',label:'Items of Interest',placeholder:'e.g. Ceramic bowls, local olive oil'}
+  ],
+  hike:[
+    {key:'trail_name',label:'Trail Name',required:true,placeholder:'e.g. Calanques Coastal Trail'},
+    {key:'trailhead_address',label:'Trailhead Address',placeholder:'e.g. Trailhead parking, Cassis'},
+    {key:'distance_value',label:'Distance',placeholder:'e.g. 8.2'},
+    {key:'distance_unit',label:'Distance Unit',type:'select',options:['mi','km']},
+    {key:'elevation_gain',label:'Elevation Gain',placeholder:'e.g. 1200'},
+    {key:'difficulty',label:'Difficulty',type:'select',options:['easy','moderate','hard','strenuous']},
+    {key:'estimated_duration_min',label:'Estimated Duration (min)',placeholder:'e.g. 180'},
+    {key:'route_type',label:'Route Type',type:'select',options:['loop','out_and_back','point_to_point']},
+    {key:'permit_required',label:'Permit Required',type:'bool'},
+    {key:'dog_friendly',label:'Dog Friendly',type:'bool'}
+  ],
+  neighborhood:[
+    {key:'parent_city',label:'Parent City',placeholder:'e.g. Paris'},
+    {key:'description',label:'Description',placeholder:'e.g. Historic Jewish quarter with boutiques and falafel'},
+    {key:'known_for',label:'Known For',placeholder:'e.g. Nightlife, street art, vintage shops'},
+    {key:'boundary_geojson',label:'Map Boundary (GeoJSON)',placeholder:'e.g. {"type":"Polygon", ...}'}
+  ],
+  museum:[
+    {key:'opening_hours',label:'Opening Hours',placeholder:'e.g. 9:00am–6:00pm, closed Tues'},
+    {key:'ticket_price',label:'Ticket Price',placeholder:'e.g. 17.00'},
+    {key:'reservation_datetime',label:'Reservation Time',placeholder:'e.g. 2026-09-16T10:00:00+02:00',primaryTime:true},
+    {key:'requires_timed_entry',label:'Requires Timed Entry',type:'bool'},
+    {key:'estimated_visit_duration_min',label:'Estimated Visit Duration (min)',placeholder:'e.g. 120'},
+    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 40 20 50 50'},
+    {key:'exhibits_of_interest',label:'Exhibits of Interest',placeholder:'e.g. Mona Lisa, Winged Victory'}
+  ],
+  experience:[
+    {key:'experience_category',label:'Experience Category',type:'select',options:['tour','class','spa','sailing','adventure','wellness','other']},
+    {key:'provider_name',label:'Provider Name',placeholder:'e.g. Paris Food Tours Co.'},
+    {key:'duration_min',label:'Duration (min)',placeholder:'e.g. 180'},
+    {key:'num_participants',label:'Number of Participants',placeholder:'e.g. 2'},
+    {key:'meeting_point',label:'Meeting Point',placeholder:'e.g. Fountain at Place Saint-Michel'},
+    {key:'includes',label:'Includes',placeholder:'e.g. Lunch, wine tasting, equipment'}
+  ],
+  ticket:[
+    {key:'event_name',label:'Event Name',required:true,placeholder:'e.g. Coldplay: Music of the Spheres Tour'},
+    {key:'venue_name',label:'Venue Name',required:true,placeholder:'e.g. Accor Arena'},
+    {key:'event_datetime',label:'Event Time',required:true,placeholder:'e.g. 2026-09-19T20:00:00+02:00',primaryTime:true},
+    {key:'ticket_type',label:'Ticket Type',type:'select',options:['concert','sports','theater','movie','attraction','other']},
+    {key:'seat_section',label:'Seat Section',placeholder:'e.g. Floor A'},
+    {key:'seat_row',label:'Seat Row',placeholder:'e.g. 12'},
+    {key:'seat_number',label:'Seat Number',placeholder:'e.g. 8'},
+    {key:'quantity',label:'Quantity',placeholder:'e.g. 2'},
+    {key:'barcode_qr_url',label:'Ticket / QR Link',placeholder:'e.g. https://...'}
+  ],
+  drive:[
+    {key:'start_location',label:'Start Location',required:true,placeholder:'e.g. Nice'},
+    {key:'end_location',label:'End Location',required:true,placeholder:'e.g. Monaco'},
+    {key:'departure_datetime',label:'Departure Time',placeholder:'e.g. 2026-09-20T09:00:00+02:00',primaryTime:true},
+    {key:'distance_value',label:'Distance',placeholder:'e.g. 20'},
+    {key:'distance_unit',label:'Distance Unit',type:'select',options:['mi','km']},
+    {key:'estimated_duration_min',label:'Estimated Duration (min)',placeholder:'e.g. 35'},
+    {key:'route_notes',label:'Route Notes',placeholder:'e.g. Take the Moyenne Corniche for the views'},
+    {key:'waypoints',label:'Waypoints',placeholder:'e.g. Villefranche-sur-Mer, Èze'},
+    {key:'toll_cost',label:'Toll Cost',placeholder:'e.g. 8.50'}
+  ],
+  misc:[
+    {key:'custom_category_label',label:'Category Label',placeholder:'e.g. Laundry pickup'},
+    {key:'icon',label:'Icon',placeholder:'e.g. washing-machine'},
+    {key:'reminder_datetime',label:'Reminder Time',placeholder:'e.g. 2026-09-17T09:00:00+02:00',primaryTime:true}
+  ]
 };
+
+// Booking status (a Common Field on every element) drives the status chip's color + label.
+const STATUS_COLORS={ idea:'tag', planned:'amber', booked:'blue', confirmed:'green', cancelled:'tag' };
+const STATUS_LABELS={ idea:'Idea', planned:'Planned', booked:'Booked', confirmed:'Confirmed', cancelled:'Cancelled' };
+
+function tfInputHTML(f,prefix,val){
+  const id=prefix+'-f-'+f.key;
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  const label=f.label+(f.required?' *':'');
+  if(f.type==='select'){
+    const opts=f.options.map(o=>'<option value="'+o+'"'+(val===o?' selected':'')+'>'+o+'</option>').join('');
+    return '<div class="ef-col"><div class="ef-label">'+label+'</div><select class="ef-input ef-select" id="'+id+'"><option value="">—</option>'+opts+'</select></div>';
+  }
+  if(f.type==='bool'){
+    return '<div class="ef-col"><div class="ef-label">'+label+'</div><select class="ef-input ef-select" id="'+id+'"><option value="">—</option><option value="yes"'+(val==='yes'?' selected':'')+'>Yes</option><option value="no"'+(val==='no'?' selected':'')+'>No</option></select></div>';
+  }
+  return '<div class="ef-col"><div class="ef-label">'+label+'</div><input class="ef-input" id="'+id+'" type="text" value="'+esc(val||'')+'"></div>';
+}
+function renderTypeFieldsHTML(typeKey,prefix,values){
+  const fields=TYPE_FIELDS[typeKey]||[];
+  let html='';
+  for(let i=0;i<fields.length;i+=2){
+    html+='<div class="ef-row">'+fields.slice(i,i+2).map(f=>tfInputHTML(f,prefix,values[f.key])).join('')+'</div>';
+  }
+  return html;
+}
+function readTypeFieldValues(typeKey,prefix){
+  const fields=TYPE_FIELDS[typeKey]||[];
+  const out={};
+  fields.forEach(f=>{
+    const el=document.getElementById(prefix+'-f-'+f.key);
+    if(el&&el.value) out[f.key]=el.value.trim();
+  });
+  return out;
+}
+function primaryTimeValue(typeKey,values){
+  const f=(TYPE_FIELDS[typeKey]||[]).find(x=>x.primaryTime);
+  return f?(values[f.key]||''):'';
+}
 
 function buildTypeSheet(){
   const g=document.getElementById('type-grid');
@@ -1809,14 +2040,10 @@ function populateDaySelect(){
 }
 function showAddFields(){
   const t=pendingAddType; if(!t) return;
-  const cfg=FIELD_CONFIG[t.key]||FIELD_CONFIG.misc;
   document.getElementById('type-sheet-title').textContent='Add '+t.label;
-  document.getElementById('af-name-label').textContent=cfg.nameLabel;
-  document.getElementById('af-details-label').textContent=cfg.detailsLabel;
-  document.getElementById('af-time-label').textContent=cfg.timeLabel;
-  document.getElementById('af-tag-label').textContent=cfg.tagLabel;
-  document.getElementById('af-link-label').textContent=cfg.linkLabel;
-  ['af-name','af-details','af-time','af-tag','af-link'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('af-type-fields').innerHTML=renderTypeFieldsHTML(t.key,'af',{});
+  ['af-name','af-details','af-location','af-address','af-confirm','af-cost','af-link'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('af-status').value='';
   addPhotos=[];
   renderAfPhotos();
   populateDaySelect();
@@ -1850,8 +2077,12 @@ function saveAddElement(){
   const name=document.getElementById('af-name').value.trim();
   if(!name){ toast('Add a name to save this element'); return; }
   const details=document.getElementById('af-details').value.trim();
-  const time=document.getElementById('af-time').value.trim();
-  const tag=document.getElementById('af-tag').value.trim();
+  const typeValues=readTypeFieldValues(t.key,'af');
+  const location=document.getElementById('af-location').value.trim();
+  const address=document.getElementById('af-address').value.trim();
+  const status=document.getElementById('af-status').value;
+  const confirm=document.getElementById('af-confirm').value.trim();
+  const cost=document.getElementById('af-cost').value.trim();
   const link=document.getElementById('af-link').value.trim();
   const screen=activeTrip();
   const days=[...screen.querySelectorAll('.day-sec')];
@@ -1860,11 +2091,15 @@ function saveAddElement(){
   if(!btn) return closeTypeSheet();
   const esc=s=>(s||'').replace(/"/g,'&quot;');
   const meta=[];
+  const time=primaryTimeValue(t.key,typeValues);
   if(time) meta.push({k:'time',v:time});
-  if(tag) meta.push({k:TAG_COLORS[tag.toLowerCase()]||'tag',v:tag});
+  if(status) meta.push({k:STATUS_COLORS[status]||'tag',v:STATUS_LABELS[status]||status});
   if(link) meta.push({k:'link',v:link});
   const card=document.createElement('div');
   card.className='ec';
+  card.dataset.type=t.key;
+  card.dataset.fields=JSON.stringify(Object.assign({},typeValues,{location_name:location,address:address,booking_status:status,confirmation_number:confirm,cost_amount:cost,url:link}));
+  if(confirm) card.dataset.copy=confirm;
   card.innerHTML='<div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div>'+
     '<div class="einfo"><div class="en">'+esc(name)+'</div>'+
     (details?'<div class="ed">'+esc(details)+'</div>':'')+
