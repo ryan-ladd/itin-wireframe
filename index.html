@@ -233,6 +233,7 @@
   .dh-date { font-size: 19px; font-weight: 800; color: var(--pal-text); letter-spacing: -0.2px; }
   .dh-geo { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--pal-city-text); margin-top: 6px; padding: 4px 11px; background: var(--pal-city-bg); border-radius: 999px; }
   .dh-geo svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .dh-geo .en { color: inherit; font-size: inherit; font-weight: inherit; }
   .dh-geo + .dh-geo { margin-left: 6px; }
   .dh-add-city { width: 24px; height: 24px; margin-top: 6px; margin-left: 6px; border-radius: 50%; border: 1.3px solid var(--pal-chip-border); background: none; color: var(--pal-muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; vertical-align: top; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
   .dh-add-city svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; }
@@ -241,14 +242,14 @@
   .day-stay-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--pal-city-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .day-stay-icon svg { width: 14px; height: 14px; fill: var(--pal-city-text); }
   .day-stay-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-  .day-stay-label { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--pal-notes-label); }
+  .day-stay-label { font-size: 11px; font-weight: 600; color: var(--pal-notes-label); }
   .day-stay-name { font-size: 13px; font-weight: 700; color: var(--pal-notes-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   /* Accommodation element card, styled to match the .day-stay banner above (tappable, unlike the banner) */
   .ec.ec-stay { background: var(--pal-notes-bg); border-color: var(--pal-notes-border); }
   .ec.ec-stay .ec-inner { padding: 10px 14px; }
   .trip-screen .ec.ec-stay .ei { width: 28px; height: 28px; border-radius: 50%; background: var(--pal-city-bg) !important; border: none; }
   .trip-screen .ec.ec-stay .ei svg { width: 14px; height: 14px; color: var(--pal-city-text) !important; }
-  .ec.ec-stay .stay-label { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--pal-notes-label); }
+  .ec.ec-stay .stay-label { font-size: 11px; font-weight: 600; color: var(--pal-notes-label); }
   .ec.ec-stay .en { color: var(--pal-notes-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .drive-note { padding: 2px 20px 8px; font-size: 11px; font-weight: 400; color: var(--pal-muted); }
   .subhead { padding: 8px 20px 3px; font-size: 11px; font-weight: 800; color: var(--pal-muted); letter-spacing: 0.5px; text-transform: uppercase; }
@@ -269,6 +270,7 @@
   .einfo { flex: 1; min-width: 0; }
   .en { font-size: 13px; font-weight: 800; color: var(--pal-text); }
   .ed { font-size: 11px; font-weight: 400; color: var(--pal-ed); margin-top: 2px; line-height: 1.4; }
+  .meal-label { font-size: 11px; font-weight: 600; color: var(--pal-ed); margin-bottom: 2px; line-height: 1.4; }
   .ea { display: flex; gap: 7px; align-items: center; flex-shrink: 0; }
   .hb { font-size: 18px; color: #ccc; cursor: pointer; border: none; background: none; padding: 2px; line-height: 1; transition: transform 0.12s; user-select: none; display: flex; }
   .hb svg { width: 20px; height: 18px; fill: currentColor; display: block; }
@@ -296,6 +298,12 @@
   .ef-row { display: flex; gap: 10px; }
   .ef-col { flex: 1; min-width: 0; }
   .ef-delete { color: #E34234; border-color: #f0d0cb; }
+  .ef-checkbox-col { display: flex; align-items: flex-end; }
+  .ef-checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #1a1a1a; cursor: pointer; padding-bottom: 11px; user-select: none; }
+  .ef-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #1a1a1a; }
+  .ef-star-btn { font-size: 28px; line-height: 1; background: none; border: none; color: #ccc; cursor: pointer; padding: 0; transition: transform 0.12s; }
+  .ef-star-btn.on { color: #F0A020; }
+  .ef-star-btn:active { transform: scale(1.2); }
   .ef-photos { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
   .ef-pt { position: relative; width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0; }
   .ef-pt img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
@@ -724,7 +732,7 @@
 
       <!-- DAY 0: May 29 Portland Arrive -->
       <div class="day-sec on" id="d0">
-        <div class="dh"><div class="dh-date">Friday, May 29</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Portland, Oregon</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Friday, May 29</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Portland, Oregon</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
 
         <div class="ec"><div class="ec-inner">
           <div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div>
@@ -771,7 +779,7 @@
 
       <!-- DAY 1: May 30 Portland Explore -->
       <div class="day-sec" id="d1">
-        <div class="dh"><div class="dh-date">Saturday, May 30</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Portland, Oregon</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Saturday, May 30</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Portland, Oregon</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="subhead">Downtown</div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Never Coffee</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Powell's Books</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div></div>
@@ -803,7 +811,7 @@
 
       <!-- DAY 2: May 31 Portland → Seaside -->
       <div class="day-sec" id="d2">
-        <div class="dh"><div class="dh-date">Sunday, May 31</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Seaside, Oregon</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Sunday, May 31</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Seaside, Oregon</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="drive-note">1.5 hr drive</div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Sincerely, Bagel</div><div class="ed">Parmesan Leek Bagel, Scallion Cream Cheese</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div><div class="photo-tiles"><img class="pt" src="Photos/Sincerely%20Bagel.jpg" alt="Sincerely, Bagel"><img class="pt" src="Photos/Sincerely%20Bagel%202.jpg" alt="Sincerely, Bagel — bagel close-up"></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Pittock Mansion Viewpoint</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
@@ -831,7 +839,7 @@
 
       <!-- DAY 3: Jun 1 Seaside → Newport -->
       <div class="day-sec" id="d3">
-        <div class="dh"><div class="dh-date">Monday, Jun 1</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Newport, Oregon</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Monday, Jun 1</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Newport, Oregon</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="drive-note">2 hr 43 min drive</div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Tillamook Creamery</div><div class="ed">Cheese curds stop</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/></svg></div><div class="einfo"><div class="en">Neskowin Provisions</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
@@ -850,7 +858,7 @@
 
       <!-- DAY 4: Jun 2 Newport → Redwoods -->
       <div class="day-sec" id="d4">
-        <div class="dh"><div class="dh-date">Tuesday, Jun 2</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>McKinleyville, California</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Tuesday, Jun 2</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">McKinleyville, California</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="drive-note">6 hr drive · Emily's Birthday!</div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Airbnb — McKinleyville, CA</div><div class="ed">4403 Chaffin Rd</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/></svg></div><div class="einfo"><div class="en">Florence, OR — Sand Dunes</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
@@ -864,7 +872,7 @@
 
       <!-- DAY 5: Jun 3 McKinleyville → Sea Ranch -->
       <div class="day-sec" id="d5">
-        <div class="dh"><div class="dh-date">Wednesday, Jun 3</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Sea Ranch, California</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Wednesday, Jun 3</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Sea Ranch, California</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="drive-note">5 hr drive</div>
         <div class="ec">
           <div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/></svg></div><div class="einfo"><div class="en">Avenue of the Giants</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb on">★</span><span class="drag-icon">⠿</span></div></div>
@@ -884,7 +892,7 @@
 
       <!-- DAY 6: Jun 4 Sea Ranch -->
       <div class="day-sec" id="d6">
-        <div class="dh"><div class="dh-date">Thursday, Jun 4</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Sea Ranch, California</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Thursday, Jun 4</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Sea Ranch, California</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="ec" data-copy="4BMNZY4AJN"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Sea Ranch Lodge · Night 2</div><div class="ed">Res #4BMNZY4AJN · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#F1EFE8;"><svg viewBox="0 0 24 24" style="color:#777777;"><path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/></svg></div><div class="einfo"><div class="en">Relax day</div><div class="ed">No agenda, just vibes</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — The Dining Room</div><div class="ed">Or Gama Izakaya</div></div><div class="ea"><span class="hb on"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div></div>
@@ -895,7 +903,7 @@
 
       <!-- DAY 7: Jun 5 Berkeley -->
       <div class="day-sec" id="d7">
-        <div class="dh"><div class="dh-date">Friday, Jun 5</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Berkeley, California</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Friday, Jun 5</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Berkeley, California</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="drive-note">2.5 hr drive · 10am check out</div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">DoubleTree Berkeley Marina</div><div class="ed">Hilton · Check in</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Sol Food</div><div class="ed">Marin Redwood Area · 12:30 with Paige</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
@@ -967,93 +975,94 @@
       </div>
 
       <div class="day-sec on">
-        <div class="dh"><div class="dh-date">Friday, Oct 23</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Washington, D.C.</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="ec" data-view="1" data-fields="{&quot;departure_airport&quot;:&quot;IAD&quot;,&quot;arrival_airport&quot;:&quot;FRA&quot;,&quot;departure_datetime&quot;:&quot;Oct 23, 2026, 10:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 12:10 PM&quot;,&quot;pnr&quot;:&quot;HSZBFL&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">IAD<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>FRA</div><div class="ed">10:10 PM – 12:10 PM⁺¹</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="dh"><div class="dh-date">Friday, Oct 23</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Washington, D.C.</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="ec" data-fields="{&quot;departure_airport&quot;:&quot;IAD&quot;,&quot;arrival_airport&quot;:&quot;FRA&quot;,&quot;departure_datetime&quot;:&quot;Oct 23, 2026, 10:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 12:10 PM&quot;,&quot;pnr&quot;:&quot;HSZBFL&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">IAD<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>FRA</div><div class="ed">10:10 PM – 12:10 PM⁺¹</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Saturday, Oct 24</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="ec ec-stay" data-view="1" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="stay-label">Staying at</div><div class="en">Art Gallery Hotel Baku</div></div></div></div>
-        <div class="ec" data-view="1" data-fields="{&quot;departure_airport&quot;:&quot;FRA&quot;,&quot;arrival_airport&quot;:&quot;GYD&quot;,&quot;departure_datetime&quot;:&quot;Oct 24, 2026, 5:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 11:55 PM&quot;,&quot;pnr&quot;:&quot;CGNVC8&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>GYD</div><div class="ed">5:10 – 11:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="dh"><div class="dh-date">Saturday, Oct 24</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="ec ec-stay" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div>
+        <div class="ec" data-fields="{&quot;departure_airport&quot;:&quot;FRA&quot;,&quot;arrival_airport&quot;:&quot;GYD&quot;,&quot;departure_datetime&quot;:&quot;Oct 24, 2026, 5:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 11:55 PM&quot;,&quot;pnr&quot;:&quot;CGNVC8&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>GYD</div><div class="ed">5:10 – 11:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Sunday, Oct 25</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="ec ec-stay" data-view="1" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="stay-label">Staying at</div><div class="en">Art Gallery Hotel Baku</div></div></div></div>
+        <div class="dh"><div class="dh-date">Sunday, Oct 25</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="ec ec-stay" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Monday, Oct 26</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Baku, Azerbaijan</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-label">Staying at</div><div class="day-stay-name">The Telegraph Hotel</div></div></div>
+        <div class="dh"><div class="dh-date">Monday, Oct 26</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Tbilisi, Georgia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">The Telegraph Hotel</div><div class="day-stay-label">31 Shota Rustaveli Ave</div></div></div>
+        <div class="ec" data-type="restaurant" data-fields="{&quot;meal&quot;:&quot;Lunch&quot;,&quot;url&quot;:&quot;https://stambahotel.com/eat/lolita&quot;}"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="meal-label">Lunch</div><div class="en">Lolita</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Tuesday, Oct 27</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-label">Staying at</div><div class="day-stay-name">The Telegraph Hotel</div></div></div>
+        <div class="dh"><div class="dh-date">Tuesday, Oct 27</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Tbilisi, Georgia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">The Telegraph Hotel</div><div class="day-stay-label">31 Shota Rustaveli Ave</div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Wednesday, Oct 28</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-label">Staying at</div><div class="day-stay-name">The Telegraph Hotel</div></div></div>
+        <div class="dh"><div class="dh-date">Wednesday, Oct 28</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Tbilisi, Georgia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">The Telegraph Hotel</div><div class="day-stay-label">31 Shota Rustaveli Ave</div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Thursday, Oct 29</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-label">Staying at</div><div class="day-stay-name">The Telegraph Hotel</div></div></div>
+        <div class="dh"><div class="dh-date">Thursday, Oct 29</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Tbilisi, Georgia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">The Telegraph Hotel</div><div class="day-stay-label">31 Shota Rustaveli Ave</div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Friday, Oct 30</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Tbilisi, Georgia</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-label">Staying at</div><div class="day-stay-name">The Telegraph Hotel</div></div></div>
+        <div class="dh"><div class="dh-date">Friday, Oct 30</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Tbilisi, Georgia</div></div></div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Yerevan, Armenia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">The Telegraph Hotel</div><div class="day-stay-label">31 Shota Rustaveli Ave</div></div></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Saturday, Oct 31</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Saturday, Oct 31</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Yerevan, Armenia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Sunday, Nov 1</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Sunday, Nov 1</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Yerevan, Armenia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Monday, Nov 2</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Monday, Nov 2</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Yerevan, Armenia</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
       </div>
 
       <div class="day-sec">
-        <div class="dh"><div class="dh-date">Tuesday, Nov 3</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Yerevan, Armenia</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Washington, D.C.</div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="dh"><div class="dh-date">Tuesday, Nov 3</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Yerevan, Armenia</div></div></div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Washington, D.C.</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
         <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="spacer"></div>
@@ -1289,21 +1298,23 @@
       <select class="ef-input ef-select" id="af-day"></select>
       <div class="ef-label">Name</div>
       <input class="ef-input" id="af-name" type="text">
-      <div class="ef-label">Details</div>
-      <input class="ef-input" id="af-details" type="text" placeholder="Add details…">
+      <div id="af-details-group">
+        <div class="ef-label">Details</div>
+        <input class="ef-input" id="af-details" type="text" placeholder="Add details…">
+      </div>
       <div id="af-type-fields"></div>
       <div class="ef-row">
-        <div class="ef-col">
+        <div class="ef-col" id="af-location-col">
           <div class="ef-label">Location Name</div>
           <input class="ef-input" id="af-location" type="text">
         </div>
-        <div class="ef-col">
+        <div class="ef-col" id="af-address-col">
           <div class="ef-label">Address</div>
           <input class="ef-input" id="af-address" type="text">
         </div>
       </div>
       <div class="ef-row">
-        <div class="ef-col">
+        <div class="ef-col" id="af-status-col">
           <div class="ef-label">Booking Status</div>
           <select class="ef-input ef-select" id="af-status">
             <option value="">—</option>
@@ -1314,17 +1325,17 @@
             <option value="cancelled">Cancelled</option>
           </select>
         </div>
-        <div class="ef-col">
+        <div class="ef-col" id="af-confirm-col">
           <div class="ef-label">Confirmation Number</div>
           <input class="ef-input" id="af-confirm" type="text">
         </div>
       </div>
       <div class="ef-row">
-        <div class="ef-col">
+        <div class="ef-col" id="af-cost-col">
           <div class="ef-label">Cost</div>
           <input class="ef-input" id="af-cost" type="text">
         </div>
-        <div class="ef-col">
+        <div class="ef-col" id="af-link-col">
           <div class="ef-label">Link</div>
           <input class="ef-input" id="af-link" type="text">
         </div>
@@ -1377,21 +1388,23 @@
     <div class="sheet-title" id="edit-sheet-title">Edit element</div>
     <div class="ef-label">Name</div>
     <input class="ef-input" id="ef-name" type="text">
-    <div class="ef-label">Details</div>
-    <input class="ef-input" id="ef-details" type="text" placeholder="Add details…">
+    <div id="ef-details-group">
+      <div class="ef-label">Details</div>
+      <input class="ef-input" id="ef-details" type="text" placeholder="Add details…">
+    </div>
     <div id="ef-type-fields"></div>
     <div class="ef-row">
-      <div class="ef-col">
+      <div class="ef-col" id="ef-location-col">
         <div class="ef-label">Location Name</div>
         <input class="ef-input" id="ef-location" type="text">
       </div>
-      <div class="ef-col">
+      <div class="ef-col" id="ef-address-col">
         <div class="ef-label">Address</div>
         <input class="ef-input" id="ef-address" type="text">
       </div>
     </div>
     <div class="ef-row">
-      <div class="ef-col">
+      <div class="ef-col" id="ef-status-col">
         <div class="ef-label">Booking Status</div>
         <select class="ef-input ef-select" id="ef-status">
           <option value="">—</option>
@@ -1402,17 +1415,17 @@
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
-      <div class="ef-col">
+      <div class="ef-col" id="ef-confirm-col">
         <div class="ef-label">Confirmation Number</div>
         <input class="ef-input" id="ef-confirm" type="text">
       </div>
     </div>
     <div class="ef-row">
-      <div class="ef-col">
+      <div class="ef-col" id="ef-cost-col">
         <div class="ef-label">Cost</div>
         <input class="ef-input" id="ef-cost" type="text">
       </div>
-      <div class="ef-col">
+      <div class="ef-col" id="ef-link-col">
         <div class="ef-label">Link</div>
         <input class="ef-input" id="ef-link" type="text">
       </div>
@@ -1617,10 +1630,10 @@ document.getElementById('ef-file').addEventListener('change',function(){
 });
 
 document.addEventListener('click',function(e){
-  const card=e.target.closest('.trip-screen .ec');
+  const card=e.target.closest('.trip-screen .ec, .trip-screen .dh-geo');
   if(!card) return;
   if(e.target.closest('.ea,.hb,.sb,.drag-icon,.mc,.photo-tiles,input,textarea,button')) return;
-  if(card.dataset.view==='1') openViewSheet(card); else openEditSheet(card);
+  openViewSheet(card);
 });
 
 let editingType=null;
@@ -1633,6 +1646,7 @@ function openEditSheet(card){
   document.getElementById('ef-name').value=(card.querySelector('.en')||{}).textContent||'';
   document.getElementById('ef-details').value=(card.querySelector('.ed')||{}).textContent||'';
   document.getElementById('ef-type-fields').innerHTML=renderTypeFieldsHTML(editingType,'ef',stored);
+  applyUniversalFieldVisibility('ef',editingType);
   document.getElementById('ef-location').value=stored.location_name||'';
   document.getElementById('ef-address').value=stored.address||'';
   document.getElementById('ef-status').value=stored.booking_status||'';
@@ -1666,6 +1680,29 @@ const VIEW_SPEC={
     {label:'Confirmation #', html:false, value:c=>{const f=JSON.parse(c.dataset.fields||'{}'); return f.confirmation_number||f.pnr||'';}}
   ]
 };
+// Generic fallback for any type without a hand-tuned VIEW_SPEC above: pulls together
+// whichever of the type's spreadsheet fields (plus time/status/confirmation) are actually
+// filled in, capped at 5 rows so it stays a compact preview rather than the full edit form.
+function autoViewRows(card,type){
+  const stored=JSON.parse(card.dataset.fields||'{}');
+  const rows=[];
+  const name=(card.querySelector('.en')||{}).textContent||'';
+  if(name) rows.push({label:'Name',val:name});
+  const time=primaryTimeValue(type,stored);
+  if(time) rows.push({label:'Time',val:time});
+  const details=(card.querySelector('.ed')||{}).textContent||'';
+  if(details) rows.push({label:'Details',val:details});
+  (TYPE_FIELDS[type]||[]).forEach(f=>{
+    if(f.primaryTime) return;
+    if(!stored[f.key]) return;
+    if(f.type==='checkbox') rows.push({label:f.label,val:'Yes'});
+    else if(f.type==='star') rows.push({label:f.label,val:'★ Favorited'});
+    else rows.push({label:f.label,val:stored[f.key]});
+  });
+  if(stored.booking_status) rows.push({label:'Status',val:STATUS_LABELS[stored.booking_status]||stored.booking_status});
+  if(stored.confirmation_number) rows.push({label:'Confirmation #',val:stored.confirmation_number});
+  return rows.slice(0,5);
+}
 let viewingCard=null;
 function openViewSheet(card){
   viewingCard=card;
@@ -1674,13 +1711,14 @@ function openViewSheet(card){
   document.getElementById('view-sheet-title').textContent=typeMeta?typeMeta.label:'Element';
   const rowsEl=document.getElementById('view-rows');
   rowsEl.innerHTML='';
-  (VIEW_SPEC[type]||[]).forEach(spec=>{
-    const val=spec.value(card);
-    if(!val) return;
+  const rows=VIEW_SPEC[type]
+    ? VIEW_SPEC[type].map(spec=>({label:spec.label,val:spec.value(card),html:spec.html})).filter(r=>r.val)
+    : autoViewRows(card,type);
+  rows.forEach(r=>{
     const row=document.createElement('div'); row.className='view-row';
-    const label=document.createElement('div'); label.className='ef-label'; label.textContent=spec.label;
+    const label=document.createElement('div'); label.className='ef-label'; label.textContent=r.label;
     const text=document.createElement('div'); text.className='view-text';
-    if(spec.html) text.innerHTML=val; else text.textContent=val;
+    if(r.html) text.innerHTML=r.val; else text.textContent=r.val;
     row.appendChild(label); row.appendChild(text); rowsEl.appendChild(row);
   });
   document.getElementById('view-scrim').classList.add('show');
@@ -1714,6 +1752,7 @@ function saveElement(){
   let en=card.querySelector('.en');
   if(!en){ en=document.createElement('div'); en.className='en'; info.prepend(en); }
   en.textContent=name||'Untitled';
+  applyTopLabel(info,en,typeKey,typeValues);
   let ed=card.querySelector('.ed');
   if(details){
     if(!ed){ ed=document.createElement('div'); ed.className='ed'; en.after(ed); }
@@ -1930,13 +1969,12 @@ const TYPE_FIELDS={
     {key:'mileage_policy',label:'Mileage Policy',placeholder:'e.g. Unlimited mileage'}
   ],
   restaurant:[
-    {key:'cuisine_type',label:'Cuisine Type',placeholder:'e.g. Italian'},
-    {key:'reservation_datetime',label:'Reservation Time',placeholder:'e.g. 2026-09-16T19:30:00+02:00',primaryTime:true},
-    {key:'party_size',label:'Party Size',placeholder:'e.g. 4'},
-    {key:'price_range',label:'Price Range',type:'select',options:['$','$$','$$$','$$$$']},
-    {key:'phone',label:'Phone',placeholder:'e.g. +33 1 98 76 54 32'},
-    {key:'rating',label:'Rating',placeholder:'e.g. 4.5'},
-    {key:'dietary_notes',label:'Dietary Notes',placeholder:'e.g. Vegetarian menu available'}
+    {key:'meal',label:'Meal',type:'select',options:['Breakfast','Lunch','Snack','Dinner','Dessert']},
+    {key:'reservation',label:'Reservation',type:'checkbox'},
+    {key:'reservation_platform',label:'Reservation Platform',placeholder:'e.g. OpenTable, Resy',fullWidth:true},
+    {key:'cancellation_fee',label:'Cancellation Fee',type:'checkbox'},
+    {key:'booked',label:'Booking Status',type:'checkbox'},
+    {key:'favorite',label:'Favorite',type:'star'}
   ],
   coffee:[
     {key:'specialty',label:'Specialty',placeholder:'e.g. Pour-over and pastries'},
@@ -2038,13 +2076,34 @@ function tfInputHTML(f,prefix,val){
   if(f.type==='bool'){
     return '<div class="ef-col"><div class="ef-label">'+label+'</div><select class="ef-input ef-select" id="'+id+'"><option value="">—</option><option value="yes"'+(val==='yes'?' selected':'')+'>Yes</option><option value="no"'+(val==='no'?' selected':'')+'>No</option></select></div>';
   }
+  if(f.type==='checkbox'){
+    return '<div class="ef-col ef-checkbox-col"><label class="ef-checkbox"><input type="checkbox" id="'+id+'"'+(val==='yes'?' checked':'')+'><span>'+label+'</span></label></div>';
+  }
+  if(f.type==='star'){
+    return '<div class="ef-col"><div class="ef-label">'+label+'</div><button type="button" class="ef-star-btn'+(val==='yes'?' on':'')+'" id="'+id+'" onclick="toggleEfStar(this)" aria-label="Toggle favorite">★</button></div>';
+  }
   return '<div class="ef-col"><div class="ef-label">'+label+'</div><input class="ef-input" id="'+id+'" type="text" value="'+esc(val||'')+'"></div>';
 }
+function toggleEfStar(btn){ btn.classList.toggle('on'); }
 function renderTypeFieldsHTML(typeKey,prefix,values){
   const fields=TYPE_FIELDS[typeKey]||[];
   let html='';
-  for(let i=0;i<fields.length;i+=2){
-    html+='<div class="ef-row">'+fields.slice(i,i+2).map(f=>tfInputHTML(f,prefix,values[f.key])).join('')+'</div>';
+  let i=0;
+  while(i<fields.length){
+    const f=fields[i];
+    if(f.fullWidth){
+      html+='<div class="ef-row">'+tfInputHTML(f,prefix,values[f.key])+'</div>';
+      i+=1;
+      continue;
+    }
+    const next=fields[i+1];
+    if(next && !next.fullWidth){
+      html+='<div class="ef-row">'+tfInputHTML(f,prefix,values[f.key])+tfInputHTML(next,prefix,values[next.key])+'</div>';
+      i+=2;
+    } else {
+      html+='<div class="ef-row">'+tfInputHTML(f,prefix,values[f.key])+'</div>';
+      i+=1;
+    }
   }
   return html;
 }
@@ -2053,9 +2112,41 @@ function readTypeFieldValues(typeKey,prefix){
   const out={};
   fields.forEach(f=>{
     const el=document.getElementById(prefix+'-f-'+f.key);
-    if(el&&el.value) out[f.key]=el.value.trim();
+    if(!el) return;
+    if(f.type==='checkbox'){ if(el.checked) out[f.key]='yes'; }
+    else if(f.type==='star'){ if(el.classList.contains('on')) out[f.key]='yes'; }
+    else if(el.value) out[f.key]=el.value.trim();
   });
   return out;
+}
+// Some types don't need every universal Common Field shown in the edit/add sheet
+// (e.g. a restaurant doesn't need its own address or a cost line). List which of
+// details/location/address/status/confirm/cost/link to hide, per type key.
+const HIDDEN_UNIVERSAL_FIELDS={
+  restaurant:['details','location','address','status','confirm','cost']
+};
+// For a type listed here, that type-specific field's value is mirrored onto the card
+// face as a small label line above the name (e.g. a restaurant's Meal above its name).
+const TOP_LABEL_FIELD={ restaurant:'meal' };
+function applyTopLabel(info,en,typeKey,typeValues){
+  const key=TOP_LABEL_FIELD[typeKey];
+  const val=key?typeValues[key]:'';
+  let label=info.querySelector('.meal-label');
+  if(val){
+    if(!label){ label=document.createElement('div'); label.className='meal-label'; en.before(label); }
+    label.textContent=val;
+  } else if(label) label.remove();
+}
+const UNIVERSAL_FIELD_WRAPPERS={
+  details:'details-group', location:'location-col', address:'address-col',
+  status:'status-col', confirm:'confirm-col', cost:'cost-col', link:'link-col'
+};
+function applyUniversalFieldVisibility(prefix,type){
+  const hidden=new Set(HIDDEN_UNIVERSAL_FIELDS[type]||[]);
+  Object.keys(UNIVERSAL_FIELD_WRAPPERS).forEach(name=>{
+    const el=document.getElementById(prefix+'-'+UNIVERSAL_FIELD_WRAPPERS[name]);
+    if(el) el.style.display=hidden.has(name)?'none':'';
+  });
 }
 function primaryTimeValue(typeKey,values){
   const f=(TYPE_FIELDS[typeKey]||[]).find(x=>x.primaryTime);
@@ -2115,6 +2206,7 @@ function showAddFields(){
   const t=pendingAddType; if(!t) return;
   document.getElementById('type-sheet-title').textContent='Add '+t.label;
   document.getElementById('af-type-fields').innerHTML=renderTypeFieldsHTML(t.key,'af',{});
+  applyUniversalFieldVisibility('af',t.key);
   ['af-name','af-details','af-location','af-address','af-confirm','af-cost','af-link'].forEach(id=>{ document.getElementById(id).value=''; });
   document.getElementById('af-status').value='';
   addPhotos=[];
@@ -2173,8 +2265,12 @@ function saveAddElement(){
   card.dataset.type=t.key;
   card.dataset.fields=JSON.stringify(Object.assign({},typeValues,{location_name:location,address:address,booking_status:status,confirmation_number:confirm,cost_amount:cost,url:link}));
   if(confirm) card.dataset.copy=confirm;
+  const topLabelKey=TOP_LABEL_FIELD[t.key];
+  const topLabelVal=topLabelKey?typeValues[topLabelKey]:'';
   card.innerHTML='<div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div>'+
-    '<div class="einfo"><div class="en">'+esc(name)+'</div>'+
+    '<div class="einfo">'+
+    (topLabelVal?'<div class="meal-label">'+esc(topLabelVal)+'</div>':'')+
+    '<div class="en">'+esc(name)+'</div>'+
     (details?'<div class="ed">'+esc(details)+'</div>':'')+
     (meta.length?'<div class="em">'+meta.map(chipHTML).join('')+'</div>':'')+
     '</div><div class="ea"><span class="hb"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>';
