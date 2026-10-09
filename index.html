@@ -1550,10 +1550,12 @@
           <select class="ef-input ef-select" id="nf-day"></select>
         </div>
         <div class="ef-col">
-          <div class="ef-label">Time</div>
-          <input class="ef-input" id="nf-time" type="time">
+          <div class="ef-label">Start time</div>
+          <input class="ef-input" id="nf-start" type="time">
         </div>
       </div>
+      <div class="ef-label">Time zone</div>
+      <select class="ef-input ef-select" id="nf-tz"></select>
 
       <div class="ef-label">Category</div>
       <div class="nf-cat-box" id="nf-cat-box" onclick="nfToggleList()"></div>
@@ -2367,6 +2369,25 @@ function primaryTimeValue(typeKey,values){
   return f?(values[f.key]||''):'';
 }
 
+// Time zones offered on the Add form; a trip's own zone is preselected
+const NF_TZ=[
+  {id:'America/Los_Angeles',abbr:'PT',label:'Pacific Time (PT)'},
+  {id:'America/Denver',abbr:'MT',label:'Mountain Time (MT)'},
+  {id:'America/Chicago',abbr:'CT',label:'Central Time (CT)'},
+  {id:'America/New_York',abbr:'ET',label:'Eastern Time (ET)'},
+  {id:'America/Anchorage',abbr:'AKT',label:'Alaska Time (AKT)'},
+  {id:'Pacific/Honolulu',abbr:'HST',label:'Hawaii Time (HST)'},
+  {id:'UTC',abbr:'UTC',label:'UTC'},
+  {id:'Europe/London',abbr:'GMT',label:'London (GMT/BST)'},
+  {id:'Europe/Paris',abbr:'CET',label:'Central Europe (CET)'},
+  {id:'Europe/Istanbul',abbr:'TRT',label:'Türkiye (TRT)'},
+  {id:'Asia/Tbilisi',abbr:'GET',label:'Georgia (GET)'},
+  {id:'Asia/Baku',abbr:'AZT',label:'Azerbaijan (AZT)'},
+  {id:'Asia/Yerevan',abbr:'AMT',label:'Armenia (AMT)'},
+  {id:'Asia/Tokyo',abbr:'JST',label:'Japan (JST)'},
+  {id:'Australia/Sydney',abbr:'AET',label:'Sydney (AET)'}
+];
+const TRIP_TZ={ 's-trip':'America/Los_Angeles', 's-caucasus':'Asia/Tbilisi' };
 let nfCats=[], nfPlace=null, nfResults=[], nfSearchT=null, nfSearchSeq=0, nfListOpen=false;
 function openAddMenu(){ pendingAddBtn=null; openTypeSheet(); } // itin + button → active day
 function dayIndexOf(screen,daySec){ return [...screen.querySelectorAll('.day-sec')].indexOf(daySec); }
@@ -2379,13 +2400,16 @@ function openTypeSheet(cats,dayIdx){
   const screen=activeTrip();
   pendingAddDayIdx = (typeof dayIdx==='number') ? dayIdx : (pendingAddBtn ? dayIndexOf(screen,pendingAddBtn.closest('.day-sec')) : activeDayIndex(screen));
   nfCats=(cats||[]).slice(); nfPlace=null; nfResults=[]; nfListOpen=false;
-  ['nf-name','nf-loc','nf-time','nf-confirm','nf-notes'].forEach(id=>{ document.getElementById(id).value=''; });
+  ['nf-name','nf-loc','nf-start','nf-confirm','nf-notes'].forEach(id=>{ document.getElementById(id).value=''; });
   document.getElementById('nf-reserved').checked=false;
   document.getElementById('nf-results').style.display='none';
   document.getElementById('nf-loc-pin').classList.remove('on');
   const sub=document.getElementById('nf-loc-sub'); sub.style.display='none'; sub.textContent='';
   nfRenderCats();
   nfPopulateDays();
+  const tzSel=document.getElementById('nf-tz');
+  tzSel.innerHTML=NF_TZ.map(z=>'<option value="'+z.id+'">'+z.label+'</option>').join('');
+  tzSel.value=TRIP_TZ[activeTrip().id]||NF_TZ[0].id;
   document.getElementById('type-scrim').classList.add('show');
   document.getElementById('type-sheet').classList.add('show');
   // Wait for the open transition before focusing, or the browser scrolls the page to the off-screen field.
@@ -2472,7 +2496,9 @@ function saveAddElement(){
   const t=ELEMENT_TYPES.find(x=>x.key===cats[0]);
   const loc=document.getElementById('nf-loc').value.trim();
   const place=(nfPlace&&nfPlace.name===loc)?nfPlace:null;
-  const timeStr=nfFmtTime(document.getElementById('nf-time').value);
+  const tz=NF_TZ.find(z=>z.id===document.getElementById('nf-tz').value)||NF_TZ[0];
+  const startStr=nfFmtTime(document.getElementById('nf-start').value);
+  const timeStr=startStr?startStr+' '+tz.abbr:'';
   const reserved=document.getElementById('nf-reserved').checked;
   const confirm=document.getElementById('nf-confirm').value.trim();
   const notes=document.getElementById('nf-notes').value.trim();
@@ -2490,7 +2516,7 @@ function saveAddElement(){
   card.className='ec';
   card.dataset.type=t.key;
   card.dataset.tags=cats.join(',');
-  card.dataset.fields=JSON.stringify({location_name:loc,address:place?place.addr:'',latitude:place?place.lat:'',longitude:place?place.lng:'',time:timeStr,reservation:reserved,booking_status:reserved?'booked':'',confirmation_number:confirm,notes:notes,tags:cats});
+  card.dataset.fields=JSON.stringify({location_name:loc,address:place?place.addr:'',latitude:place?place.lat:'',longitude:place?place.lng:'',start_time:startStr,time_zone:tz.id,reservation:reserved,booking_status:reserved?'booked':'',confirmation_number:confirm,notes:notes,tags:cats});
   if(confirm) card.dataset.copy=confirm;
   card.innerHTML='<div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div>'+
     '<div class="einfo">'+
