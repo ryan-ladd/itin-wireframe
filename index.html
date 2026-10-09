@@ -440,7 +440,36 @@
   .filter-apply { flex: 2; padding: 12px; border-radius: 999px; border: none; background: #1a1a1a; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
   .home-filter.active { color: #0b3ef7; }
 
-  /* ADD-ELEMENT TYPE PICKER */
+  /* ADD-ELEMENT UNIVERSAL FORM */
+  .nf-loc { position: relative; }
+  #nf-loc { padding-right: 40px; }
+  .nf-loc-pin { position: absolute; right: 12px; top: 0; height: 42px; display: flex; align-items: center; pointer-events: none; }
+  .nf-loc-pin svg { width: 17px; height: 17px; fill: none; stroke: #1a1a1a; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .nf-results { display: none; margin-top: 6px; border: 0.5px solid #e5e5e5; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,0.07); }
+  .nf-res { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 0.5px solid #f2f2f2; align-items: flex-start; }
+  .nf-res:last-child { border-bottom: none; }
+  .nf-res:active { background: #F9F8F4; }
+  .nf-res svg { width: 16px; height: 16px; fill: #E34234; flex-shrink: 0; margin-top: 1px; }
+  .nf-res b { display: block; font-size: 13px; font-weight: 800; color: #1a1a1a; }
+  .nf-res small { display: block; font-size: 11px; font-weight: 400; color: #999; margin-top: 1px; }
+  .nf-res-msg { padding: 12px; font-size: 12px; font-weight: 600; color: #999; }
+  .nf-loc-sub { display: none; font-size: 11px; font-weight: 400; color: #999; margin-top: 6px; padding-left: 2px; }
+  .nf-cat-box { position: relative; min-height: 42px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border: 0.5px solid #ddd; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23999" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center / 18px; border-radius: 12px; padding: 6px 34px 6px 8px; cursor: pointer; box-sizing: border-box; }
+  .nf-ph { color: #aaa; font-size: 14px; font-weight: 600; padding: 3px 4px; }
+  .nf-tag { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 6px 4px 9px; font-size: 12px; font-weight: 700; }
+  .nf-tag svg { width: 13px; height: 13px; fill: currentColor; }
+  .nf-tag i { font-style: normal; font-size: 10px; opacity: 0.6; padding: 0 3px; cursor: pointer; }
+  .nf-cat-list { display: none; margin-top: 6px; border: 0.5px solid #e5e5e5; border-radius: 12px; max-height: 210px; overflow-y: auto; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,0.07); }
+  .nf-opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: #1a1a1a; }
+  .nf-opt:active { background: #F1EFE8; }
+  .nf-opt.on { background: #FAF9F5; }
+  .nf-opt b { margin-left: auto; color: #E34234; opacity: 0; font-size: 14px; }
+  .nf-opt.on b { opacity: 1; }
+  .nf-res-check { margin-top: 16px; padding-bottom: 0; }
+  textarea.nf-notes { resize: none; min-height: 76px; line-height: 1.4; }
+  input[type="time"].ef-input { min-height: 42px; }
+
+  /* ADD-ELEMENT TYPE PICKER (retired — kept for reference) */
   .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-height: 46vh; overflow-y: auto; margin-top: 8px; }
   .type-divider { grid-column: 1 / -1; height: 1px; background: #ececec; margin: 6px 4px; }
   .type-item { display: flex; align-items: center; gap: 10px; padding: 9px 8px; cursor: pointer; border-radius: 12px; }
@@ -553,6 +582,100 @@
   .cover-drop svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .type-pills { display: flex; flex-wrap: wrap; gap: 8px; }
   .type-pills .chip.on { background: #1a1a1a; color: #fff; }
+
+  /* ONBOARDING (4 slides: welcome, tour, profile setup, first trip) */
+  #s-onboard { background: #fff; position: relative; }
+  .ob-top { height: 40px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .ob-link { background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 700; color: #999; cursor: pointer; padding: 6px 2px; min-width: 44px; }
+  .ob-link.hide { visibility: hidden; }
+  .ob-dots { display: flex; gap: 6px; }
+  .ob-dot { width: 7px; height: 7px; border-radius: 99px; background: #e2e0d8; transition: width 0.3s ease, background 0.3s ease; }
+  .ob-dot.on { width: 22px; background: #1a1a1a; }
+  .ob-stage { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  .ob-track { display: flex; width: 500%; height: 100%; transition: transform 0.45s cubic-bezier(0.32,0.72,0.2,1); }
+  .ob-slide { width: 20%; height: 100%; padding: 8px 26px 0; display: flex; flex-direction: column; overflow-y: auto; }
+  .ob-slide::-webkit-scrollbar { width: 0; }
+  .ob-slide > * { flex-shrink: 0; }
+  .ob-h { font-size: 30px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.8px; line-height: 1.08; }
+  .ob-p { font-size: 15px; font-weight: 400; color: #777; line-height: 1.45; margin-top: 10px; }
+  .ob-foot { padding: 12px 26px 34px; display: flex; flex-direction: column; gap: 6px; align-items: stretch; flex-shrink: 0; }
+  .ob-btn { height: 52px; border: none; border-radius: 999px; background: #1a1a1a; color: #fff; font-family: inherit; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 0.12s; }
+  .ob-btn:active { transform: scale(0.97); }
+  .ob-btn2 { height: 36px; background: none; border: none; font-family: inherit; font-size: 14px; font-weight: 700; color: #999; cursor: pointer; }
+  .ob-btn2.hide { visibility: hidden; }
+  /* 1 welcome */
+  .ob-hero { position: relative; height: 330px; margin-top: 6px; flex-shrink: 0; }
+  .ob-ph { position: absolute; border-radius: 22px; background-size: cover; background-position: center; box-shadow: 0 10px 28px rgba(0,0,0,0.18); border: 4px solid #fff; }
+  .ob-ph.a { width: 210px; height: 270px; left: 0; top: 0; transform: rotate(-4deg); }
+  .ob-ph.b { width: 160px; height: 200px; right: 0; top: 70px; transform: rotate(5deg); }
+  .ob-ph.c { width: 110px; height: 110px; left: 70px; bottom: 0; transform: rotate(-2deg); border-radius: 50%; }
+  .ob-logo { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; color: #E34234; margin-bottom: 8px; }
+  /* 2 tour */
+  .ob-cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -26px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+  .ob-cards::-webkit-scrollbar { display: none; }
+  .ob-card { flex: 0 0 100%; scroll-snap-align: start; padding: 0 26px; }
+  .ob-mock { height: 252px; border-radius: 24px; background: #F7F5EC; margin-bottom: 20px; position: relative; overflow: hidden; padding: 18px; }
+  .ob-trip { padding: 4px 0 0; background: var(--pal-bg); border: 1px solid #ece9df; box-sizing: border-box; }
+  .ob-trip::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 56px; background: linear-gradient(to bottom, transparent, var(--pal-bg)); pointer-events: none; }
+  .ob-trip .ob-lift { transform: rotate(-1.5deg) translateX(6px) scale(1.02); box-shadow: 0 12px 26px rgba(0,0,0,0.18); border-color: #E34234; position: relative; z-index: 1; }
+  .ob-mapmock { padding: 0; }
+  #ob-map { position: absolute; inset: 0; pointer-events: none; background: transparent; }
+  .ob-mchips { position: absolute; top: 10px; left: 0; right: 0; z-index: 500; display: flex; gap: 6px; padding: 0 12px; overflow-x: auto; scrollbar-width: none; }
+  .ob-mchips::-webkit-scrollbar { display: none; }
+  .ob-mchip { flex-shrink: 0; border: none; border-radius: 999px; padding: 6px 11px; font-family: inherit; font-size: 11px; font-weight: 800; background: #fff; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.14); cursor: pointer; }
+  .ob-mchip.on { background: #1a1a1a; color: #fff; }
+  .map-pin.sm { width: 20px; height: 20px; border-width: 2px; box-shadow: 0 1px 5px rgba(0,0,0,0.3); font-size: 10px; font-weight: 800; color: #fff; }
+  .ob-cdots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  .ob-cdots i { width: 6px; height: 6px; border-radius: 50%; background: #dcd9ce; transition: background 0.2s; }
+  .ob-cdots i.on { background: #E34234; }
+  .m-ava { width: 62px; height: 62px; border-radius: 50%; border: 3px solid #F7F5EC; background-size: cover; background-position: center; position: absolute; }
+  .m-pill { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); background: #1a1a1a; color: #fff; border-radius: 999px; padding: 10px 18px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+  .m-map { position: absolute; inset: 0; background: linear-gradient(135deg,#E3EBD6 0 40%,#D9E6EA 40% 62%,#E8EEDF 62%); }
+  /* 3 profile */
+  .ob-prev { margin-top: 16px; border-radius: 22px; overflow: hidden; text-align: center; padding-bottom: 14px; background: #fff; color: #1a1a1a; border: 1px solid #ececec; transition: background 0.3s, color 0.3s, border-color 0.3s; flex-shrink: 0; }
+  .ob-pcover { height: 78px; background: #EAE8E0 center/cover; }
+  .ob-prev .pa { width: 62px; height: 62px; border-radius: 50%; margin: -31px auto 0; border: 3px solid transparent; background: #D8D5C9 center/cover; position: relative; box-shadow: 0 0 0 3px var(--ob-pv, #fff); }
+  .ob-prev .pn { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; margin-top: 8px; }
+  .ob-prev .ph { font-size: 12px; font-weight: 400; opacity: 0.6; margin-top: 2px; }
+  .ob-lbl { font-size: 11px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: #999; margin: 18px 0 8px; flex-shrink: 0; }
+  .ob-at { position: relative; }
+  .ob-at span { position: absolute; left: 14px; top: 0; height: 48px; display: flex; align-items: center; font-size: 16px; font-weight: 700; color: #aaa; }
+  .ob-at .ob-name { padding-left: 30px; }
+  .ob-up { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px dashed #cfccc0; color: #aaa; cursor: pointer; background: #fff center/cover no-repeat; font-size: 13px; font-weight: 700; box-sizing: border-box; overflow: hidden; }
+  .ob-up input { display: none; }
+  .ob-up svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .ob-up.round { width: 72px; height: 72px; border-radius: 50%; }
+  .ob-up.wide { width: 100%; height: 96px; border-radius: 16px; }
+  .ob-up.has { border-style: solid; border-color: transparent; }
+  .ob-up.has svg, .ob-up.has span { display: none; }
+  .ob-name { width: 100%; box-sizing: border-box; height: 48px; border: 1.5px solid #e6e3d8; border-radius: 14px; padding: 0 14px; font-family: inherit; font-size: 16px; font-weight: 700; color: #1a1a1a; outline: none; background: #fff; }
+  .ob-name:focus { border-color: #1a1a1a; }
+  .ob-pals { display: flex; gap: 10px; }
+  .ob-pal { flex: 1; height: 54px; border-radius: 14px; border: 3px solid transparent; outline: 1px solid #e6e3d8; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; box-sizing: border-box; }
+  .ob-pal.on { border-color: #E34234; outline-color: transparent; }
+  /* 4 verify email */
+  .ob-mail { width: 84px; height: 84px; border-radius: 50%; background: #FDECEA; display: flex; align-items: center; justify-content: center; margin: 26px 0 20px; transition: background 0.3s; }
+  .ob-mail svg { width: 38px; height: 38px; stroke: #E34234; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s; }
+  .ob-mail.ok { background: #E1F5EE; }
+  .ob-mail.ok svg { stroke: #0F6E56; }
+  .ob-to { font-weight: 800; color: #1a1a1a; word-break: break-all; }
+  .ob-code { display: flex; gap: 8px; margin-top: 26px; }
+  .ob-code input { flex: 1; min-width: 0; width: 100%; height: 58px; box-sizing: border-box; border: 1.5px solid #e6e3d8; border-radius: 14px; text-align: center; font-family: inherit; font-size: 24px; font-weight: 800; color: #1a1a1a; outline: none; background: #fff; padding: 0; caret-color: #E34234; }
+  .ob-code input:focus { border-color: #1a1a1a; }
+  .ob-code input.filled { border-color: #bdb9aa; }
+  .ob-code.err input { border-color: #E34234; animation: obShake 0.35s; }
+  .ob-code.ok input { border-color: #0F6E56; background: #F1FAF6; }
+  @keyframes obShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .ob-hint { font-size: 12px; font-weight: 400; color: #aaa; margin-top: 14px; }
+  .ob-hint a { color: #E34234; font-weight: 700; cursor: pointer; }
+  /* 5 first trip */
+  .ob-end { height: 250px; border-radius: 26px; margin-top: 6px; background-size: cover; background-position: center; position: relative; overflow: hidden; flex-shrink: 0; }
+  .ob-end::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.0) 60%); }
+  .ob-end-t { position: absolute; left: 18px; bottom: 16px; z-index: 1; color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .ob-end-t small { display: block; font-size: 12px; font-weight: 400; opacity: 0.85; margin-bottom: 3px; letter-spacing: 0; }
+  .ob-steps { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .ob-step { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #444; }
+  .ob-step b { width: 26px; height: 26px; border-radius: 50%; background: #F1EFE8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
 
   /* LEGEND */
   .legend { margin: 30px auto 0; width: 375px; background: #fff; border-radius: 16px; border: 0.5px solid #e5e5e5; padding: 20px; font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; }
@@ -1100,6 +1223,7 @@
       </div>
       <div class="prof-section-title">Countries visited</div>
       <div class="country-grid" id="prof-countries"></div>
+      <div style="text-align:center;padding:0 20px 120px;"><button class="ob-link" onclick="obStart()" style="color:#E34234;">Replay onboarding</button></div>
     </div>
     <div class="nav">
       <div class="nav-indicator"></div>
@@ -1177,6 +1301,123 @@
           <button class="chip" onclick="pickType2(this)">Backpacking</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ======================== ONBOARDING (4 slides) ======================== -->
+  <div class="screen" id="s-onboard">
+    <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
+    <div class="ob-top">
+      <button class="ob-link" id="ob-back" onclick="obBack()">Back</button>
+      <div class="ob-dots" id="ob-dots"><span class="ob-dot on"></span><span class="ob-dot"></span><span class="ob-dot"></span><span class="ob-dot"></span><span class="ob-dot"></span></div>
+      <button class="ob-link" id="ob-skip" onclick="obSkip()">Skip</button>
+    </div>
+    <div class="ob-stage" onscroll="this.scrollLeft=0">
+      <div class="ob-track" id="ob-track">
+
+        <!-- 1 · Welcome -->
+        <div class="ob-slide">
+          <div class="ob-hero">
+            <div class="ob-ph a" style="background-image:url('Photos/Japan.jpg');"></div>
+            <div class="ob-ph b" style="background-image:url('Photos/Yerevan.jpg');"></div>
+            <div class="ob-ph c" style="background-image:url('Photos/Cannon%20Beach.jpg');"></div>
+          </div>
+          <div class="ob-logo" style="margin-top:22px;">itin</div>
+          <div class="ob-h">Plan beautiful trips.</div>
+          <div class="ob-p">Build sleek itineraries, collaborate smartly with your travel crew, and catalog great memories on the go.</div>
+        </div>
+
+        <!-- 2 · Value tour (swipeable) -->
+        <div class="ob-slide">
+          <div class="ob-cards" id="ob-cards" onscroll="obCardScroll()">
+            <div class="ob-card">
+              <div class="trip-screen ob-mock ob-trip"><div class="dh"><div class="dh-date">Saturday, Oct 24</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div></div><div class="ec ob-lift"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>GYD</div><div class="ed">5:10 – 11:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div><div class="ec ec-stay"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div><div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="meal-label">Lunch</div><div class="en">Lolita</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div></div>
+              <div class="ob-h">Build it day by day</div>
+              <div class="ob-p">Organize the messy details of your trip with smart elements, Drag to reorder anything.</div>
+            </div>
+            <div class="ob-card">
+              <div class="ob-mock">
+                <div class="m-ava" style="left:34px;top:34px;background-image:url('Photos/Ryan%20Profile%20Pic.jpg');"></div>
+                <div class="m-ava" style="left:104px;top:64px;width:76px;height:76px;background-image:url('Photos/Emily%20Profile%20Pic.jpeg');"></div>
+                <div class="m-ava" style="left:190px;top:30px;background-image:url('Photos/Charles.png');"></div>
+                <div class="m-ava" style="left:238px;top:96px;width:56px;height:56px;background-image:url('Photos/Nikki.jpg');"></div>
+                <div class="m-pill">Invite · copy link</div>
+              </div>
+              <div class="ob-h">Plan it together</div>
+              <div class="ob-p">Throw out the travel doc and collaborate with tools built with travelers in mind.</div>
+            </div>
+            <div class="ob-card">
+              <div class="ob-mock ob-mapmock">
+                <div class="m-map"></div>
+                <div id="ob-map"></div>
+                <div class="ob-mchips" id="ob-mchips"></div>
+              </div>
+              <div class="ob-h">Maximize your day</div>
+              <div class="ob-p">See how your top spots fit each day's schedule, so every stop makes sense.</div>
+            </div>
+          </div>
+          <div class="ob-cdots" id="ob-cdots"><i class="on"></i><i></i><i></i></div>
+        </div>
+
+        <!-- 3 · Profile setup -->
+        <div class="ob-slide ob-slide-form">
+          <div class="ob-h">Set up your profile</div>
+          <div class="ob-p" style="margin-top:6px;">You can change any of this later.</div>
+          <div class="ob-prev" id="ob-prev">
+            <div class="ob-pcover" id="ob-pcover"></div>
+            <div class="pa" id="ob-pa"></div>
+            <div class="pn" id="ob-pn">Your name</div>
+            <div class="ph" id="ob-ph">@username</div>
+          </div>
+          <div class="ob-lbl">Name</div>
+          <input class="ob-name" id="ob-name" type="text" placeholder="e.g. Ryan Ladd" autocomplete="off" oninput="obRender()">
+          <div class="ob-lbl">Username</div>
+          <div class="ob-at"><span>@</span><input class="ob-name" id="ob-user" type="text" placeholder="username" autocomplete="off" autocapitalize="none" spellcheck="false" oninput="obCleanUser()"></div>
+          <div class="ob-lbl">Profile picture</div>
+          <label class="ob-up round" id="ob-up-ava"><input type="file" accept="image/*" onchange="obUpload(this,'ava')"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></label>
+          <div class="ob-lbl">Travel cover photo</div>
+          <label class="ob-up wide" id="ob-up-cover"><input type="file" accept="image/*" onchange="obUpload(this,'cover')"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Upload a photo</span></label>
+          <div class="ob-lbl">Profile color theme</div>
+          <div class="ob-pals" id="ob-pals"></div>
+          <div class="ob-lbl">Email</div>
+          <input class="ob-name" id="ob-email" type="email" placeholder="you@example.com" autocomplete="off">
+          <div class="ob-lbl">Phone number</div>
+          <input class="ob-name" id="ob-phone" type="tel" placeholder="(555) 123-4567" autocomplete="off">
+          <div style="height:20px;flex-shrink:0;"></div>
+        </div>
+
+        <!-- 4 · Verify email -->
+        <div class="ob-slide">
+          <div class="ob-mail" id="ob-mail"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg></div>
+          <div class="ob-h">Check your email</div>
+          <div class="ob-p">We sent a 6-digit code to <span class="ob-to" id="ob-ve">your email</span>. Enter it below to verify it's you.</div>
+          <div class="ob-code" id="ob-code">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" oninput="obCodeIn(this,0)" onkeydown="obCodeKey(event,0)" onpaste="obCodePaste(event)">
+            <input type="text" inputmode="numeric" maxlength="1" oninput="obCodeIn(this,1)" onkeydown="obCodeKey(event,1)" onpaste="obCodePaste(event)">
+            <input type="text" inputmode="numeric" maxlength="1" oninput="obCodeIn(this,2)" onkeydown="obCodeKey(event,2)" onpaste="obCodePaste(event)">
+            <input type="text" inputmode="numeric" maxlength="1" oninput="obCodeIn(this,3)" onkeydown="obCodeKey(event,3)" onpaste="obCodePaste(event)">
+            <input type="text" inputmode="numeric" maxlength="1" oninput="obCodeIn(this,4)" onkeydown="obCodeKey(event,4)" onpaste="obCodePaste(event)">
+            <input type="text" inputmode="numeric" maxlength="1" oninput="obCodeIn(this,5)" onkeydown="obCodeKey(event,5)" onpaste="obCodePaste(event)">
+          </div>
+          <div class="ob-hint" id="ob-hint">Wrong email? <a onclick="obStep=2;obRender()">Edit it</a><br>Demo: any 6 digits will work.</div>
+        </div>
+
+        <!-- 5 · First trip -->
+        <div class="ob-slide">
+          <div class="ob-end" style="background-image:url('Photos/Australia.jpg');"><div class="ob-end-t"><small>Your first itin</small>Where to first?</div></div>
+          <div class="ob-h" style="margin-top:20px;" id="ob-end-h">You're all set.</div>
+          <div class="ob-steps">
+            <div class="ob-step"><b>1</b>Name your trip and pick dates</div>
+            <div class="ob-step"><b>2</b>Add your travel crew</div>
+            <div class="ob-step"><b>3</b>Start filling in the days</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="ob-foot">
+      <button class="ob-btn" id="ob-next" onclick="obNext()">Get started</button>
+      <button class="ob-btn2" id="ob-alt" onclick="obAlt()">I already have an account</button>
     </div>
   </div>
 
@@ -1291,58 +1532,41 @@
   <div class="sheet-scrim" id="type-scrim" onclick="closeTypeSheet()"></div>
   <div class="sheet" id="type-sheet">
     <div class="sheet-grab"></div>
-    <div class="sheet-title" id="type-sheet-title">Add element</div>
-    <div class="type-grid" id="type-grid"></div>
-    <div id="add-fields" style="display:none;">
-      <div class="ef-label">Day</div>
-      <select class="ef-input ef-select" id="af-day"></select>
-      <div class="ef-label">Name</div>
-      <input class="ef-input" id="af-name" type="text">
-      <div id="af-details-group">
-        <div class="ef-label">Details</div>
-        <input class="ef-input" id="af-details" type="text" placeholder="Add details…">
+    <div id="add-fields">
+      <div class="ef-label" style="margin-top:6px;">Name</div>
+      <input class="ef-input" id="nf-name" type="text" placeholder="e.g. Dinner at Fantino" autocomplete="off">
+
+      <div class="ef-label">Location</div>
+      <div class="nf-loc">
+        <input class="ef-input" id="nf-loc" type="text" placeholder="Search places or addresses" autocomplete="off" oninput="nfLocInput()">
+        <span class="nf-loc-pin" id="nf-loc-pin"><svg viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span>
+        <div class="nf-results" id="nf-results"></div>
+        <div class="nf-loc-sub" id="nf-loc-sub"></div>
       </div>
-      <div id="af-type-fields"></div>
+
       <div class="ef-row">
-        <div class="ef-col" id="af-location-col">
-          <div class="ef-label">Location Name</div>
-          <input class="ef-input" id="af-location" type="text">
+        <div class="ef-col">
+          <div class="ef-label">Date</div>
+          <select class="ef-input ef-select" id="nf-day"></select>
         </div>
-        <div class="ef-col" id="af-address-col">
-          <div class="ef-label">Address</div>
-          <input class="ef-input" id="af-address" type="text">
-        </div>
-      </div>
-      <div class="ef-row">
-        <div class="ef-col" id="af-status-col">
-          <div class="ef-label">Booking Status</div>
-          <select class="ef-input ef-select" id="af-status">
-            <option value="">—</option>
-            <option value="idea">Idea</option>
-            <option value="planned">Planned</option>
-            <option value="booked">Booked</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <div class="ef-col" id="af-confirm-col">
-          <div class="ef-label">Confirmation Number</div>
-          <input class="ef-input" id="af-confirm" type="text">
+        <div class="ef-col">
+          <div class="ef-label">Time</div>
+          <input class="ef-input" id="nf-time" type="time">
         </div>
       </div>
-      <div class="ef-row">
-        <div class="ef-col" id="af-cost-col">
-          <div class="ef-label">Cost</div>
-          <input class="ef-input" id="af-cost" type="text">
-        </div>
-        <div class="ef-col" id="af-link-col">
-          <div class="ef-label">Link</div>
-          <input class="ef-input" id="af-link" type="text">
-        </div>
-      </div>
-      <div class="ef-label">Photos</div>
-      <div class="ef-photos" id="af-photos"></div>
-      <input type="file" id="af-file" accept="image/*" multiple hidden>
+
+      <div class="ef-label">Category</div>
+      <div class="nf-cat-box" id="nf-cat-box" onclick="nfToggleList()"></div>
+      <div class="nf-cat-list" id="nf-cat-list"></div>
+
+      <label class="ef-checkbox nf-res-check"><input type="checkbox" id="nf-reserved"> Reservation</label>
+
+      <div class="ef-label">Confirmation number</div>
+      <input class="ef-input" id="nf-confirm" type="text" autocomplete="off">
+
+      <div class="ef-label">Notes</div>
+      <textarea class="ef-input nf-notes" id="nf-notes" rows="3" placeholder="Anything worth remembering…"></textarea>
+
       <div class="filter-actions">
         <button class="filter-clear" onclick="closeTypeSheet()">Cancel</button>
         <button class="filter-apply" onclick="saveAddElement()">Add</button>
@@ -1839,28 +2063,18 @@ document.querySelectorAll('#filter-sheet .chip').forEach(chip=>{
   });
 });
 
-// --- Add element (type picker → detail sheet) ---
-// A day's "+ Add element" opens the same type-picker menu as the itin's + button,
-// remembering which day was clicked so the detail sheet defaults to that day.
-let pendingAddBtn=null, pendingAddType=null, pendingAddDayIdx=-1, addPhotos=[];
+// --- Add element: one universal form (name, location search, date, time, category tags,
+// reservation, confirmation number, notes). A day's "+ Add element" remembers which day was
+// clicked so the Date defaults to it; the itin's + button uses the active day. ---
+let pendingAddBtn=null, pendingAddDayIdx=-1;
 function addElement(btn){ pendingAddBtn=btn; openTypeSheet(); }
 
 // The faint "+" beside a day's city chips — jumps straight to the City fields for that day,
 // skipping the type grid since the type is already implied.
 function addCityToDay(el){
   const screen=activeTrip();
-  const daySec=el.closest('.day-sec');
   pendingAddBtn=null;
-  pendingAddDayIdx=dayIndexOf(screen,daySec);
-  pendingAddType=ELEMENT_TYPES.find(x=>x.key==='city');
-  // Configure + swap to the fields view BEFORE the sheet starts its show transition, so its
-  // height is already final when the transform animation begins (never changes mid-transition).
-  showAddFields();
-  document.getElementById('type-scrim').classList.add('show');
-  document.getElementById('type-sheet').classList.add('show');
-  // Wait for the open transition to finish before focusing — focusing a field while its sheet
-  // is still off-screen makes the browser scroll-into-view immediately, jumping the whole page.
-  setTimeout(()=>document.getElementById('af-name').focus(), 320);
+  openTypeSheet(['city'],dayIndexOf(screen,el.closest('.day-sec')));
 }
 
 // --- Invite / Share bottom sheet ---
@@ -2153,138 +2367,141 @@ function primaryTimeValue(typeKey,values){
   return f?(values[f.key]||''):'';
 }
 
-function buildTypeSheet(){
-  const g=document.getElementById('type-grid');
-  if(!g) return;
-  const item=t=>'<div class="type-item" onclick="pickType(\''+t.key+'\')"><div class="type-ic" style="background:'+t.bg+';color:'+t.fg+';"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div><div class="type-name">'+t.label+'</div></div>';
-  // City + Accommodation on the first row, then a divider, then the rest
-  g.innerHTML=ELEMENT_TYPES.slice(0,2).map(item).join('')+'<div class="type-divider"></div>'+ELEMENT_TYPES.slice(2).map(item).join('');
-}
+let nfCats=[], nfPlace=null, nfResults=[], nfSearchT=null, nfSearchSeq=0, nfListOpen=false;
 function openAddMenu(){ pendingAddBtn=null; openTypeSheet(); } // itin + button → active day
-function openTypeSheet(){
-  // Always start on the type grid — pickType() swaps this same sheet to the detail fields in place,
-  // so reset back in case it was left mid-form from a previous open.
-  document.getElementById('type-grid').style.display='';
-  document.getElementById('add-fields').style.display='none';
-  document.getElementById('type-sheet-title').textContent='Add element';
-  document.getElementById('type-scrim').classList.add('show');
-  document.getElementById('type-sheet').classList.add('show');
-}
-function closeTypeSheet(){
-  document.getElementById('type-scrim').classList.remove('show');
-  document.getElementById('type-sheet').classList.remove('show');
-  pendingAddBtn=null; pendingAddType=null;
-}
 function dayIndexOf(screen,daySec){ return [...screen.querySelectorAll('.day-sec')].indexOf(daySec); }
 function activeDayIndex(screen){
   const chips=[...screen.querySelectorAll('.dc')];
   let idx=chips.indexOf(screen.querySelector('.dc.on'));
   return idx<0?0:idx;
 }
-function pickType(key){
-  const t=ELEMENT_TYPES.find(x=>x.key===key); if(!t) return;
+function openTypeSheet(cats,dayIdx){
   const screen=activeTrip();
-  pendingAddDayIdx = pendingAddBtn ? dayIndexOf(screen,pendingAddBtn.closest('.day-sec')) : activeDayIndex(screen);
-  pendingAddType=t;
-  showAddFields();
-  // Safe to focus immediately here — the sheet is already open and settled (the grid was visible
-  // before this swap), so the field is already on-screen at its final position.
-  document.getElementById('af-name').focus();
+  pendingAddDayIdx = (typeof dayIdx==='number') ? dayIdx : (pendingAddBtn ? dayIndexOf(screen,pendingAddBtn.closest('.day-sec')) : activeDayIndex(screen));
+  nfCats=(cats||[]).slice(); nfPlace=null; nfResults=[]; nfListOpen=false;
+  ['nf-name','nf-loc','nf-time','nf-confirm','nf-notes'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('nf-reserved').checked=false;
+  document.getElementById('nf-results').style.display='none';
+  document.getElementById('nf-loc-pin').classList.remove('on');
+  const sub=document.getElementById('nf-loc-sub'); sub.style.display='none'; sub.textContent='';
+  nfRenderCats();
+  nfPopulateDays();
+  document.getElementById('type-scrim').classList.add('show');
+  document.getElementById('type-sheet').classList.add('show');
+  // Wait for the open transition before focusing, or the browser scrolls the page to the off-screen field.
+  setTimeout(()=>document.getElementById('nf-name').focus({preventScroll:true}),320);
 }
-buildTypeSheet();
-
-// --- Add element detail fields: Day (so the element can be moved/sorted) + type-specific fields.
-// Swaps in place inside the same #type-sheet rather than opening a second sheet. ---
-function populateDaySelect(){
-  const screen=activeTrip();
-  const sel=document.getElementById('af-day');
-  const days=[...screen.querySelectorAll('.dh-date')].map(d=>d.textContent.trim());
+function closeTypeSheet(){
+  document.getElementById('type-scrim').classList.remove('show');
+  document.getElementById('type-sheet').classList.remove('show');
+  pendingAddBtn=null;
+}
+function nfPopulateDays(){
+  const sel=document.getElementById('nf-day');
+  const days=[...activeTrip().querySelectorAll('.dh-date')].map(d=>d.textContent.trim());
   sel.innerHTML=days.map((d,i)=>'<option value="'+i+'">'+d+'</option>').join('');
   sel.value=String(pendingAddDayIdx>=0?pendingAddDayIdx:0);
 }
-function showAddFields(){
-  const t=pendingAddType; if(!t) return;
-  document.getElementById('type-sheet-title').textContent='Add '+t.label;
-  document.getElementById('af-type-fields').innerHTML=renderTypeFieldsHTML(t.key,'af',{});
-  applyUniversalFieldVisibility('af',t.key);
-  ['af-name','af-details','af-location','af-address','af-confirm','af-cost','af-link'].forEach(id=>{ document.getElementById(id).value=''; });
-  document.getElementById('af-status').value='';
-  addPhotos=[];
-  renderAfPhotos();
-  populateDaySelect();
-  document.getElementById('type-grid').style.display='none';
-  document.getElementById('add-fields').style.display='block';
+
+// Category = tags: tap the field to open every element type, tick as many as apply
+function nfRenderCats(){
+  const box=document.getElementById('nf-cat-box');
+  box.innerHTML=nfCats.length
+    ? nfCats.map(k=>{ const t=ELEMENT_TYPES.find(x=>x.key===k); return '<span class="nf-tag" style="background:'+t.bg+';color:'+t.fg+';"><svg viewBox="0 0 24 24">'+t.icon+'</svg>'+t.label+'<i onclick="nfToggleCat(\''+k+'\',event)">✕</i></span>'; }).join('')
+    : '<span class="nf-ph">Select categories</span>';
+  document.getElementById('nf-cat-list').innerHTML=ELEMENT_TYPES.map(t=>
+    '<div class="nf-opt'+(nfCats.includes(t.key)?' on':'')+'" onclick="nfToggleCat(\''+t.key+'\',event)"><div class="type-ic" style="background:'+t.bg+';color:'+t.fg+';"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div>'+t.label+'<b>✓</b></div>').join('');
+  document.getElementById('nf-cat-list').style.display=nfListOpen?'block':'none';
 }
-function renderAfPhotos(){
-  const wrap=document.getElementById('af-photos');
-  const esc=s=>(s||'').replace(/"/g,'&quot;');
-  wrap.innerHTML=addPhotos.map((p,i)=>
-    '<div class="ef-pt">'+
-      (p.type==='img'
-        ?'<img src="'+esc(p.src)+'" alt="'+esc(p.alt)+'">'
-        :'<div class="ef-pt-ph" style="background:'+esc(p.bg)+';" title="'+esc(p.title)+'"></div>')+
-      '<span class="ef-pt-x" onclick="afRemovePhoto(event,'+i+')">✕</span>'+
-    '</div>').join('')+
-    (addPhotos.length<4?'<button class="ef-add" onclick="afAddPhoto()" aria-label="Add photo">+</button>':'');
+function nfToggleList(){ nfListOpen=!nfListOpen; document.getElementById('nf-cat-list').style.display=nfListOpen?'block':'none'; }
+function nfToggleCat(k,e){
+  if(e) e.stopPropagation();
+  nfCats=nfCats.includes(k)?nfCats.filter(x=>x!==k):nfCats.concat(k);
+  nfRenderCats();
 }
-function afRemovePhoto(e,i){ e.stopPropagation(); addPhotos.splice(i,1); renderAfPhotos(); }
-function afAddPhoto(){ document.getElementById('af-file').click(); }
-document.getElementById('af-file').addEventListener('change',function(){
-  [...this.files].slice(0,4-addPhotos.length).forEach(f=>{
-    const r=new FileReader();
-    r.onload=()=>{ addPhotos.push({type:'img',src:r.result,alt:f.name.replace(/\.[^.]+$/,'')}); renderAfPhotos(); };
-    r.readAsDataURL(f);
-  });
-  this.value='';
-});
+
+// Location = real maps search (Photon / OpenStreetMap data, no key needed)
+function nfLocInput(){
+  const q=document.getElementById('nf-loc').value.trim();
+  nfPlace=null; document.getElementById('nf-loc-pin').classList.remove('on');
+  const sub=document.getElementById('nf-loc-sub'); sub.style.display='none';
+  clearTimeout(nfSearchT);
+  const res=document.getElementById('nf-results');
+  if(q.length<2){ res.style.display='none'; return; }
+  nfSearchT=setTimeout(()=>nfSearch(q),350);
+}
+async function nfSearch(q){
+  const seq=++nfSearchSeq, res=document.getElementById('nf-results');
+  res.style.display='block'; res.innerHTML='<div class="nf-res-msg">Searching…</div>';
+  try{
+    const r=await fetch('https://photon.komoot.io/api/?limit=5&lang=en&q='+encodeURIComponent(q));
+    const d=await r.json();
+    if(seq!==nfSearchSeq) return;
+    nfResults=(d.features||[]).map(f=>{
+      const p=f.properties||{};
+      const street=[p.housenumber,p.street].filter(Boolean).join(' ');
+      const name=p.name||street||p.city||'';
+      const addr=[street&&street!==name?street:'',p.city||p.county||p.district,p.state,p.country].filter(Boolean).join(', ');
+      return {name:name,addr:addr,lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]};
+    }).filter(x=>x.name);
+    res.innerHTML=nfResults.length
+      ? nfResults.map((x,i)=>'<div class="nf-res" onclick="nfPick('+i+')"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg><div><b>'+nfEsc(x.name)+'</b><small>'+nfEsc(x.addr)+'</small></div></div>').join('')
+      : '<div class="nf-res-msg">No places found. Your text will be saved as typed.</div>';
+  }catch(e){
+    if(seq===nfSearchSeq) res.innerHTML='<div class="nf-res-msg">Map search needs an internet connection. Your text will be saved as typed.</div>';
+  }
+}
+function nfEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function nfPick(i){
+  nfPlace=nfResults[i]; if(!nfPlace) return;
+  document.getElementById('nf-loc').value=nfPlace.name;
+  document.getElementById('nf-results').style.display='none';
+  document.getElementById('nf-loc-pin').classList.add('on');
+  const sub=document.getElementById('nf-loc-sub'); sub.textContent=nfPlace.addr; sub.style.display=nfPlace.addr?'block':'none';
+}
+function nfFmtTime(t){
+  const m=/^(\d{1,2}):(\d{2})/.exec(t||''); if(!m) return '';
+  let h=parseInt(m[1],10); const ap=h>=12?'PM':'AM'; h=h%12||12;
+  return h+':'+m[2]+' '+ap;
+}
+
 function saveAddElement(){
-  const t=pendingAddType; if(!t) return closeTypeSheet();
-  const name=document.getElementById('af-name').value.trim();
+  const name=document.getElementById('nf-name').value.trim();
   if(!name){ toast('Add a name to save this element'); return; }
-  const details=document.getElementById('af-details').value.trim();
-  const typeValues=readTypeFieldValues(t.key,'af');
-  const location=document.getElementById('af-location').value.trim();
-  const address=document.getElementById('af-address').value.trim();
-  const status=document.getElementById('af-status').value;
-  const confirm=document.getElementById('af-confirm').value.trim();
-  const cost=document.getElementById('af-cost').value.trim();
-  const link=document.getElementById('af-link').value.trim();
+  const cats=nfCats.length?nfCats.slice():['misc'];
+  const t=ELEMENT_TYPES.find(x=>x.key===cats[0]);
+  const loc=document.getElementById('nf-loc').value.trim();
+  const place=(nfPlace&&nfPlace.name===loc)?nfPlace:null;
+  const timeStr=nfFmtTime(document.getElementById('nf-time').value);
+  const reserved=document.getElementById('nf-reserved').checked;
+  const confirm=document.getElementById('nf-confirm').value.trim();
+  const notes=document.getElementById('nf-notes').value.trim();
   const screen=activeTrip();
   const days=[...screen.querySelectorAll('.day-sec')];
-  const dayIdx=parseInt(document.getElementById('af-day').value,10)||0;
+  const dayIdx=parseInt(document.getElementById('nf-day').value,10)||0;
   const day=days[dayIdx]; const btn=day&&day.querySelector('.add-btn');
   if(!btn) return closeTypeSheet();
-  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  const esc=nfEsc;
   const meta=[];
-  const time=primaryTimeValue(t.key,typeValues);
-  if(time) meta.push({k:'time',v:time});
-  if(status) meta.push({k:STATUS_COLORS[status]||'tag',v:STATUS_LABELS[status]||status});
-  if(link) meta.push({k:'link',v:link});
+  if(timeStr) meta.push({k:'time',v:timeStr});
+  if(reserved) meta.push({k:'green',v:'Reservation'});
+  cats.forEach(k=>{ const ct=ELEMENT_TYPES.find(x=>x.key===k); if(ct) meta.push({k:'tag',v:ct.label}); });
   const card=document.createElement('div');
   card.className='ec';
   card.dataset.type=t.key;
-  card.dataset.fields=JSON.stringify(Object.assign({},typeValues,{location_name:location,address:address,booking_status:status,confirmation_number:confirm,cost_amount:cost,url:link}));
+  card.dataset.tags=cats.join(',');
+  card.dataset.fields=JSON.stringify({location_name:loc,address:place?place.addr:'',latitude:place?place.lat:'',longitude:place?place.lng:'',time:timeStr,reservation:reserved,booking_status:reserved?'booked':'',confirmation_number:confirm,notes:notes,tags:cats});
   if(confirm) card.dataset.copy=confirm;
-  const topLabelKey=TOP_LABEL_FIELD[t.key];
-  const topLabelVal=topLabelKey?typeValues[topLabelKey]:'';
   card.innerHTML='<div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24">'+t.icon+'</svg></div>'+
     '<div class="einfo">'+
-    (topLabelVal?'<div class="meal-label">'+esc(topLabelVal)+'</div>':'')+
     '<div class="en">'+esc(name)+'</div>'+
-    (details?'<div class="ed">'+esc(details)+'</div>':'')+
+    (loc?'<div class="ed">'+esc(loc)+'</div>':'')+
+    (notes?'<div class="ed">'+esc(notes)+'</div>':'')+
     (meta.length?'<div class="em">'+meta.map(chipHTML).join('')+'</div>':'')+
     '</div><div class="ea"><span class="hb"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span class="sb">★</span><span class="drag-icon">⠿</span></div></div>';
-  if(addPhotos.length){
-    const ptRow=document.createElement('div');
-    ptRow.className='photo-tiles';
-    ptRow.innerHTML=addPhotos.map(p=>p.type==='img'
-      ?'<img class="pt" src="'+esc(p.src)+'" alt="'+esc(p.alt)+'">'
-      :'<div class="pt pt-ph" style="background:'+esc(p.bg)+';" title="'+esc(p.title)+'"></div>').join('');
-    card.appendChild(ptRow);
-  }
   btn.parentNode.insertBefore(card,btn);
   closeTypeSheet();
-  toast(t.label+' added');
+  toast((cats.length>1?'Element':t.label)+' added');
   card.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
@@ -2530,9 +2747,7 @@ function showExploreMap(){
 }
 function initExploreMap(){
   exploreMap=L.map('explore-map',{zoomControl:false,attributionControl:true,worldCopyJump:true,zoomSnap:0,minZoom:1});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-    subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'
-  }).addTo(exploreMap);
+  addBaseMap(exploreMap);
   EXPLORE_REGIONS.forEach(r=>{
     const icon=L.divIcon({className:'',iconSize:[44,44],iconAnchor:[22,22],
       html:'<div class="reg-badge"><div class="reg-count">'+r.itins.length+'</div></div>'});
@@ -2657,6 +2872,170 @@ function openNewItin(){
   refreshCreateBtn();
   go('s-new');
 }
+// --- Onboarding (welcome → tour → profile → first trip) ---
+const OB_PALS=[
+  {key:'classic',name:'Classic',bg:'#ffffff',fg:'#1a1a1a'},
+  {key:'wanderlust',name:'Wander',bg:'#2A1342',fg:'#D2E8FF'},
+  {key:'cozy',name:'Cozy',bg:'#F7F2B6',fg:'#4C2719'},
+  {key:'nature',name:'Nature',bg:'#454F2A',fg:'#F0F5CE'}
+];
+let obStep=0, obCard=0, obAva=null, obCover=null, obPal='classic';
+function obStart(){
+  obStep=0; obCard=0; obAva=null; obCover=null; obPal='classic';
+  ['ob-name','ob-user','ob-email','ob-phone'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('#s-onboard .ob-up input').forEach(i=>i.value='');
+  obClearCode();
+  document.getElementById('ob-cards').scrollLeft=0;
+  document.getElementById('ob-track').style.transition='none';
+  go('s-onboard'); obRender(); 
+  void document.getElementById('ob-track').offsetWidth;
+  document.getElementById('ob-track').style.transition='';
+}
+// Light-gray basemap (Esri, no API key). Carto's free tiles now show an "API KEY REQUIRED" watermark.
+function addBaseMap(map){
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19,attribution:'Tiles &copy; Esri'}).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19}).addTo(map);
+}
+// Tour card 3: mini Pacific Coast map (reuses the trip map's pins + route)
+let obMap=null, obMapLayer=null;
+const OB_MAP_DAYS=['Fri','Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+function obInitMap(){
+  if(obMap||!window.L||typeof MAP_PINS==='undefined') return;
+  obMap=L.map('ob-map',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,tap:false});
+  addBaseMap(obMap);
+  obMapLayer=L.layerGroup().addTo(obMap);
+  document.getElementById('ob-mchips').innerHTML=OB_MAP_DAYS.map((l,i)=>'<button class="ob-mchip" onclick="obMapDay('+i+')">'+l+'</button>').join('');
+  obMapDay(3);
+}
+// One day at a time: numbered stops joined in schedule order
+function obMapDay(day){
+  if(!obMap) return;
+  document.querySelectorAll('#ob-mchips .ob-mchip').forEach((c,i)=>c.classList.toggle('on',i===day));
+  obMapLayer.clearLayers();
+  const pts=[];
+  MAP_PINS.filter(p=>p[0]===day).forEach((pin,n)=>{
+    const t=PIN_TYPES[pin[1]], ll=[pin[4],pin[5]];
+    pts.push(ll);
+    L.marker(ll,{interactive:false,icon:L.divIcon({className:'',html:'<div class="map-pin sm" style="background:'+t.c+';">'+(n+1)+'</div>',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(obMapLayer);
+  });
+  L.polyline(pts,{color:'#E34234',weight:2.5,opacity:0.75,dashArray:'1 7',lineCap:'round'}).addTo(obMapLayer);
+  obMap.invalidateSize();
+  obMap.fitBounds(L.latLngBounds(pts),{paddingTopLeft:[30,56],paddingBottomRight:[30,26],maxZoom:14,animate:false});
+}
+function obRender(){
+  document.getElementById('ob-track').style.transform='translateX(-'+(obStep*20)+'%)';
+  document.querySelectorAll('#ob-dots .ob-dot').forEach((d,i)=>d.classList.toggle('on',i===obStep));
+  document.querySelectorAll('#ob-cdots i').forEach((d,i)=>d.classList.toggle('on',i===obCard));
+  document.getElementById('ob-back').classList.toggle('hide',obStep===0);
+  document.getElementById('ob-skip').classList.toggle('hide',obStep===0||obStep>=3);
+  const nx=document.getElementById('ob-next'), alt=document.getElementById('ob-alt');
+  alt.classList.remove('hide');
+  if(obStep===0){ nx.textContent='Get started'; alt.textContent='I already have an account'; }
+  else if(obStep===1){ nx.textContent=obCard<2?'Next':'Continue'; alt.classList.add('hide'); }
+  else if(obStep===2){ nx.textContent='Continue'; alt.classList.add('hide'); }
+  else if(obStep===3){ nx.textContent='Verify email'; alt.textContent='Resend code'; }
+  else { nx.textContent='Create my first trip'; alt.textContent="I'll do this later"; }
+  document.getElementById('ob-ve').textContent=document.getElementById('ob-email').value.trim()||'your email';
+  if(obStep===1&&obCard===2&&!obMap) setTimeout(function(){ obInitMap(); },450);
+  // profile slide
+  const nm=document.getElementById('ob-name').value.trim();
+  document.getElementById('ob-pn').textContent=nm||'Your name';
+  const first=nm.split(/\s+/)[0];
+  document.getElementById('ob-end-h').textContent=first?("You're all set, "+first+"."):"You're all set.";
+  const pa=document.getElementById('ob-pa');
+  pa.style.backgroundImage=obAva?"url('"+obAva+"')":'none';
+  const pc=document.getElementById('ob-pcover');
+  pc.style.backgroundImage=obCover?"url('"+obCover+"')":'none';
+  const un=document.getElementById('ob-user').value;
+  document.getElementById('ob-ph').textContent='@'+(un||'username');
+  const pal=OB_PALS.find(p=>p.key===obPal), pv=document.getElementById('ob-prev');
+  pv.style.background=pal.bg; pv.style.color=pal.fg; pv.style.borderColor=pal.key==='classic'?'#ececec':pal.bg;
+  pv.style.setProperty('--ob-pv',pal.bg);
+  document.getElementById('ob-pals').innerHTML=OB_PALS.map(p=>
+    '<div class="ob-pal'+(p.key===obPal?' on':'')+'" style="background:'+p.bg+';color:'+p.fg+'" onclick="obPickPal(\''+p.key+'\')">'+p.name+'</div>').join('');
+}
+function obCleanUser(){
+  const u=document.getElementById('ob-user');
+  u.value=u.value.replace(/^@+/,'').replace(/[^A-Za-z0-9_.]/g,'').toLowerCase();
+  obRender();
+}
+function obUpload(input,kind){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=function(){
+    const url=r.result;
+    if(kind==='ava') obAva=url; else obCover=url;
+    const box=document.getElementById(kind==='ava'?'ob-up-ava':'ob-up-cover');
+    box.style.backgroundImage="url('"+url+"')"; box.classList.add('has');
+    obRender();
+  };
+  r.readAsDataURL(f);
+}
+// --- Email verification (6-digit code; any 6 digits pass in the wireframe) ---
+function obBoxes(){ return [...document.querySelectorAll('#ob-code input')]; }
+function obClearCode(){
+  obBoxes().forEach(b=>{ b.value=''; b.classList.remove('filled'); });
+  ['ob-code'].forEach(id=>document.getElementById(id).classList.remove('err','ok'));
+  document.getElementById('ob-mail').classList.remove('ok');
+}
+function obFocusCode(){ setTimeout(function(){ const b=obBoxes().find(x=>!x.value)||obBoxes()[0]; b.focus({preventScroll:true}); },500); }
+function obCodeIn(el,i){
+  el.value=el.value.replace(/\D/g,'').slice(-1);
+  el.classList.toggle('filled',!!el.value);
+  document.getElementById('ob-code').classList.remove('err');
+  if(el.value&&i<5) obBoxes()[i+1].focus({preventScroll:true});
+}
+function obCodeKey(e,i){
+  const b=obBoxes();
+  if(e.key==='Backspace'&&!b[i].value&&i>0){ b[i-1].value=''; b[i-1].classList.remove('filled'); b[i-1].focus({preventScroll:true}); }
+  else if(e.key==='ArrowLeft'&&i>0) b[i-1].focus({preventScroll:true});
+  else if(e.key==='ArrowRight'&&i<5) b[i+1].focus({preventScroll:true});
+  else if(e.key==='Enter') obVerify();
+}
+function obCodePaste(e){
+  const d=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,6);
+  if(!d) return; e.preventDefault();
+  obBoxes().forEach((b,i)=>{ b.value=d[i]||''; b.classList.toggle('filled',!!b.value); });
+  obBoxes()[Math.min(d.length,5)].focus({preventScroll:true});
+}
+function obVerify(){
+  const full=obBoxes().every(b=>b.value);
+  const wrap=document.getElementById('ob-code');
+  if(!full){ wrap.classList.remove('err'); void wrap.offsetWidth; wrap.classList.add('err'); toast('Enter the 6-digit code'); return; }
+  wrap.classList.add('ok'); document.getElementById('ob-mail').classList.add('ok');
+  document.getElementById('ob-next').textContent='Verified ✓';
+  setTimeout(function(){ obStep=4; obRender(); },700);
+}
+function obRefresh(){ obRender(); }
+function obPickPal(k){ obPal=k; obRender(); }
+function obCardScroll(){
+  const c=document.getElementById('ob-cards');
+  const i=Math.round(c.scrollLeft/c.clientWidth);
+  if(i!==obCard){ obCard=i; obRender(); }
+}
+function obShowCard(i){ const c=document.getElementById('ob-cards'); c.scrollTo({left:i*c.clientWidth,behavior:'smooth'}); }
+function obNext(){
+  if(obStep===1 && obCard<2){ obCard++; obShowCard(obCard); obRender(); return; }
+  if(obStep===3){ obVerify(); return; }
+  if(obStep===4){ obFinish(true); return; }
+  obStep++; obRender();
+  if(obStep===3) obFocusCode();
+}
+function obBack(){
+  if(obStep===1 && obCard>0){ obCard--; obShowCard(obCard); obRender(); return; }
+  if(obStep>0){ obStep--; obRender(); }
+}
+function obSkip(){ obStep=obStep===1?2:3; obRender(); if(obStep===3) obFocusCode(); }
+function obAlt(){
+  if(obStep===0){ toast('Sign-in is not part of this wireframe'); obFinish(false); }
+  else if(obStep===3){ toast('New code sent'); obClearCode(); obFocusCode(); }
+  else if(obStep===4){ obFinish(false); }
+}
+function obFinish(createTrip){
+  if(createTrip) openNewItin(); else go('s-home');
+}
+if(location.hash==='#onboarding') obStart();
+
 function avaFill(p){ // background style + optional initial glyph for a round avatar
   if(p.pic) return { style:"background-image:url('"+p.pic+"')", inner:'' };
   return { style:"background-color:"+(p.color||'#777'), inner:'<span class="init-txt">'+p.name.trim().charAt(0).toUpperCase()+'</span>' };
@@ -2931,9 +3310,7 @@ function closeMap(){ document.getElementById('map-view').classList.remove('show'
 
 function initTripMap(){
   tripMap=L.map('map-canvas',{zoomControl:false,attributionControl:true});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-    subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'
-  }).addTo(tripMap);
+  addBaseMap(tripMap);
   mapRouteLine=L.polyline(MAP_ROUTE,{color:'#E34234',weight:2.5,opacity:0.75,dashArray:'1 7',lineCap:'round'}).addTo(tripMap);
   mapMarkers=MAP_PINS.map(pin=>{
     const[day,type,name,note,lat,lng]=pin;
