@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itin load screen — loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap">
+<style>
+  :root { --bg: #ffffff; --fg: #1a1a1a; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--fg); transition: background 0.3s ease, color 0.3s ease; font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  svg { width: min(520px, 80vw); height: auto; overflow: visible; }
+  .line { fill: none; stroke: var(--fg); stroke-width: 30; stroke-miterlimit: 10; transition: stroke 0.3s ease; }
+  .dot { fill: var(--fg); transform-box: fill-box; transform-origin: center; transition: fill 0.3s ease; }
+
+  /* feedback controls (they pick up the theme colors) */
+  .themes { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
+  .theme { display: flex; align-items: center; gap: 8px; font-family: inherit; font-weight: 700; font-size: 12px; color: var(--fg); background: transparent; border: 1px solid color-mix(in srgb, var(--fg) 22%, var(--bg)); border-radius: 999px; padding: 5px 12px 5px 6px; cursor: pointer; }
+  .theme.on { border-color: var(--fg); }
+  .theme i { width: 22px; height: 22px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent); display: flex; align-items: center; justify-content: center; }
+  .theme i b { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .bar { width: min(560px, 92vw); margin-bottom: 28px; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--fg) 14%, var(--bg)); border-radius: 18px; display: flex; align-items: center; gap: 12px; background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
+  .bar button, .bar select { font-family: inherit; font-weight: 700; font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid color-mix(in srgb, var(--fg) 25%, var(--bg)); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .bar input[type=range] { flex: 1; min-width: 0; accent-color: var(--fg); }
+  .bar .t { font-size: 12px; color: color-mix(in srgb, var(--fg) 55%, var(--bg)); width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+  .hint { font-size: 12px; font-weight: 400; color: color-mix(in srgb, var(--fg) 50%, var(--bg)); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <svg id="logo" viewBox="330 450 420 160" xmlns="http://www.w3.org/2000/svg" aria-label="Itin">
+      <path id="r1" class="line" d="M356.43,514.72 c0,39.57 18.72,71.64 41.8,71.64 L397.73,586.37 c23.09,0 41.8,-32.08 41.8,-71.64 v-50.29"/>
+      <path id="r2" class="line" d="M439.53,514.72 c0,39.57 18.72,71.64 41.8,71.64 L481.34,586.36 C504.42,586.36 523.14,554.29 523.14,514.72"/>
+      <path id="r3" class="line" d="M523.59,514.89 C523.59,554.28 542.14,586.47 565.01,586.22 C585.71,585.99 594.42,558.01 594.42,558.01 C603.6,531.82 617.29,528.29 628.07,528.28 c10.96,0 20.75,10.3 27.17,26.42 c0,0 11.49,31.5 34.8,31.5 h6.4"/>
+      <line id="cross" class="line" x1="396.3" y1="529.29" x2="482.76" y2="501.83"/>
+      <circle id="d1" class="dot" cx="356.43" cy="489.05" r="15.1"/>
+      <circle id="d2" class="dot" cx="523.14" cy="489.05" r="15.1"/>
+      <circle id="d3" class="dot" cx="723.57" cy="586.2" r="15.1"/>
+    </svg>
+  </div>
+
+  <div class="hint">Looping. Pause and drag the slider to scrub through any moment.</div>
+  <div class="themes" id="variants"></div>
+  <div class="themes" id="themes"></div>
+  <div class="bar">
+    <button id="play">Pause</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0">
+    <span class="t" id="time">0.0s</span>
+    <select id="speed" aria-label="Speed">
+      <option value="0.5">0.5×</option>
+      <option value="0.75">0.75×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.5">1.5×</option>
+    </select>
+  </div>
+
+<script>
+// Color options
+const THEMES = [
+  { id: 'white', name: 'White',         bg: '#ffffff', fg: '#1a1a1a' },
+  { id: 'black', name: 'Black',         bg: '#000000', fg: '#ffffff' },
+  { id: 'cocoa', name: 'Cocoa + cream', bg: '#280e11', fg: '#fef5c2' }
+];
+const themesEl = document.getElementById('themes');
+let themeId = 'white';
+function updateHash(){ try { history.replaceState(null, '', '#' + themeId + '/' + variant); } catch(e) {} }
+function setTheme(id){
+  const th = THEMES.find(x => x.id === id) || THEMES[0];
+  themeId = th.id;
+  document.documentElement.style.setProperty('--bg', th.bg);
+  document.documentElement.style.setProperty('--fg', th.fg);
+  themesEl.querySelectorAll('.theme').forEach(b => b.classList.toggle('on', b.dataset.id === th.id));
+  updateHash();
+}
+themesEl.innerHTML = THEMES.map(th =>
+  '<button class="theme" data-id="' + th.id + '"><i style="background:' + th.bg + '"><b style="background:' + th.fg + '"></b></i>' + th.name + '</button>').join('');
+themesEl.addEventListener('click', e => { const b = e.target.closest('.theme'); if(b) setTheme(b.dataset.id); });
+
+// Timeline (ms at 1×) — same animation as the app's load screen, one loop cycle
+const DOT1_AT = 165;     // far-left dot appears first
+const LINE_AT = 550;     // line starts drawing
+const LINE_DUR_A = 2700; // version A: one continuous motion, dot → middle dot → last dot
+const LINE_DUR_B = 2455; // version B: 10% faster
+let LINE_DUR = LINE_DUR_A;
+const HOLD = 1430;       // finished logo holds
+const FADE = 550;        // fades out
+const GAP = 440;         // blank beat before the next loop
+const POP = 495;         // dot pop-in time
+const CROSS_DUR = 550;   // cross of the t draws in
+
+const pieces = ['r1','r2','r3'].map(id => document.getElementById(id));
+const lens = pieces.map(p => p.getTotalLength());
+const starts = [0, lens[0], lens[0] + lens[1]];
+const total = lens[0] + lens[1] + lens[2];
+const len2 = starts[2];                                   // the middle dot sits at the end of piece 2
+const cross = document.getElementById('cross');
+const crossLen = cross.getTotalLength();
+const dots = ['d1','d2','d3'].map(id => document.getElementById(id));
+const logo = document.getElementById('logo');
+
+pieces.forEach((p,i) => { p.style.strokeDasharray = lens[i] + ' ' + lens[i]; });
+cross.style.strokeDasharray = crossLen + ' ' + crossLen;
+
+// Even travel speed through both curves, with an easy start and a soft landing at the last dot
+const ACC = 0.2, DEC = 0.2, V = 1 / (1 - (ACC + DEC) / 2);
+function lineProgress(u){                                   // u: 0..1 of the line's travel time → 0..1 of its length
+  if(u <= 0) return 0; if(u >= 1) return 1;
+  if(u < ACC) return V * u * u / (2 * ACC);
+  if(u <= 1 - DEC) return V * (ACC / 2 + (u - ACC));
+  return 1 - V * (1 - u) * (1 - u) / (2 * DEC);
+}
+const easeOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+
+// moment the line reaches the middle dot (found numerically)
+let lo = 0, hi = 1;
+for(let i = 0; i < 40; i++){ const mid = (lo + hi) / 2; if(lineProgress(mid) * total < len2) lo = mid; else hi = mid; }
+const HI_DOT2 = hi;                                        // where in the line's travel time the middle dot sits
+const FINALE_DELAY = 400;                                  // version B: beat after the last dot, then middle dot + cross
+
+// Version A — dots land as the route passes them; the cross of the t comes in with the last dot.
+// Version B — first dot, the full line, the last dot… then the cross of the t draws in, then the middle dot pops.
+let variant = 'a', T_END = 0, T_DOT2 = 0, T_CROSS = 0, T_LAST = 0, CYCLE = 0;
+function setVariant(v){
+  variant = v === 'b' ? 'b' : 'a';
+  LINE_DUR = variant === 'b' ? LINE_DUR_B : LINE_DUR_A;
+  T_END = LINE_AT + LINE_DUR;                              // line reaches the last dot
+  if(variant === 'b'){ T_CROSS = T_END + FINALE_DELAY; T_DOT2 = T_CROSS + CROSS_DUR; T_LAST = T_DOT2; }   // B: cross of the t first, then the middle dot
+  else { T_DOT2 = LINE_AT + HI_DOT2 * LINE_DUR; T_CROSS = T_END; T_LAST = T_END; }   // A: middle dot pops as the line passes it
+  CYCLE = T_LAST + HOLD + FADE + GAP;
+  if(t >= CYCLE) t = 0;
+  variantsEl.querySelectorAll('.theme').forEach(b => b.classList.toggle('on', b.dataset.id === variant));
+  updateHash();
+  show();
+}
+const variantsEl = document.getElementById('variants');
+variantsEl.innerHTML =
+  '<button class="theme" data-id="a" style="padding-left:12px">Version A</button>' +
+  '<button class="theme" data-id="b" style="padding-left:12px">Version B</button>';
+variantsEl.addEventListener('click', e => { const b = e.target.closest('.theme'); if(b) setVariant(b.dataset.id); });
+
+// Everything is a pure function of the time t, so the slider can scrub to any moment.
+function render(t){
+  const drawn = lineProgress((t - LINE_AT) / LINE_DUR) * total;
+  pieces.forEach((p,i) => {
+    const vis = Math.max(0, Math.min(lens[i], drawn - starts[i]));
+    p.style.strokeDashoffset = lens[i] - vis;
+  });
+  const pop = at => { const x = Math.max(0, Math.min(1, (t - at) / POP)); return x <= 0 ? 0 : easeOutBack(x); };
+  dots[0].style.transform = 'scale(' + pop(DOT1_AT) + ')';
+  dots[1].style.transform = 'scale(' + pop(T_DOT2) + ')';
+  dots[2].style.transform = 'scale(' + pop(T_END) + ')';
+  const cx = Math.max(0, Math.min(1, (t - T_CROSS) / CROSS_DUR));
+  cross.style.strokeDashoffset = crossLen * (1 - easeOut(cx));
+  const fadeStart = T_LAST + HOLD;
+  logo.style.opacity = t < fadeStart ? 1 : Math.max(0, 1 - (t - fadeStart) / FADE);
+}
+
+// playback
+let playing = true, speed = 1, t = 0, last = null, dragging = false;
+const playBtn = document.getElementById('play'), scrub = document.getElementById('scrub');
+const timeEl = document.getElementById('time'), speedSel = document.getElementById('speed');
+
+function show(){
+  render(t);
+  timeEl.textContent = (t / 1000).toFixed(1) + 's';
+  if(!dragging) scrub.value = Math.round(t / CYCLE * 1000);
+}
+function loop(ts){
+  if(last === null) last = ts;
+  const dt = ts - last; last = ts;
+  if(playing && !dragging){ t = (t + dt * speed) % CYCLE; show(); }
+  requestAnimationFrame(loop);
+}
+playBtn.onclick = () => { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Play'; };
+speedSel.onchange = () => { speed = parseFloat(speedSel.value); };
+scrub.addEventListener('input', () => { dragging = true; t = scrub.value / 1000 * CYCLE; show(); });
+scrub.addEventListener('change', () => { dragging = false; });
+scrub.addEventListener('pointerup', () => { dragging = false; });
+document.addEventListener('keydown', e => { if(e.code === 'Space'){ e.preventDefault(); playBtn.click(); } });
+const [hTheme, hVariant] = location.hash.slice(1).split('/');
+setTheme(hTheme);
+setVariant(hVariant);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itin logo — compare versions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px 20px 60px; background: #f6f4ee; color: #1a1a1a; font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: -0.4px; }
+  .sub { margin-top: -14px; font-size: 13px; font-weight: 400; color: #999; }
+  .row { display: flex; gap: 18px; width: min(1000px, 100%); flex-wrap: wrap; }
+  .card { flex: 1 1 380px; background: #fff; border: 1px solid #e8e5dc; border-radius: 22px; padding: 18px 18px 14px; }
+  .card h2 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: #999; display: flex; justify-content: space-between; align-items: baseline; }
+  .card h2 span { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 12px; }
+  svg { width: 100%; height: auto; display: block; }
+  svg .cls-1 { fill: none; stroke: #1a1a1a; stroke-width: 30px; stroke-miterlimit: 10; }
+  svg circle { fill: #1a1a1a; }
+
+  /* overlay */
+  .overlay svg .grp { transition: opacity 0.15s linear; }
+  .overlay .a .cls-1 { stroke: #1a1a1a; } .overlay .a circle { fill: #1a1a1a; }
+  .overlay .b .cls-1 { stroke: #ff3b1f; } .overlay .b circle { fill: #ff3b1f; }
+  .overlay.multiply .b { mix-blend-mode: multiply; }
+  .legend { display: flex; gap: 16px; font-size: 12px; font-weight: 400; color: #777; margin: 8px 0 2px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  .controls { width: min(1000px, 100%); background: #fff; border: 1px solid #e8e5dc; border-radius: 18px; padding: 14px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+  .controls label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .controls input[type=range] { width: 180px; accent-color: #1a1a1a; }
+  .controls select, .controls button { font-family: inherit; font-weight: 700; font-size: 13px; background: #fff; color: #1a1a1a; border: 1px solid #ddd; border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .controls button.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .note { width: min(1000px, 100%); font-size: 13px; font-weight: 400; color: #666; line-height: 1.5; }
+  .note b { color: #1a1a1a; }
+</style>
+</head>
+<body>
+  <h1>Itin logo — compare versions</h1>
+  <div class="sub">Original = <code>Itin Logo.svg</code>. Pick which artboard to compare it with.</div>
+
+  <div class="controls">
+    <label>Compare with
+      <select id="which">
+        <option value="Itin Logo - Updated.svg" selected>Itin Logo - Updated</option>
+        <option value="Artboard 3.svg">Artboard 3</option>
+        <option value="Artboard 2.svg">Artboard 2</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="align" checked> Align the letters (ignore the overall shift)</label>
+  </div>
+
+  <div class="row">
+    <div class="card"><h2>Original <span id="nameA">Itin Logo.svg</span></h2><svg id="svgA" viewBox="330 450 420 175"></svg></div>
+    <div class="card"><h2 id="titleB">Artboard 3 <span id="nameB"></span></h2><svg id="svgB" viewBox="330 450 420 175"></svg></div>
+  </div>
+
+  <div class="card overlay multiply" id="ov" style="width:min(1000px,100%);">
+    <h2>Overlay <span id="shiftInfo"></span></h2>
+    <svg id="svgO" viewBox="330 450 420 175">
+      <g class="grp a" id="ovA"></g>
+      <g class="grp b" id="ovB"></g>
+    </svg>
+    <div class="legend"><span><i style="background:#1a1a1a"></i>Original</span><span><i style="background:#ff3b1f"></i>New artboard</span><span>Dark where they agree; black-only or red-only where they differ.</span></div>
+  </div>
+
+  <div class="controls">
+    <label>Fade original ⟷ new <input type="range" id="mix" min="0" max="100" value="50"></label>
+    <button id="blink">Blink between them</button>
+    <button id="reset">Overlay (both)</button>
+  </div>
+
+  <div class="note" id="note"></div>
+
+<script>
+const ORIGINAL = 'Logo/Itin Logo.svg';
+const whichEl = document.getElementById('which'), alignEl = document.getElementById('align');
+const NS = 'http://www.w3.org/2000/svg';
+let docs = {};          // parsed svg roots by path
+
+// the three dots are circles; the left-most dot's centre tells us how far the whole logo moved
+function dot1(root){ return [...root.querySelectorAll('circle')].sort((a,b)=>a.getAttribute('cx')-b.getAttribute('cx'))[0]; }
+function content(root){ return [...root.children].filter(n => n.tagName !== 'defs' && n.tagName !== 'style'); }
+function fill(g, root, dy){
+  g.innerHTML = '';
+  const wrap = document.createElementNS(NS, 'g');
+  if(dy) wrap.setAttribute('transform', 'translate(0,' + dy + ')');
+  content(root).forEach(n => wrap.appendChild(document.importNode(n, true)));
+  g.appendChild(wrap);
+}
+function describe(rootA, rootB){
+  const q = (r, sel) => [...r.querySelectorAll(sel)];
+  const crossA = rootA.querySelector('line'), crossB = rootB.querySelector('line');
+  const cy = r => +dot1(r).getAttribute('cy');
+  const shift = cy(rootB) - cy(rootA);
+  const rel = l => ['x1','y1','x2','y2'].map(k => +l.getAttribute(k));
+  const a = rel(crossA), b = rel(crossB);
+  const ang = ([x1,y1,x2,y2]) => Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+  const len = ([x1,y1,x2,y2]) => Math.hypot(x2 - x1, y2 - y1);
+  const dyCross = (b[1] - shift) - a[1];
+  return { shift, dyCross, angA: ang(a), angB: ang(b), lenA: len(a), lenB: len(b) };
+}
+async function fetchRoot(path){
+  if(docs[path]) return docs[path];
+  const txt = await (await fetch(path)).text();
+  docs[path] = new DOMParser().parseFromString(txt, 'image/svg+xml').documentElement;
+  return docs[path];
+}
+async function draw(){
+  const fileB = 'Logo/' + whichEl.value;
+  const A = await fetchRoot('Logo/Itin Logo.svg'), B = await fetchRoot(fileB);
+  const info = describe(A, B);
+  const dyB = alignEl.checked ? -info.shift : 0;
+  document.getElementById('titleB').firstChild.textContent = whichEl.options[whichEl.selectedIndex].text + ' ';
+  document.getElementById('nameB').textContent = whichEl.value;
+  fill(document.getElementById('svgA'), A, 0);
+  fill(document.getElementById('svgB'), B, dyB);
+  // overlay groups
+  fill(document.getElementById('ovA'), A, 0);
+  fill(document.getElementById('ovB'), B, dyB);
+  document.getElementById('shiftInfo').textContent = alignEl.checked ? 'letters aligned' : 'as exported (raw positions)';
+  const parts = [];
+  if(Math.abs(info.shift) > 0.01) parts.push('The whole logo sits <b>' + Math.abs(info.shift).toFixed(2) + ' units ' + (info.shift > 0 ? 'lower' : 'higher') + '</b> on the artboard.');
+  else parts.push('The logo sits in the <b>same position</b> on the artboard.');
+  if(Math.abs(info.dyCross) > 0.3) parts.push('Relative to the letters, the cross of the t is <b>' + Math.abs(info.dyCross).toFixed(2) + ' units ' + (info.dyCross < 0 ? 'higher' : 'lower') + '</b>.');
+  if(Math.abs(info.angA - info.angB) > 0.3) parts.push('Its angle changes from <b>' + info.angA.toFixed(1) + '°</b> to <b>' + info.angB.toFixed(1) + '°</b>.');
+  if(Math.abs(info.lenA - info.lenB) > 0.3) parts.push('Its length changes from <b>' + info.lenA.toFixed(1) + '</b> to <b>' + info.lenB.toFixed(1) + '</b>.');
+  parts.push('Letter shapes and dots are otherwise identical.');
+  document.getElementById('note').innerHTML = parts.join(' ');
+}
+whichEl.onchange = draw; alignEl.onchange = draw;
+
+// fade + blink
+const ovA = document.getElementById('ovA'), ovB = document.getElementById('ovB'), ov = document.getElementById('ov');
+const mix = document.getElementById('mix'), blinkBtn = document.getElementById('blink'), resetBtn = document.getElementById('reset');
+let blinkTimer = null;
+function setMix(v){ ovA.style.opacity = 1 - v / 100; ovB.style.opacity = v / 100; }
+mix.oninput = () => { stopBlink(); ov.classList.remove('multiply'); setMix(+mix.value); };
+function stopBlink(){ if(blinkTimer){ clearInterval(blinkTimer); blinkTimer = null; } blinkBtn.classList.remove('on'); }
+blinkBtn.onclick = () => {
+  if(blinkTimer){ stopBlink(); return; }
+  blinkBtn.classList.add('on'); ov.classList.remove('multiply'); let on = false;
+  const flip = () => { on = !on; ovA.style.opacity = on ? 0 : 1; ovB.style.opacity = on ? 1 : 0; };
+  flip(); blinkTimer = setInterval(flip, 800);
+};
+resetBtn.onclick = () => { stopBlink(); ov.classList.add('multiply'); ovA.style.opacity = 1; ovB.style.opacity = 1; mix.value = 50; };
+draw();
+</script>
+</body>
+</html>

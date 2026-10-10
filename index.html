@@ -70,7 +70,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; background: #F1EFE8; display: flex; justify-content: center; align-items: center; padding: 40px 20px; min-height: 100vh; }
   .phone { width: 375px; background: #fff; border: 1px solid #ddd; border-radius: 40px; overflow: hidden; display: flex; flex-direction: column; min-height: 720px; height: 760px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); position: relative; }
-  .dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 20px; z-index: 45; }
+  .dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 20px; z-index: 80; }
   .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
   .screen.active { display: flex; }
   .sbar { padding: 0 24px; height: 58px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -682,6 +682,17 @@
   .ob-step { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #444; }
   .ob-step b { width: 26px; height: 26px; border-radius: 50%; background: #F1EFE8; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
 
+  /* APP LOAD SCREEN — the Itin logo draws itself like a route: dot, line to the next dot, on to the last dot */
+  #splash { position: absolute; inset: 0; z-index: 75; background: #fff; display: none; align-items: center; justify-content: center; transition: opacity 0.55s ease; cursor: pointer; }
+  #splash.show { display: flex; }
+  #splash.hide { opacity: 0; pointer-events: none; }
+  #splash svg { width: 236px; height: auto; overflow: visible; }
+  #splash .sp-line { fill: none; stroke: #1a1a1a; stroke-width: 30; stroke-miterlimit: 10; }
+  #splash .sp-dot { fill: #1a1a1a; transform-box: fill-box; transform-origin: center; transform: scale(0); }
+  #splash .sp-dot.in { animation: spPop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #splash .sp-cross { transition: stroke-dashoffset 0.55s cubic-bezier(0.25,0.8,0.25,1); }
+  @keyframes spPop { from { transform: scale(0); } to { transform: scale(1); } }
+
   /* LEGEND */
   .legend { margin: 30px auto 0; width: 375px; background: #fff; border-radius: 16px; border: 0.5px solid #e5e5e5; padding: 20px; font-family: 'Cal Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; }
   .legend h2 { font-size: 14px; font-weight: 800; color: #1a1a1a; margin-bottom: 14px; }
@@ -722,6 +733,19 @@
 <div class="phone">
 
   <div class="dynamic-island"></div>
+
+  <div id="splash" onclick="endSplash()">
+    <svg viewBox="330 450 420 160" xmlns="http://www.w3.org/2000/svg" aria-label="Itin">
+      <path id="sp-r1" class="sp-line" d="M356.43,514.72 c0,39.57 18.72,71.64 41.8,71.64 L397.73,586.37 c23.09,0 41.8,-32.08 41.8,-71.64 v-50.29"/>
+      <path id="sp-r2" class="sp-line" d="M439.53,514.72 c0,39.57 18.72,71.64 41.8,71.64 L481.34,586.36 C504.42,586.36 523.14,554.29 523.14,514.72"/>
+      <path id="sp-r3" class="sp-line" d="M523.59,514.89 C523.59,554.28 542.14,586.47 565.01,586.22 C585.71,585.99 594.42,558.01 594.42,558.01 C603.6,531.82 617.29,528.29 628.07,528.28 c10.96,0 20.75,10.3 27.17,26.42 c0,0 11.49,31.5 34.8,31.5 h6.4"/>
+      <line id="sp-cross" class="sp-line sp-cross" x1="396.3" y1="529.29" x2="482.76" y2="501.83"/>
+      <circle id="sp-d1" class="sp-dot" cx="356.43" cy="489.05" r="15.1"/>
+      <circle id="sp-d2" class="sp-dot" cx="523.14" cy="489.05" r="15.1"/>
+      <circle id="sp-d3" class="sp-dot" cx="723.57" cy="586.2" r="15.1"/>
+    </svg>
+  </div>
+
 
   <!-- ======================== HOME SCREEN ======================== -->
   <div class="screen active" id="s-home">
@@ -1752,15 +1776,70 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+// --- App load screen: the logo's route draws itself (dot → line → dot, cross of the t, → final dot) ---
+let splashRAF=null, splashTimers=[], splashAt=function(){};
+function endSplash(){
+  const el=document.getElementById('splash'); if(!el||!el.classList.contains('show')) return;
+  cancelAnimationFrame(splashRAF); splashTimers.forEach(clearTimeout); splashTimers=[];
+  el.classList.add('hide');
+  setTimeout(()=>{ el.classList.remove('show','hide'); },550);
+}
+function playSplash(){
+  const el=document.getElementById('splash'); if(!el) return;
+  cancelAnimationFrame(splashRAF); splashTimers.forEach(clearTimeout); splashTimers=[];
+  // The route is three pieces (flat ends where the line turns back on itself); they draw back to back
+  const pieces=['sp-r1','sp-r2','sp-r3'].map(id=>document.getElementById(id));
+  const lens=pieces.map(r=>r.getTotalLength());
+  const starts=[0,lens[0],lens[0]+lens[1]];
+  const total=lens[0]+lens[1]+lens[2];
+  const len2=starts[2];                       // second dot sits where the 2nd piece ends
+  const cross=document.getElementById('sp-cross'), crossLen=cross.getTotalLength();
+  const dots=['sp-d1','sp-d2','sp-d3'].map(id=>document.getElementById(id));
+  const setDrawn=function(drawn){
+    pieces.forEach((r,i)=>{ const vis=Math.max(0,Math.min(lens[i],drawn-starts[i])); r.style.strokeDashoffset=lens[i]-vis; });
+  };
+  // reset to the empty state
+  dots.forEach(d=>d.classList.remove('in'));
+  pieces.forEach((r,i)=>{ r.style.strokeDasharray=lens[i]+' '+lens[i]; });
+  setDrawn(0);
+  cross.style.transition='none'; cross.style.strokeDasharray=crossLen; cross.style.strokeDashoffset=crossLen;
+  void cross.getBoundingClientRect(); cross.style.transition='';
+  el.classList.remove('hide'); el.classList.add('show');
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){
+    setDrawn(total); cross.style.strokeDashoffset=0; dots.forEach(d=>d.classList.add('in'));
+    splashTimers.push(setTimeout(endSplash,1200)); return;
+  }
+  const START=550, DUR=2700; let d2=false, d3=false, t0=null;
+  // one continuous motion (no stop at the middle dot): easy start, even speed through both curves, soft landing
+  const ACC=0.2, DEC=0.2, V=1/(1-(ACC+DEC)/2);
+  const progress=u=> u<=0?0 : u>=1?1 : u<ACC ? V*u*u/(2*ACC) : u<=1-DEC ? V*(ACC/2+(u-ACC)) : 1-V*(1-u)*(1-u)/(2*DEC);
+  splashTimers.push(setTimeout(()=>dots[0].classList.add('in'),165));   // far-left dot first
+  // one animation step for elapsed time t (ms since the route started drawing)
+  splashAt=function(t){
+    if(t<0||d3) return;
+    const k=Math.min(1,t/DUR), drawn=progress(k)*total;
+    setDrawn(drawn);
+    if(!d2&&drawn>=len2){ d2=true; dots[1].classList.add('in'); }                      // middle dot reached → it pops, the line keeps going
+    if(!d3&&k>=1){ d3=true; dots[2].classList.add('in'); cross.style.strokeDashoffset=0; splashTimers.push(setTimeout(endSplash,1430)); }  // n finished → last dot + cross of the t
+  };
+  function frame(ts){
+    if(t0===null) t0=ts;
+    splashAt(ts-t0-START);
+    if(!d3) splashRAF=requestAnimationFrame(frame);
+  }
+  splashRAF=requestAnimationFrame(frame);
+}
+
 // --- Password gate (client-side only — a light gate for a shared demo link, not real security) ---
 const PW_GATE_PASSWORD='rem';
-if(sessionStorage.getItem('itin-unlocked')==='yes'){ document.getElementById('pw-gate').classList.add('unlocked'); }
+if(sessionStorage.getItem('itin-unlocked')==='yes'){ document.getElementById('pw-gate').classList.add('unlocked'); playSplash(); }
 function checkPassword(){
   const input=document.getElementById('pw-input');
   const err=document.getElementById('pw-error');
   if(input.value===PW_GATE_PASSWORD){
     sessionStorage.setItem('itin-unlocked','yes');
     document.getElementById('pw-gate').classList.add('unlocked');
+    playSplash();
   } else {
     err.textContent='Incorrect password';
     input.value='';
