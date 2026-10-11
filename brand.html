@@ -477,7 +477,6 @@
       <a href="#motion">Motion</a>
     </nav>
     <div class="tools">
-      <button class="btn" id="gapsBtn">Highlight gaps <small id="gapCount"></small></button>
       <button class="btn" id="themeBtn">Dark mode</button>
     </div>
   </aside>
@@ -902,11 +901,6 @@ sizePhones(); new ResizeObserver(sizePhones).observe($('#elementCards'));
 const links = [...document.querySelectorAll('#nav a')];
 const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-35% 0px -60% 0px' });
 document.querySelectorAll('main section').forEach(s => io.observe(s));
-// gap counts per section next to the nav links
-links.forEach(l => { const sec = document.querySelector(l.getAttribute('href')); const n = sec.querySelectorAll('.todo').length; if(n) l.insertAdjacentHTML('beforeend', '<small>' + n + '</small>'); });
-const total = document.querySelectorAll('.todo').length;
-$('#gapCount').textContent = '(' + total + ')';
-$('#gapsBtn').onclick = e => { document.body.classList.toggle('show-gaps'); e.currentTarget.classList.toggle('on'); if(document.body.classList.contains('show-gaps')) document.querySelector('.todo').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
 const root = document.documentElement;
 const savedTheme = (() => { try { return localStorage.getItem('itin-brand-theme'); } catch(e) { return null; } })();
 if(savedTheme === 'dark' || (!savedTheme && matchMedia('(prefers-color-scheme: dark)').matches)) root.dataset.theme = 'dark';
