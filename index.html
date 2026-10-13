@@ -4053,10 +4053,17 @@ document.querySelectorAll('.ec').forEach(addFavButton);
 const TIME_LEFT=true;
 // Time zone shown under every time: the one typed on the chip, else the zone of the day's (last) city
 function defaultTz(ec){
-  if(ec.closest('#s-trip')) return 'PT';
+  if(ec.closest('#s-trip')) return 'PT';  // Pacific Coast trip
   const day=ec.closest('.day-sec'); const names=day?[...day.querySelectorAll('.dh-geo .en')].map(e=>e.textContent):[];
   const c=names[names.length-1]||'';
-  return /Baku/.test(c)?'AZT':/Tbilisi/.test(c)?'GET':/Yerevan/.test(c)?'AMT':/Washington|D\.C/.test(c)?'ET':'';
+  const known=/Baku/.test(c)?'AZT':/Tbilisi/.test(c)?'GET':/Yerevan/.test(c)?'AMT':/Washington|D\.C/.test(c)?'ET':'';
+  if(known) return known;
+  // last resort so a time is never without a zone: the trip's own zone (or this device's)
+  try{
+    const id=(ec.closest('.trip-screen')||{}).id, tz=(typeof TRIP_TZ!=='undefined'&&TRIP_TZ[id])||undefined;
+    const part=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'short'}).formatToParts(new Date()).find(x=>x.type==='timeZoneName');
+    return part?part.value:'';
+  }catch(e){ return ''; }
 }
 function timeToLeft(ec){
   if(ec.classList.contains('ec-stay')) return;
@@ -4080,7 +4087,7 @@ function timeToLeft(ec){
     let f={}; try{ f=JSON.parse(ec.dataset.fields||'{}'); }catch(e){}
     const m=(f.departure_datetime||'').match(/(\d{1,2}(?::\d\d)?)\s*(AM|PM)/i);
     const AIRPORT_TZ={GYD:'AZT',TBS:'GET',EVN:'AMT',IAD:'ET',FRA:'CET',PDX:'PT',BWI:'ET',LAX:'PT'};
-    const tz=AIRPORT_TZ[f.departure_airport]||'';
+    const tz=AIRPORT_TZ[f.departure_airport]||defaultTz(ec);
     if(m){ col.dataset.tz=tz; col.innerHTML='<div class="row"><span class="t">'+m[1]+'</span><span class="ap">'+m[2].toUpperCase()+'</span></div>'+(tz?'<span class="tz">'+tz+'</span>':''); }
   }
   inner.insertBefore(col,inner.firstChild);
