@@ -219,11 +219,11 @@
   .dh-geo svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
   .dh-geo .en { color: inherit; font-size: inherit; font-weight: inherit; }
   .dh-geo + .dh-geo { margin-left: 6px; }
-  .dh-add-city, .dh-add-stay { width: 24px; height: 24px; margin-top: 6px; margin-left: 6px; border-radius: 50%; border: 1.3px solid var(--pal-chip-border); background: none; color: var(--pal-muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; vertical-align: top; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
+  .dh-add-city, .dh-add-stay, .dh-add-el { width: 24px; height: 24px; margin-top: 6px; margin-left: 6px; border-radius: 50%; border: 1.3px solid var(--pal-chip-border); background: none; color: var(--pal-muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; vertical-align: top; flex-shrink: 0; transition: border-color 0.15s, color 0.15s; }
   .dh .dh-add-city svg { width: 14px; height: 14px; stroke-width: 2; stroke-linejoin: round; }
   .dh-date + .dh-add-city { margin-left: 0; }
-  .dh-add-city svg, .dh-add-stay svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; }
-  .dh-add-city:active, .dh-add-stay:active { border-color: var(--pal-chip-text); color: var(--pal-chip-text); }
+  .dh-add-city svg, .dh-add-stay svg, .dh-add-el svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; }
+  .dh-add-city:active, .dh-add-stay:active, .dh-add-el:active { border-color: var(--pal-chip-text); color: var(--pal-chip-text); }
   .day-stay { display: flex; align-items: center; gap: 10px; margin: 0 16px 10px; padding: 10px 14px; background: var(--pal-notes-bg); border: 0.5px solid var(--pal-notes-border); border-radius: 14px; transition: background-color 0.3s ease, border-color 0.3s ease; }
   .day-stay-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--pal-city-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .day-stay-icon svg { width: 14px; height: 14px; fill: var(--pal-city-text); }
@@ -248,7 +248,35 @@
   /* TRIAL: time on the left of the card (set TIME_LEFT=false in the script to go back to the time chip) */
   .ec .meal-label { display: none; } /* cards show only the title and its locations (meal now sits in the title) */
   .ec .ed.loc { color: var(--pal-ed); }
+  /* Neighborhood with nested stops: each stop floats as its own small card (own star, drag to reorder) */
+  .ec-stops { padding: 0 10px 12px; }
+  .ec-stops .stops-list { display: flex; flex-direction: column; gap: 8px; }
+  .ec-stops .stop { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--pal-text) 11%, var(--pal-bg)); border: 1px solid color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); box-shadow: 0 2px 8px rgba(0,0,0,0.16); cursor: grab; }
+  .ec-stops .stop.sortable-chosen { box-shadow: 0 8px 18px rgba(0,0,0,0.28); }
+  .ec-stops .stop.sortable-ghost { opacity: 0.35; }
+  .ec-stops .st-tile { flex: 0 0 auto; position: relative; width: 30px; height: 30px; border-radius: 9px; background: color-mix(in srgb, var(--pal-city-bg) 30%, var(--pal-bg)); --ic: color-mix(in srgb, var(--pal-city-bg) 55%, var(--pal-text)); display: flex; align-items: center; justify-content: center; }
+  .ec-stops .st-tile svg { width: 32px; height: 32px; }
+  .ec-stops .st-body { flex: 1; min-width: 0; }
+  .ec-stops .st-eb { font-size: 11px; color: var(--pal-ed); margin-bottom: 1px; }
+  .ec-stops .st-eb b { font-weight: 500; color: var(--pal-ed); }
+  .ec-stops .st-n { font-size: 13px; font-weight: 800; color: var(--pal-text); }
+  .ec-stops .st-l { font-size: 11px; font-weight: 400; color: var(--pal-ed); margin-top: 1px; }
+  .stop-fav { position: relative; flex: 0 0 auto; width: 16px; height: 16px; margin: 0 -2px 0 4px; border: none; background: transparent; color: var(--pal-muted); display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; transition: transform 0.12s, color 0.2s; }
+  .stop-fav::after { content: ''; position: absolute; inset: -10px; }
+  .stop-fav svg { width: 16px; height: 16px; display: block; }
+  .stop-fav svg path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+  .stop[data-fav] .stop-fav { color: var(--pal-city-bg); }
+  .stop[data-fav] .stop-fav svg path { fill: currentColor; }
+  .ec-stops .st-add { margin-top: 8px; font: inherit; font-size: 11px; font-weight: 700; color: var(--pal-muted); background: none; border: 1px solid var(--pal-chip-border); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .ec.stops-collapsed .ec-stops { display: none; }
+  .stops-toggle { display: inline-flex; align-items: center; gap: 4px; margin-top: 7px; font: inherit; font-size: 11px; font-weight: 700; color: var(--pal-city-bg); background: none; border: none; padding: 0; cursor: pointer; }
+  .stops-toggle svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+  .ec.stops-collapsed .stops-toggle svg { transform: rotate(-90deg); }
   .ec-time { display: none; }
+  .ec-eyebrow { font-size: 12px; line-height: 1.25; margin-bottom: 2px; color: var(--pal-ed); font-weight: 500; }
+  .ec-eyebrow .tm { font-weight: 500; color: var(--pal-ed); }
+  .ec-eyebrow .tm.soft { font-style: italic; }
+  .ec-eyebrow .dot { margin: 0 4px; }
   .ec-inner { align-items: flex-start !important; } /* time stays top-left and the star top-right on every card, flights included */
   body.time-left .ec-time { display: flex; flex: 0 0 56px; width: 56px; white-space: nowrap; flex-direction: column; align-items: flex-start; text-align: left; line-height: 1.15; padding-top: 2px; color: var(--pal-text); }
   body.time-left .ec-time .row { display: flex; align-items: baseline; gap: 3px; }
@@ -383,9 +411,10 @@
   .lb-arrow.hidden { display: none; }
 
   /* ADD BUTTON */
-  .day-sec .add-btn { display: none; } /* per-day "+ Add element" button hidden; the + at the top still adds elements (the hidden button stays as the insertion point) */
-  .add-btn { margin: 10px 16px 0; padding: 10px; border: 0.5px dashed var(--pal-chip-border); border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer; color: var(--pal-muted); font-size: 12px; background: none; width: calc(100% - 32px); transition: border-color 0.15s, color 0.15s; }
-  .add-btn:active { border-color: #999; color: #777; }
+  /* "Add stop": a card-shaped row with a smooth accent outline and a round + in the same accent as the City tag */
+  .add-btn { margin: 10px 16px 0; padding: 11px 14px; border: 1px solid var(--pal-card-border); border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 9px; cursor: pointer; color: var(--pal-muted); font-family: var(--itin-font); font-size: 12px; font-weight: 700; background: transparent; width: calc(100% - 32px); transition: border-color 0.15s, color 0.15s, background-color 0.15s, transform 0.12s; }
+  .add-btn::before { content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; padding-bottom: 1px; box-sizing: border-box; border-radius: 50%; flex: 0 0 auto; background: color-mix(in srgb, var(--pal-text) 12%, var(--pal-bg)); color: var(--pal-muted); font-size: 15px; font-weight: 700; line-height: 1; }
+  .add-btn:active { transform: scale(0.99); color: var(--pal-ed); border-color: var(--pal-chip-border); background: color-mix(in srgb, var(--pal-text) 5%, var(--pal-bg)); }
   .spacer { height: 20px; }
 
   /* DAY NOTES */
@@ -1131,8 +1160,8 @@
           <div class="photo-tiles"><img class="pt" src="Photos/Fantino.jpg" alt="Fantino, Portland"><img class="pt" src="Photos/Fantino%202.jpg" alt="Fantino, Portland — second dish"></div>
         </div>
 
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Emily lands 20 min after Ryan — meet at baggage claim. Hoxton is a 20 min ride from PDX.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1163,8 +1192,8 @@
           <!-- [PHOTO: Food dishes at Eem Thai BBQ — deep green/orange tones] -->
           <div class="photo-tiles"><div class="pt pt-ph" style="background:#3D6B3A;" title="Eem Thai BBQ, Portland"></div></div>
         </div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1191,8 +1220,8 @@
           <!-- [PHOTO: Haystack Rock at Cannon Beach golden hour — teal ocean, warm rock] -->
           <div class="photo-tiles"><img class="pt" src="Photos/Cannon%20Beach.jpg" alt="Haystack Rock, Cannon Beach"></div>
         </div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Sunset at Cannon Beach ~8:45pm — grab firewood in Seaside before dinner.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1210,8 +1239,8 @@
           <!-- [PHOTO: Beautiful fish dish at Local Oceans — teal/seafood tones] -->
           <div class="photo-tiles"><div class="pt pt-ph" style="background:#3B6E72;" title="Local Oceans, Newport"></div></div>
         </div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1224,8 +1253,8 @@
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Tu Tu Tun</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1"><div class="ec-inner"><div class="ei" style="background:#E1F5EE;"><svg viewBox="0 0 24 24" style="color:#0F6E56;"><path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/></svg></div><div class="einfo"><div class="en">Redwood National Park</div><div class="ed">Grove of Titans · Lady Bird Johnson Grove Trail (easy 1 mi)</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Arcata, CA</div><div class="ed">SALT or Campground</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1244,8 +1273,8 @@
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div><div class="einfo"><div class="en">Sierra tea & snack</div><div class="ed">Elk Country Store · Arrive Elk by 2pm</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-copy="4BMNZY4AJN"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Sea Ranch Lodge</div><div class="ed">Res #4BMNZY4AJN · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — Sea Ranch Lodge Bar</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1255,8 +1284,8 @@
         <div class="ec" data-copy="4BMNZY4AJN"><div class="ec-inner"><div class="ei" style="background:#EEEDFE;"><svg viewBox="0 0 24 24" style="color:#533AB7;"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Sea Ranch Lodge · Night 2</div><div class="ed">Res #4BMNZY4AJN · tap to copy</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1"><div class="ec-inner"><div class="ei" style="background:#F1EFE8;"><svg viewBox="0 0 24 24" style="color:#777777;"><path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/></svg></div><div class="einfo"><div class="en">Relax day</div><div class="ed">No agenda, just vibes</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Dinner — The Dining Room</div><div class="ed">Or Gama Izakaya</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1268,8 +1297,8 @@
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Sol Food</div><div class="ed">Marin Redwood Area · 12:30 with Paige</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FAEEDA;"><svg viewBox="0 0 24 24" style="color:#854F0B;"><path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/></svg></div><div class="einfo"><div class="en">Ryan — welcome drinks</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Emily — Chez Panisse?</div><div class="ed">TBD</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1337,8 +1366,8 @@
         <div class="dh"><div class="dh-date">Friday, Oct 23</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Washington, D.C.</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg></button><button class="dh-add-stay" onclick="addStayToDay(this)" aria-label="Add accommodation"><svg viewBox="0 0 24 24"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 00-3-3h-8v6"/><circle cx="6.8" cy="11" r="1.7"/></svg></button></div>
         <div class="ec" data-fields="{&quot;departure_airport&quot;:&quot;IAD&quot;,&quot;arrival_airport&quot;:&quot;FRA&quot;,&quot;departure_datetime&quot;:&quot;Oct 23, 2026, 10:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 12:10 PM&quot;,&quot;pnr&quot;:&quot;HSZBFL&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">IAD<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>FRA</div><div class="ed">10:10 PM – 12:10 PM⁺¹</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="misc" data-fields="{&quot;locations&quot;: [&quot;Washington, D.C.&quot;]}"><div class="ec-inner"><div class="ei" data-etype="misc"></div><div class="einfo"><div class="en">Print e-visa and hotel confirmations</div><div class="ed">Azerbaijan e-visa PDF · passport valid 6+ months</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>Before leaving</span><span class="mc amber">To do</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Flight leaves IAD at 10:10 PM — aim to be at the airport by 7:00 PM.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1347,8 +1376,8 @@
         <div class="ec ec-stay" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div>
         <div class="ec" data-fields="{&quot;departure_airport&quot;:&quot;FRA&quot;,&quot;arrival_airport&quot;:&quot;GYD&quot;,&quot;departure_datetime&quot;:&quot;Oct 24, 2026, 5:10 PM&quot;,&quot;arrival_datetime&quot;:&quot;Oct 24, 2026, 11:55 PM&quot;,&quot;pnr&quot;:&quot;CGNVC8&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>GYD</div><div class="ed">5:10 – 11:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="drive" data-fields="{&quot;start_location&quot;: &quot;Heydar Aliyev Airport (GYD)&quot;, &quot;end_location&quot;: &quot;Art Gallery Hotel Baku&quot;, &quot;departure_datetime&quot;: &quot;Oct 24, 11:55 PM&quot;, &quot;distance_value&quot;: &quot;22&quot;, &quot;distance_unit&quot;: &quot;km&quot;, &quot;estimated_duration_min&quot;: &quot;25&quot;, &quot;route_notes&quot;: &quot;Driver meets you at arrivals with a name sign&quot;, &quot;locations&quot;: [&quot;Heydar Aliyev International Airport&quot;, &quot;Art Gallery Hotel Baku, 105 Neftchilar Ave&quot;]}"><div class="ec-inner"><div class="ei" data-etype="drive"></div><div class="einfo"><div class="en">Airport → Art Gallery Hotel</div><div class="ed">Pre-booked taxi, about 25 minutes</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>11:55 PM</span><span class="mc ">Taxi booked</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Land late — hotel knows about the midnight check-in.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1356,13 +1385,13 @@
         <div class="dh"><div class="dh-date">Sunday, Oct 25</div><div class="dh-geo" data-type="city" data-fields="{}"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div><button class="dh-add-city" onclick="addCityToDay(this)" aria-label="Add city"><svg viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg></button><button class="dh-add-stay" onclick="addStayToDay(this)" aria-label="Add accommodation"><svg viewBox="0 0 24 24"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 00-3-3h-8v6"/><circle cx="6.8" cy="11" r="1.7"/></svg></button></div>
         <div class="ec ec-stay" data-fields="{&quot;confirmation_number&quot;:&quot;1095068261&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div>
         <div class="ec" data-type="coffee" data-fields="{&quot;specialty&quot;: &quot;Flat whites and pastries&quot;, &quot;hours&quot;: &quot;8:00 AM – 11:00 PM&quot;, &quot;wifi_available&quot;: true, &quot;locations&quot;: [&quot;Baku city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="coffee"></div><div class="einfo"><div class="en">Coffee Moffie</div><div class="ed">Flat white and a pastry before the Old City</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>9:00 AM</span><span class="mc ">Wifi</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <div class="ec" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Baku&quot;, &quot;description&quot;: &quot;UNESCO-listed walled city of narrow lanes and carpet shops&quot;, &quot;known_for&quot;: &quot;Maiden Tower, Shirvanshah Palace, tea houses&quot;, &quot;locations&quot;: [&quot;Icherisheher, Baku&quot;, &quot;Maiden Tower&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">Old City (Icherisheher)</div><div class="ed">Walled medieval quarter with the Maiden Tower</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>Morning</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec" data-stops="[{&quot;t&quot;: &quot;museum&quot;, &quot;n&quot;: &quot;Maiden Tower&quot;, &quot;l&quot;: &quot;Icherisheher, Baku&quot;, &quot;time&quot;: &quot;10:00 AM&quot;, &quot;fav&quot;: true}, {&quot;t&quot;: &quot;museum&quot;, &quot;n&quot;: &quot;Palace of the Shirvanshahs&quot;, &quot;l&quot;: &quot;Icherisheher, Baku&quot;, &quot;time&quot;: &quot;11:00 AM&quot;}, {&quot;t&quot;: &quot;coffee&quot;, &quot;n&quot;: &quot;Tea break in a courtyard chaikhana&quot;, &quot;l&quot;: &quot;Icherisheher, Baku&quot;, &quot;time&quot;: &quot;11:45 AM&quot;}]" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Baku&quot;, &quot;description&quot;: &quot;UNESCO-listed walled city of narrow lanes and carpet shops&quot;, &quot;known_for&quot;: &quot;Maiden Tower, Shirvanshah Palace, tea houses&quot;, &quot;locations&quot;: [&quot;Icherisheher, Baku&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">Old City (Icherisheher)</div><div class="ed">Walled medieval quarter with the Maiden Tower</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>Morning</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="store" data-fields="{&quot;store_category&quot;: &quot;Local market&quot;, &quot;hours&quot;: &quot;8:00 AM – 7:00 PM&quot;, &quot;items_of_interest&quot;: &quot;Saffron, dried fruit, tea&quot;, &quot;locations&quot;: [&quot;Taza Bazaar, Baku&quot;]}"><div class="ec-inner"><div class="ei" data-etype="store"></div><div class="einfo"><div class="en">Taza Bazaar</div><div class="ed">Fruit, dried apricots, pomegranate and saffron</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>12:00 PM</span><span class="mc ">Souvenirs</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="museum" data-fields="{&quot;opening_hours&quot;: &quot;11:00 AM – 7:00 PM, closed Mon&quot;, &quot;ticket_price&quot;: &quot;15.00&quot;, &quot;requires_timed_entry&quot;: true, &quot;estimated_visit_duration_min&quot;: &quot;120&quot;, &quot;exhibits_of_interest&quot;: &quot;Carpet gallery, Hadid architecture exhibit&quot;, &quot;reservation_datetime&quot;: &quot;2:00 PM&quot;, &quot;locations&quot;: [&quot;1 Heydar Aliyev Ave, Baku&quot;]}"><div class="ec-inner"><div class="ei" data-etype="museum"></div><div class="einfo"><div class="en">Heydar Aliyev Center</div><div class="ed">Zaha Hadid building and rotating exhibits</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>2:00 PM</span><span class="mc blue">Tickets booked</span><span class="mc link" onclick="linkChip(event,'Website')"><svg viewBox="0 0 24 24"><path d="M3.9 12A3.1 3.1 0 017 8.9h4V7H7a5 5 0 000 10h4v-1.9H7A3.1 3.1 0 013.9 12zM8 13h8v-2H8v2zm9-6h-4v1.9h4a3.1 3.1 0 010 6.2h-4V17h4a5 5 0 000-10z"/></svg>Website</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="experience" data-fields="{&quot;experience_category&quot;: &quot;tour&quot;, &quot;provider_name&quot;: &quot;Caspian Day Trips&quot;, &quot;duration_min&quot;: &quot;240&quot;, &quot;num_participants&quot;: &quot;2&quot;, &quot;meeting_point&quot;: &quot;Hotel lobby&quot;, &quot;includes&quot;: &quot;Driver, entry tickets, bottled water&quot;, &quot;locations&quot;: [&quot;Art Gallery Hotel Baku (pickup)&quot;, &quot;Gobustan National Park&quot;]}"><div class="ec-inner"><div class="ei" data-etype="experience"></div><div class="einfo"><div class="en">Gobustan mud volcano and rock art tour</div><div class="ed">Half-day with a private driver</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>4:30 PM</span><span class="mc amber">Highlight</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="restaurant" data-fields="{&quot;reservation&quot;: true, &quot;booked&quot;: true, &quot;reservation_platform&quot;: &quot;Phone&quot;, &quot;meal&quot;: &quot;Dinner&quot;, &quot;locations&quot;: [&quot;Baku Old City&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Dinner — Qaytarma</div><div class="ed">Lamb dolma and saffron plov</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>8:00 PM AZT</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Old City closes up early on Sundays — do it in the morning.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1372,8 +1401,8 @@
         <div class="ec" data-type="flight" data-fields="{&quot;airline&quot;: &quot;Azerbaijan Airlines&quot;, &quot;flight_number&quot;: &quot;J2 1081&quot;, &quot;departure_airport&quot;: &quot;GYD&quot;, &quot;arrival_airport&quot;: &quot;TBS&quot;, &quot;departure_datetime&quot;: &quot;Oct 26, 2026, 11:10 AM&quot;, &quot;arrival_datetime&quot;: &quot;Oct 26, 2026, 11:50 AM&quot;, &quot;pnr&quot;: &quot;K4TQ9X&quot;, &quot;cabin_class&quot;: &quot;economy&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" data-etype="flight"></div><div class="einfo"><div class="en">GYD<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>TBS</div><div class="ed">11:10 AM – 11:50 AM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="restaurant" data-fields="{&quot;meal&quot;: &quot;Lunch&quot;, &quot;url&quot;: &quot;https://stambahotel.com/eat/lolita&quot;, &quot;locations&quot;: [&quot;Stamba Hotel, 14 Merab Kostava St, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="en">Lunch — Lolita</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="bar" data-fields="{&quot;bar_type&quot;: &quot;wine&quot;, &quot;hours&quot;: &quot;12:00 PM – 1:00 AM&quot;, &quot;dress_code&quot;: &quot;Casual&quot;, &quot;cover_charge&quot;: &quot;0&quot;, &quot;locations&quot;: [&quot;Machabeli St, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="bar"></div><div class="einfo"><div class="en">Vino Underground</div><div class="ed">Georgian natural wine in a brick cellar</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>8:30 PM</span><span class="mc ">Walk-ins</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Georgia is 0 hours ahead of Baku — no time change, but the Telegraph check-in is after 2:00 PM.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1383,11 +1412,11 @@
         <div class="ec" data-type="coffee" data-fields="{&quot;specialty&quot;: &quot;Espresso and pour-over&quot;, &quot;hours&quot;: &quot;8:00 AM – 10:00 PM&quot;, &quot;wifi_available&quot;: true, &quot;locations&quot;: [&quot;Tbilisi city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="coffee"></div><div class="einfo"><div class="en">Coffee LAB</div><div class="ed">Georgian-roasted espresso near Rustaveli</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>9:00 AM</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="museum" data-fields="{&quot;opening_hours&quot;: &quot;10:00 AM – 6:00 PM, closed Mon&quot;, &quot;ticket_price&quot;: &quot;15.00&quot;, &quot;requires_timed_entry&quot;: false, &quot;estimated_visit_duration_min&quot;: &quot;90&quot;, &quot;exhibits_of_interest&quot;: &quot;Archaeological Treasury&quot;, &quot;locations&quot;: [&quot;3 Rustaveli Ave, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="museum"></div><div class="einfo"><div class="en">Georgian National Museum</div><div class="ed">Treasury of gold, plus the Soviet occupation exhibit</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>11:00 AM</span><span class="mc blue">Tickets booked</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="store" data-fields="{&quot;store_category&quot;: &quot;Flea market&quot;, &quot;items_of_interest&quot;: &quot;Cobalt glass, vintage maps, wool socks&quot;, &quot;locations&quot;: [&quot;Dry Bridge, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="store"></div><div class="einfo"><div class="en">Dry Bridge Market</div><div class="ed">Antiques, Soviet badges, paintings and ceramics</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>1:30 PM</span><span class="mc ">Souvenirs</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <div class="ec" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Tbilisi&quot;, &quot;description&quot;: &quot;Domed brick bathhouses over natural hot springs&quot;, &quot;known_for&quot;: &quot;Sulfur baths, Narikala cable car, Legvtakhevi waterfall&quot;, &quot;locations&quot;: [&quot;Abanotubani, Old Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">Abanotubani</div><div class="ed">Old sulfur-bath district under Narikala Fortress</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>Afternoon</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
+        <div class="ec" data-stops="[{&quot;t&quot;: &quot;hike&quot;, &quot;n&quot;: &quot;Narikala Fortress&quot;, &quot;l&quot;: &quot;Narikala Hill, Old Tbilisi&quot;, &quot;time&quot;: &quot;2:30 PM&quot;, &quot;fav&quot;: true}, {&quot;t&quot;: &quot;hike&quot;, &quot;n&quot;: &quot;Legvtakhevi Waterfall&quot;, &quot;l&quot;: &quot;Abanotubani, Old Tbilisi&quot;, &quot;time&quot;: &quot;3:30 PM&quot;}, {&quot;t&quot;: &quot;museum&quot;, &quot;n&quot;: &quot;Juma Mosque&quot;, &quot;l&quot;: &quot;Abanotubani, Old Tbilisi&quot;, &quot;time&quot;: &quot;4:15 PM&quot;}]" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Tbilisi&quot;, &quot;description&quot;: &quot;Domed brick bathhouses over natural hot springs&quot;, &quot;known_for&quot;: &quot;Sulfur baths, Narikala cable car, Legvtakhevi waterfall&quot;, &quot;locations&quot;: [&quot;Abanotubani, Old Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">Abanotubani</div><div class="ed">Old sulfur-bath district under Narikala Fortress</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>Afternoon</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="experience" data-fields="{&quot;experience_category&quot;: &quot;spa&quot;, &quot;provider_name&quot;: &quot;Orbeliani Baths&quot;, &quot;duration_min&quot;: &quot;60&quot;, &quot;num_participants&quot;: &quot;2&quot;, &quot;meeting_point&quot;: &quot;Main entrance on Abanotubani Square&quot;, &quot;includes&quot;: &quot;Private room, scrub, towels&quot;, &quot;locations&quot;: [&quot;Orbeliani Baths, Abanotubani Square, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="experience"></div><div class="einfo"><div class="en">Private sulfur bath at Orbeliani</div><div class="ed">Hot-spring room with scrub</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>5:00 PM</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="restaurant" data-fields="{&quot;reservation&quot;: true, &quot;booked&quot;: true, &quot;reservation_platform&quot;: &quot;OpenTable&quot;, &quot;meal&quot;: &quot;Dinner&quot;, &quot;locations&quot;: [&quot;Writers&#x27; House, 13 Machabeli St, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Dinner — Cafe Littera</div><div class="ed">Khachapuri and mtsvadi in the garden</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>8:00 PM GET</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Bring a swimsuit for the baths — private rooms are optional.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1399,8 +1428,8 @@
         <div class="ec" data-fav="1" data-type="hike" data-fields="{&quot;trail_name&quot;: &quot;Gergeti Trinity Church&quot;, &quot;trailhead_address&quot;: &quot;Stepantsminda village&quot;, &quot;distance_value&quot;: &quot;8&quot;, &quot;distance_unit&quot;: &quot;km&quot;, &quot;elevation_gain&quot;: &quot;550&quot;, &quot;difficulty&quot;: &quot;moderate&quot;, &quot;estimated_duration_min&quot;: &quot;180&quot;, &quot;route_type&quot;: &quot;out_and_back&quot;, &quot;permit_required&quot;: false, &quot;dog_friendly&quot;: true, &quot;locations&quot;: [&quot;Stepantsminda village&quot;, &quot;Gergeti Trinity Church&quot;]}"><div class="ec-inner"><div class="ei" data-etype="hike"></div><div class="einfo"><div class="en">Gergeti Trinity Church trail</div><div class="ed">Steep climb to the church under Mt. Kazbek</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>12:00 PM</span><span class="mc amber">Moderate</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="restaurant" data-fields="{&quot;reservation&quot;: false, &quot;meal&quot;: &quot;Lunch&quot;, &quot;locations&quot;: [&quot;Stepantsminda&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Lunch — Rooms Hotel Kazbegi</div><div class="ed">Khinkali by the fireplace</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>3:30 PM</span><span class="mc ">Walk-in</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="restaurant" data-fields="{&quot;reservation&quot;: true, &quot;booked&quot;: true, &quot;reservation_platform&quot;: &quot;Phone&quot;, &quot;meal&quot;: &quot;Dinner&quot;, &quot;locations&quot;: [&quot;Tbilisi Old Town&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Dinner — Barbarestan</div><div class="ed">Recipes from a 19th-century Georgian cookbook</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>9:00 PM GET</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Check the road status for Jvari Pass before leaving. Return the car by 8:00 PM.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1412,8 +1441,8 @@
         <div class="ec" data-type="store" data-fields="{&quot;store_category&quot;: &quot;Creative market&quot;, &quot;items_of_interest&quot;: &quot;Georgian designer goods&quot;, &quot;locations&quot;: [&quot;8 Egnate Ninoshvili St, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="store"></div><div class="einfo"><div class="en">Fabrika</div><div class="ed">Creative hub with studios, boutiques and cafes</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>5:00 PM</span><span class="mc ">Shopping</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="ticket" data-fields="{&quot;event_name&quot;: &quot;Swan Lake&quot;, &quot;venue_name&quot;: &quot;Tbilisi Opera and Ballet Theatre&quot;, &quot;event_datetime&quot;: &quot;Oct 29, 7:00 PM&quot;, &quot;ticket_type&quot;: &quot;theater&quot;, &quot;seat_section&quot;: &quot;Parterre&quot;, &quot;seat_row&quot;: &quot;5&quot;, &quot;seat_number&quot;: &quot;12-13&quot;, &quot;quantity&quot;: &quot;2&quot;, &quot;locations&quot;: [&quot;25 Rustaveli Ave, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="ticket"></div><div class="einfo"><div class="en">Tbilisi Opera and Ballet Theatre</div><div class="ed">Evening ballet in the gilded hall</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>7:00 PM</span><span class="mc blue">Tickets booked</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="misc" data-fields="{&quot;locations&quot;: [&quot;The Telegraph Hotel, Tbilisi&quot;]}"><div class="ec-inner"><div class="ei" data-etype="misc"></div><div class="einfo"><div class="en">Pack up and settle hotel bill</div><div class="ed">Early start for the drive to Yerevan</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>10:00 PM</span><span class="mc ">To do</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Ballet starts at 7:00 PM sharp — no late seating.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1424,8 +1453,8 @@
         <div class="ec" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Dilijan&quot;, &quot;description&quot;: &quot;Armenia&#x27;s \&quot;little Switzerland\&quot;&quot;, &quot;known_for&quot;: &quot;Old Dilijan craft street, Dilijan National Park&quot;, &quot;locations&quot;: [&quot;Old Dilijan, Armenia&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">Dilijan Old Town</div><div class="ed">Wooden balconies, craft shops and forest walks</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>1:00 PM</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec ec-stay" data-fields="{&quot;confirmation_number&quot;:&quot;7314420&quot;}"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Opera Suite Hotel Yerevan</div><div class="stay-label">Tumanyan St, Yerevan</div></div></div></div>
         <div class="ec" data-fav="1" data-type="restaurant" data-fields="{&quot;reservation&quot;: true, &quot;booked&quot;: true, &quot;reservation_platform&quot;: &quot;Phone&quot;, &quot;meal&quot;: &quot;Dinner&quot;, &quot;locations&quot;: [&quot;10 Pushkin St, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Dinner — Dolmama</div><div class="ed">Armenian dolma and a pomegranate wine pairing</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>8:00 PM AMT</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Bring passports and the printed Armenia entry confirmation to the border.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1434,10 +1463,10 @@
         <div class="day-stay"><div class="day-stay-icon"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="day-stay-text"><div class="day-stay-name">Opera Suite Hotel Yerevan</div><div class="day-stay-label">Tumanyan St, Yerevan</div></div></div>
         <div class="ec" data-type="coffee" data-fields="{&quot;specialty&quot;: &quot;Armenian coffee and pastries&quot;, &quot;wifi_available&quot;: true, &quot;locations&quot;: [&quot;Yerevan city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="coffee"></div><div class="einfo"><div class="en">Jazzve</div><div class="ed">Armenian coffee in a copper pot</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>9:00 AM</span><span class="mc ">Wifi</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="museum" data-fields="{&quot;opening_hours&quot;: &quot;10:00 AM – 5:00 PM, closed Sun and Mon&quot;, &quot;ticket_price&quot;: &quot;3.50&quot;, &quot;requires_timed_entry&quot;: true, &quot;estimated_visit_duration_min&quot;: &quot;90&quot;, &quot;exhibits_of_interest&quot;: &quot;Illuminated Gospels&quot;, &quot;locations&quot;: [&quot;53 Mesrop Mashtots Ave, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="museum"></div><div class="einfo"><div class="en">Matenadaran</div><div class="ed">Ancient manuscripts and illuminated Bibles</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>11:00 AM</span><span class="mc blue">Tickets booked</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <div class="ec" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Yerevan&quot;, &quot;description&quot;: &quot;Limestone staircase through a contemporary art park&quot;, &quot;known_for&quot;: &quot;Cafesjian Center, Mount Ararat views&quot;, &quot;locations&quot;: [&quot;Tamanyan St, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">The Cascade complex</div><div class="ed">Giant staircase, sculpture gardens and city views</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>2:00 PM</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div><div class="photo-tiles"><img class="pt" src="Photos/Yerevan.jpg" alt="The Cascade complex"></div></div>
+        <div class="ec" data-stops="[{&quot;t&quot;: &quot;museum&quot;, &quot;n&quot;: &quot;Cafesjian Center for the Arts&quot;, &quot;l&quot;: &quot;Tamanyan St, Yerevan&quot;, &quot;time&quot;: &quot;2:15 PM&quot;, &quot;fav&quot;: true}, {&quot;t&quot;: &quot;hike&quot;, &quot;n&quot;: &quot;Climb the Cascade terraces&quot;, &quot;l&quot;: &quot;Cascade Complex, Yerevan&quot;, &quot;time&quot;: &quot;3:15 PM&quot;}, {&quot;t&quot;: &quot;coffee&quot;, &quot;n&quot;: &quot;Coffee at the top terrace&quot;, &quot;l&quot;: &quot;Cascade Complex, Yerevan&quot;, &quot;time&quot;: &quot;4:00 PM&quot;}]" data-fav="1" data-type="neighborhood" data-fields="{&quot;parent_city&quot;: &quot;Yerevan&quot;, &quot;description&quot;: &quot;Limestone staircase through a contemporary art park&quot;, &quot;known_for&quot;: &quot;Cafesjian Center, Mount Ararat views&quot;, &quot;locations&quot;: [&quot;Tamanyan St, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="neighborhood"></div><div class="einfo"><div class="en">The Cascade complex</div><div class="ed">Giant staircase, sculpture gardens and city views</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>2:00 PM</span><span class="mc ">Walk</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div><div class="photo-tiles"><img class="pt" src="Photos/Yerevan.jpg" alt="The Cascade complex"></div></div>
         <div class="ec" data-type="bar" data-fields="{&quot;bar_type&quot;: &quot;brewery&quot;, &quot;hours&quot;: &quot;12:00 PM – 1:00 AM&quot;, &quot;dress_code&quot;: &quot;Casual&quot;, &quot;locations&quot;: [&quot;Yerevan city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="bar"></div><div class="einfo"><div class="en">Dargett Craft Brewery</div><div class="ed">Local IPA and wings overlooking the city</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>7:30 PM</span><span class="mc ">Walk-ins</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Matenadaran is closed Sundays and Mondays, so today is the day.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1448,8 +1477,8 @@
         <div class="ec" data-type="restaurant" data-fields="{&quot;reservation&quot;: false, &quot;meal&quot;: &quot;Lunch&quot;, &quot;locations&quot;: [&quot;Yerevan city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Lunch — Tavern Yerevan</div><div class="ed">Barbecue and Armenian lavash in a cozy dining room</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>2:30 PM</span><span class="mc ">Walk-in</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="hike" data-fields="{&quot;trail_name&quot;: &quot;Garni Gorge&quot;, &quot;trailhead_address&quot;: &quot;Garni village&quot;, &quot;distance_value&quot;: &quot;3&quot;, &quot;distance_unit&quot;: &quot;km&quot;, &quot;elevation_gain&quot;: &quot;120&quot;, &quot;difficulty&quot;: &quot;easy&quot;, &quot;estimated_duration_min&quot;: &quot;60&quot;, &quot;route_type&quot;: &quot;out_and_back&quot;, &quot;permit_required&quot;: false, &quot;dog_friendly&quot;: true, &quot;locations&quot;: [&quot;Garni village&quot;, &quot;Garni Gorge&quot;]}"><div class="ec-inner"><div class="ei" data-etype="hike"></div><div class="einfo"><div class="en">Garni Gorge and Symphony of Stones</div><div class="ed">Basalt columns reached by a short riverside trail</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>4:30 PM</span><span class="mc green">Easy</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="ticket" data-fields="{&quot;event_name&quot;: &quot;Yerevan State Philharmonic&quot;, &quot;venue_name&quot;: &quot;Armenian National Opera and Ballet Theatre&quot;, &quot;event_datetime&quot;: &quot;Nov 1, 7:30 PM&quot;, &quot;ticket_type&quot;: &quot;concert&quot;, &quot;seat_section&quot;: &quot;Balcony&quot;, &quot;seat_row&quot;: &quot;A&quot;, &quot;seat_number&quot;: &quot;4-5&quot;, &quot;quantity&quot;: &quot;2&quot;, &quot;locations&quot;: [&quot;54 Tumanyan St, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="ticket"></div><div class="einfo"><div class="en">Armenian National Opera and Ballet Theatre</div><div class="ed">Evening symphony in Freedom Square</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>7:30 PM</span><span class="mc blue">Tickets booked</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Garni is on the way back from Khor Virap — ask the driver to stop.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1460,8 +1489,8 @@
         <div class="ec" data-type="store" data-fields="{&quot;store_category&quot;: &quot;Open-air market&quot;, &quot;items_of_interest&quot;: &quot;Duduk, lavash baskets, painted tiles&quot;, &quot;locations&quot;: [&quot;Aram Khachaturian St, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="store"></div><div class="einfo"><div class="en">Vernissage Market</div><div class="ed">Weekend market of carpets, duduk, and hand-painted ceramics</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>1:00 PM</span><span class="mc amber">Souvenirs</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="experience" data-fields="{&quot;experience_category&quot;: &quot;tour&quot;, &quot;provider_name&quot;: &quot;Yerevan Brandy Company&quot;, &quot;duration_min&quot;: &quot;90&quot;, &quot;num_participants&quot;: &quot;2&quot;, &quot;meeting_point&quot;: &quot;Admission desk&quot;, &quot;includes&quot;: &quot;Cellar tour and 3-sample tasting&quot;, &quot;locations&quot;: [&quot;2 Admiral Isakov Ave, Yerevan&quot;]}"><div class="ec-inner"><div class="ei" data-etype="experience"></div><div class="einfo"><div class="en">Noy Yerevan Brandy Company tour</div><div class="ed">Cellar tour and a tasting flight</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>3:30 PM</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-fav="1" data-type="restaurant" data-fields="{&quot;reservation&quot;: true, &quot;booked&quot;: true, &quot;reservation_platform&quot;: &quot;Phone&quot;, &quot;meal&quot;: &quot;Dinner&quot;, &quot;locations&quot;: [&quot;Yerevan city center&quot;]}"><div class="ec-inner"><div class="ei" data-etype="restaurant"></div><div class="einfo"><div class="en">Dinner — Lavash Restaurant</div><div class="ed">Farewell dinner, tolma and lamb khorovats</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>7:30 PM AMT</span><span class="mc green">Reservation</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)">Last night — pack before dinner. Car to the airport is at 1:30 AM.</textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1470,8 +1499,8 @@
         <div class="ec" data-type="flight" data-fields="{&quot;airline&quot;: &quot;Lufthansa&quot;, &quot;flight_number&quot;: &quot;LH 1317&quot;, &quot;departure_airport&quot;: &quot;EVN&quot;, &quot;arrival_airport&quot;: &quot;FRA&quot;, &quot;departure_datetime&quot;: &quot;Nov 3, 2026, 4:50 AM&quot;, &quot;arrival_datetime&quot;: &quot;Nov 3, 2026, 7:30 AM&quot;, &quot;pnr&quot;: &quot;N8WDQ2&quot;, &quot;cabin_class&quot;: &quot;economy&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" data-etype="flight"></div><div class="einfo"><div class="en">EVN<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>FRA</div><div class="ed">4:50 AM – 7:30 AM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="flight" data-fields="{&quot;airline&quot;: &quot;Lufthansa&quot;, &quot;flight_number&quot;: &quot;LH 418&quot;, &quot;departure_airport&quot;: &quot;FRA&quot;, &quot;arrival_airport&quot;: &quot;IAD&quot;, &quot;departure_datetime&quot;: &quot;Nov 3, 2026, 11:50 AM&quot;, &quot;arrival_datetime&quot;: &quot;Nov 3, 2026, 2:55 PM&quot;, &quot;pnr&quot;: &quot;N8WDQ2&quot;, &quot;cabin_class&quot;: &quot;economy&quot;}"><div class="ec-inner" style="align-items:center;"><div class="ei" data-etype="flight"></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>IAD</div><div class="ed">11:50 AM – 2:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
         <div class="ec" data-type="misc" data-fields="{&quot;locations&quot;: [&quot;Opera Suite Hotel Yerevan&quot;, &quot;Zvartnots International Airport&quot;]}"><div class="ec-inner"><div class="ei" data-etype="misc"></div><div class="einfo"><div class="en">Airport taxi at 1:30 AM</div><div class="ed">Hotel arranges the driver — confirm the night before</div><div class="em"><span class="mc"><svg class="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l4.2 2.5-.8 1.3L11 13V7h2v5.4z"/></svg>1:30 AM AMT</span><span class="mc ">To do</span></div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div>
-        <button class="add-btn" onclick="addElement(this)">+ Add element</button>
         <div class="day-notes"><div class="day-notes-label"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Notepad</div><textarea class="day-notes-input" rows="1" oninput="autoGrow(this)"></textarea></div>
+        <button class="add-btn" onclick="addElement(this)">Add stop</button>
         <div class="spacer"></div>
       </div>
 
@@ -1838,8 +1867,8 @@
           <input class="ef-input" id="nf-start" type="time">
         </div>
       </div>
-      <div class="ef-label">Time zone</div>
-      <select class="ef-input ef-select" id="nf-tz"></select>
+      <div hidden><div class="ef-label">Time zone</div>
+      <select class="ef-input ef-select" id="nf-tz"></select></div>
 
       <div class="ef-label">Category</div>
       <div class="nf-cat-box" id="nf-cat-box" onclick="nfToggleList()"></div>
@@ -2253,7 +2282,7 @@ document.getElementById('ef-file').addEventListener('change',function(){
 document.addEventListener('click',function(e){
   const card=e.target.closest('.trip-screen .ec, .trip-screen .dh-geo');
   if(!card) return;
-  if(e.target.closest('.ea,.hb,.sb,.fav-btn,.drag-icon,.mc,.photo-tiles,input,textarea,button')) return;
+  if(e.target.closest('.ea,.hb,.sb,.fav-btn,.ec-stops,.stops-toggle,.drag-icon,.mc,.photo-tiles,input,textarea,button')) return;
   openViewSheet(card);
 });
 
@@ -2722,7 +2751,6 @@ const TYPE_FIELDS={
   city:[
     {key:'country',label:'Country',required:true,placeholder:'e.g. France'},
     {key:'state_region',label:'State / Region',placeholder:'e.g. Île-de-France'},
-    {key:'timezone',label:'Timezone',placeholder:'e.g. Europe/Paris'},
     {key:'arrival_date',label:'Arrival Date',placeholder:'e.g. 2026-09-14'},
     {key:'departure_date',label:'Departure Date',placeholder:'e.g. 2026-09-18'},
     {key:'description',label:'Description',placeholder:'e.g. Known for the Louvre and river cruises'}
@@ -3082,7 +3110,7 @@ function saveAddElement(){
   const place=(nfPlace&&nfPlace.name===loc)?nfPlace:null;
   const tz=NF_TZ.find(z=>z.id===document.getElementById('nf-tz').value)||NF_TZ[0];
   const startStr=nfFmtTime(document.getElementById('nf-start').value);
-  const timeStr=startStr?startStr+' '+tz.abbr:'';
+  const timeStr=startStr||'';
   const reserved=document.getElementById('nf-reserved').checked;
   const confirm=document.getElementById('nf-confirm').value.trim();
   const notes=document.getElementById('nf-notes').value.trim();
@@ -3109,7 +3137,7 @@ function saveAddElement(){
     (notes?'<div class="ed">'+esc(notes)+'</div>':'')+
     (meta.length?'<div class="em">'+meta.map(chipHTML).join('')+'</div>':'')+
     '</div><div class="ea"><span class="drag-icon">⠿</span></div></div>';
-  btn.parentNode.insertBefore(card,btn);
+  btn.parentNode.insertBefore(card,btn.parentNode.querySelector('.day-notes')||btn);  // new cards go above the notepad
   renderCardLocations(card);
   addFavButton(card);
   if(typeof timeToLeft==='function'&&TIME_LEFT){ timeToLeft(card); updateTzVisibility(card.closest('.trip-screen')); }
@@ -3313,7 +3341,7 @@ function applyElementFilters(){
       const okSearch=!elSearchQuery||hay.includes(elSearchQuery);
       const okType=!elFilters.etype.size||elFilters.etype.has(elType(ec));
       const okSaved=!elFilters.saved.size||
-        (elFilters.saved.has('fav')&&ec.dataset.fav);
+        (elFilters.saved.has('fav')&&(ec.dataset.fav||ec.querySelector('.stop[data-fav]')));
       const vis=okSearch&&okType&&okSaved;
       ec.style.display=vis?'':'none';
       if(vis){ dayHas=true; any=true; }
@@ -4028,6 +4056,42 @@ function renderCardLocations(ec){
 }
 document.querySelectorAll('.ec').forEach(renderCardLocations);
 
+// Neighborhood cards can hold several stops in that area (data-stops), shown nested underneath
+function stopRow(st,tz){
+  const m=(st.time||'').match(/^(\d{1,2}(?::\d\d)?)\s*(AM|PM)$/i);
+  const d=document.createElement('div'); d.className='stop'; d.dataset.s=JSON.stringify({t:st.t,n:st.n,l:st.l,time:st.time||''}); if(st.fav) d.dataset.fav='1';
+  d.innerHTML='<div class="st-tile">'+symSvg(st.t)+'</div>'
+    +'<div class="st-body"><div class="st-eb">'+(m?'<b>'+m[1]+' '+m[2].toUpperCase()+'</b> · ':'')+typeTag(st.t,{})+'</div><div class="st-n">'+st.n+'</div><div class="st-l">'+st.l+'</div></div>'
+    +'<button type="button" class="stop-fav" aria-label="Favorite">'+FAV_SVG+'</button>';
+  return d;
+}
+function saveStops(ec){  // keep the card's data in step with the on-screen order and stars
+  ec.dataset.stops=JSON.stringify([...ec.querySelectorAll('.stop')].map(r=>Object.assign(JSON.parse(r.dataset.s),r.dataset.fav?{fav:true}:{})));
+}
+function buildStops(ec){
+  let stops=[]; try{ stops=JSON.parse(ec.dataset.stops||'[]'); }catch(e){}
+  if(!stops.length||ec.querySelector('.ec-stops')) return;
+  const tz=defaultTz(ec);
+  const wrap=document.createElement('div'); wrap.className='ec-stops';
+  const list=document.createElement('div'); list.className='stops-list';
+  stops.forEach(st=>list.appendChild(stopRow(st,tz)));
+  wrap.appendChild(list);
+  wrap.insertAdjacentHTML('beforeend','<button type="button" class="st-add" onclick="toast(\'Add a stop in this area — demo\')">+ Add a stop</button>');
+  ec.querySelector('.ec-inner').after(wrap);
+  if(window.Sortable) Sortable.create(list,{draggable:'.stop',animation:160,delay:200,delayOnTouchOnly:true,filter:'.stop-fav',preventOnFilter:false,onEnd:()=>{ saveStops(ec); toast('Reordered'); }});
+  wrap.addEventListener('click',function(e){
+    const b=e.target.closest('.stop-fav'); if(!b) return;
+    e.stopPropagation();
+    const row=b.closest('.stop'); if(row.dataset.fav) delete row.dataset.fav; else row.dataset.fav='1';
+    saveStops(ec); toast(row.dataset.fav?'Added to Favorites':'Removed from Favorites');
+    if(elFilters.saved.size) applyElementFilters();
+  });
+  const t=document.createElement('button'); t.type='button'; t.className='stops-toggle';
+  t.innerHTML=stops.length+' stops in this area <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+  t.onclick=function(e){ e.stopPropagation(); ec.classList.toggle('stops-collapsed'); };
+  ec.querySelector('.einfo').appendChild(t);
+}
+
 // Heart button on every card (accommodation banners excluded); tapping toggles the card's favorite state
 const FAV_SVG='<svg viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg>';
 function addFavButton(ec){
@@ -4048,6 +4112,7 @@ document.addEventListener('click',function(e){
   if(elFilters.saved.size) applyElementFilters();
 },true);
 document.querySelectorAll('.ec').forEach(addFavButton);
+document.querySelectorAll('.ec[data-stops]').forEach(buildStops);
 
 // TRIAL: pull each card's time chip out into a column at the left of the card
 const TIME_LEFT=true;
@@ -4065,32 +4130,38 @@ function defaultTz(ec){
     return part?part.value:'';
   }catch(e){ return ''; }
 }
+function typeKeyOf(ec){ return ec.dataset.type||((ec.querySelector('.ei')||{dataset:{}}).dataset.etype)||'misc'; }
+function typeTag(key,fields){
+  if(key==='restaurant') return (fields&&fields.meal)||'Restaurant';
+  const t=ELEMENT_TYPES.find(x=>x.key===key); const l=t?t.label:'Miscellaneous';
+  return l==='Coffee Shop'?'Coffee':l;
+}
+// Top line of every card: "12:30 PM PT · Lunch" (time in bold, then the element tag). Cards without a time show just the tag.
 function timeToLeft(ec){
   if(ec.classList.contains('ec-stay')) return;
-  const inner=ec.querySelector('.ec-inner'); if(!inner) return;
-  ec.querySelectorAll('.ec-time').forEach(e=>e.remove());
+  const info=ec.querySelector('.einfo'); if(!info) return;
+  ec.querySelectorAll('.ec-time,.ec-eyebrow').forEach(e=>e.remove());
   ec.querySelectorAll('.mc.is-time').forEach(c=>c.classList.remove('is-time'));
-  // layout: [time column] [icon] [name, details, chips]; every card gets the column so names line up
-  const col=document.createElement('div'); col.className='ec-time';
+  let f={}; try{ f=JSON.parse(ec.dataset.fields||'{}'); }catch(e){}
+  const en=info.querySelector('.en');
+  // "Lunch — Annam VL" becomes title "Annam VL" + meal tag
+  const mm=en&&en.textContent.match(/^(Breakfast|Lunch|Snack|Dinner|Dessert)\s*[—-]\s*(.+)$/);
+  if(mm){ en.textContent=mm[2]; f.meal=f.meal||mm[1]; ec.dataset.fields=JSON.stringify(f); }
+  const key=typeKeyOf(ec);
+  let time='', soft=false;
   const chip=[...ec.querySelectorAll('.em .mc')].find(c=>c.querySelector('svg.clock'));
   if(chip){
     chip.classList.add('is-time');
     const txt=chip.textContent.trim(), m=txt.match(/^(.*?)(\d{1,2}(?::\d\d)?)\s*(AM|PM)\b\s*(.*)$/i);
-    const tz=(m&&m[4].trim())||defaultTz(ec);
-    col.dataset.tz=tz;
-    col.innerHTML=(m&&m[1].trim()?'<span class="pre">'+m[1].trim()+'</span>':'')
-      +(m?'<div class="row"><span class="t">'+m[2]+'</span><span class="ap">'+m[3].toUpperCase()+'</span></div>':'<div class="row"><span class="t w">'+txt+'</span></div>')
-      +(tz?'<span class="tz">'+tz+'</span>':'');
-  }
-  else if(ec.dataset.type==='flight'||ec.querySelector('.ei[data-etype="flight"]')){
-    // flights carry their time in the details line; show the departure time here, in the departure airport's zone
-    let f={}; try{ f=JSON.parse(ec.dataset.fields||'{}'); }catch(e){}
+    if(m){ soft=!!m[1].trim(); time=(m[1].trim()?m[1].trim()+' ':'')+m[2]+' '+m[3].toUpperCase(); }  // time zones are no longer shown
+    else time=txt;
+  } else if(key==='flight'){
     const m=(f.departure_datetime||'').match(/(\d{1,2}(?::\d\d)?)\s*(AM|PM)/i);
-    const AIRPORT_TZ={GYD:'AZT',TBS:'GET',EVN:'AMT',IAD:'ET',FRA:'CET',PDX:'PT',BWI:'ET',LAX:'PT'};
-    const tz=AIRPORT_TZ[f.departure_airport]||defaultTz(ec);
-    if(m){ col.dataset.tz=tz; col.innerHTML='<div class="row"><span class="t">'+m[1]+'</span><span class="ap">'+m[2].toUpperCase()+'</span></div>'+(tz?'<span class="tz">'+tz+'</span>':''); }
+    if(m){ time=m[1]+' '+m[2].toUpperCase(); }
   }
-  inner.insertBefore(col,inner.firstChild);
+  const eb=document.createElement('div'); eb.className='ec-eyebrow';
+  eb.innerHTML=(time?'<span class="tm'+(soft?' soft':'')+'">'+time+'</span><span class="dot">·</span>':'')+'<span class="etag">'+typeTag(key,f)+'</span>';
+  info.insertBefore(eb,info.firstChild);
 }
 // Time zone is always shown under the time (kept as a function so "only when it changes" can come back)
 function updateTzVisibility(scope){
@@ -4107,7 +4178,7 @@ if(window.Sortable){
   document.querySelectorAll('.day-sec').forEach(sec=>{
     Sortable.create(sec,{
       draggable:'.ec',
-      delay:250, delayOnTouchOnly:true, filter:'.fav-btn,.mc,.photo-tiles', preventOnFilter:false,
+      delay:250, delayOnTouchOnly:true, filter:'.fav-btn,.mc,.photo-tiles,.ec-stops,.stops-toggle', preventOnFilter:false,
       animation:160,
       ghostClass:'drag-ghost',
       chosenClass:'drag-chosen',
