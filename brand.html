@@ -33,6 +33,14 @@
   aside nav a { text-decoration: none; font-size: 14px; color: var(--muted); padding: 8px 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s, color 0.15s; }
   aside nav a:hover { background: var(--soft); color: var(--ink); }
   aside nav a.on { background: var(--ink); color: var(--bg); }
+  aside nav a .chev { margin-left: auto; width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.7; }
+  aside nav a .chev:hover { opacity: 1; background: color-mix(in srgb, currentColor 14%, transparent); }
+  aside nav a .chev svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+  aside nav a.open .chev svg { transform: rotate(180deg); }
+  aside nav .subnav { display: none; flex-direction: column; gap: 1px; margin: 2px 0 8px 18px; padding-left: 10px; border-left: 1px solid var(--line); }
+  aside nav .subnav.open { display: flex; }
+  aside nav .subnav a { font-size: 13px; padding: 5px 10px; border-radius: 8px; }
+  aside nav .subnav a.cur { background: var(--soft); color: var(--ink); }
   aside nav a small { font-size: 11px; opacity: 0.7; font-weight: 400; }
   .tools { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
   .btn { font-family: inherit; font-weight: 700; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; justify-content: center; text-decoration: none; transition: transform 0.1s, border-color 0.15s; }
@@ -286,8 +294,147 @@
     .shell { grid-template-columns: 1fr; }
     aside { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; border-right: none; border-bottom: 1px solid var(--line); padding: 14px 16px; gap: 12px; }
     aside nav { flex-direction: row; flex-wrap: wrap; } aside .mark { width: 56px; }
+    aside nav .subnav, aside nav a .chev { display: none !important; }
     .tools { margin-top: 0; flex-direction: row; margin-left: auto; }
   }
+  /* ---------- Element anatomy (card / peek / edit for every element) ---------- */
+  .an-note { font-size: 14px; color: var(--muted); font-weight: 400; max-width: 72ch; }
+  .an-h { font-size: 12px; text-transform: uppercase; color: var(--muted); margin: 34px 0 10px; letter-spacing: 0.4px; }
+  .an-legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin: 14px 0 6px; font-size: 13px; font-weight: 400; color: var(--muted); align-items: center; }
+  /* each example is a real iPhone-width screen (375px, same as the app); two columns fit inside the normal page margins */
+  .an-scroll { overflow-x: auto; padding: 6px 4px 14px; margin: 0 -4px; }
+  .an-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; min-width: 880px; }
+  .an-stack { display: flex; flex-direction: column; gap: 16px; }
+  /* each view sits in its own box that fills the page width; the screen inside stays a true 375px iPhone */
+  .an-box { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 16px 18px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .an-box > .an-col { align-self: stretch; padding: 0; }
+  .an-box > .acw, .an-box > .sh { width: 375px; max-width: 100%; }
+  .an-add { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; min-width: 880px; }
+  .an-pick { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .an-ic { --ic: var(--ink); width: 82px; padding: 4px 10px 10px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); font-family: inherit; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.12s; }
+  .an-ic svg { width: 46px; height: 46px; display: block; }
+  .an-ic:hover { border-color: var(--muted); } .an-ic:active { transform: scale(0.97); }
+  .an-ic.on { --ic: var(--bg); background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .an-ic.all { justify-content: center; font-size: 12px; }
+  .an-col { font-size: 12px; text-transform: uppercase; color: var(--muted); padding: 0 4px; }
+  .an-col b { display: block; font-size: 15px; text-transform: none; color: var(--ink); margin-bottom: 2px; }
+  .an-col span { font-weight: 400; text-transform: none; font-size: 13px; line-height: 1.4; display: block; max-width: 34ch; }
+  .an-rl { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 17px; }
+  .an-rl .rlic { --ic: var(--ink); width: 34px; height: 34px; flex: 0 0 auto; } .an-rl .rlic svg { width: 34px; height: 34px; }
+  .an-rl small { font-size: 12px; font-weight: 400; color: var(--muted); }
+  /* tiny markers beside each field label: red dot = on the card, black ring = in the peek, dashed ring = stored only */
+  .bd { display: inline-block; width: 9px; height: 9px; border-radius: 50%; font-size: 0; line-height: 0; padding: 0; vertical-align: middle; flex: 0 0 auto; }
+  .bd.c { background: #E34234; }
+  .sw-oc { display: inline-block; width: 22px; height: 12px; border-radius: 4px; border: 1.5px solid #E34234; margin-right: 8px; vertical-align: -2px; }
+  .bd.p { border: 1.5px solid #1a1a1a; }
+  .bd.n { border: 1.5px dashed #c4c4c4; }
+  .an-legend .bd { width: 11px; height: 11px; margin-right: 6px; vertical-align: -1px; }
+  .an-legend .bd.p { border-color: var(--ink); } .an-legend .bd.n { border-color: var(--muted); }
+  /* the card (themed) */
+  .acw { background: var(--bg); color: var(--fg); border-radius: 22px; padding: 16px; --mut: color-mix(in srgb, var(--fg) 62%, var(--bg)); border: 1px solid var(--line); }
+  .ac { display: flex; gap: 12px; align-items: flex-start; background: color-mix(in srgb, var(--fg) 6%, var(--bg)); border: 1px solid color-mix(in srgb, var(--fg) 16%, var(--bg)); border-radius: 14px; padding: 12px 14px; }
+  .ac-ei { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--acc) 30%, var(--bg)); --ic: color-mix(in srgb, var(--acc) 55%, var(--fg)); display: flex; align-items: center; justify-content: center; }
+  .ac-ei svg { width: 40px; height: 40px; }
+  .ac-info { flex: 1; min-width: 0; }
+  .ac-eb { font-size: 12px; line-height: 1.25; font-weight: 500; color: var(--mut); margin-bottom: 2px; }
+  .ac-en { font-size: 14px; font-weight: 800; }
+  .ac-ed { font-size: 12px; font-weight: 400; color: var(--mut); margin-top: 2px; line-height: 1.4; }
+  .ac-star { flex: 0 0 auto; width: 17px; height: 17px; margin: 0.9px -1px 0 6px; color: var(--mut); }  /* star's top lines up with the top of the text, and sits the same distance from the top and right edges */
+  .ac-star svg { width: 17px; height: 17px; display: block; } .ac-star path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+  .ac-star.on { color: var(--acc); } .ac-star.on path { fill: currentColor; }
+  .ac-city { display: inline-flex; align-items: center; gap: 5px; background: var(--acc); color: var(--acct); --ic: var(--acct); font-size: 12px; font-weight: 700; border-radius: 999px; padding: 5px 12px; }
+  .ac-city svg { width: 13px; height: 13px; }
+  .ac-stay { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: color-mix(in srgb, var(--fg) 9%, var(--bg)); border: 1px solid color-mix(in srgb, var(--fg) 18%, var(--bg)); }
+  .ac-stay .circ { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: var(--acc); --ic: var(--acct); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .ac-stay .circ svg { width: 32px; height: 32px; }
+  .ac-stay .n { font-size: 13px; font-weight: 800; } .ac-stay .a { font-size: 11px; font-weight: 600; color: var(--mut); }
+  .ac-hood { flex-wrap: wrap; row-gap: 0; }
+  .ac-stops { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0; flex: 0 0 100%; }
+  .ac-stop .ac-star { margin: 2.4px 0.5px 0 6px; }
+  .ac-stop { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--fg) 11%, var(--bg)); border: 1px solid color-mix(in srgb, var(--fg) 14%, var(--bg)); }
+  .ac-stop .t { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--acc) 30%, var(--bg)); --ic: color-mix(in srgb, var(--acc) 55%, var(--fg)); display: flex; align-items: center; justify-content: center; }
+  .ac-stop .t svg { width: 40px; height: 40px; }
+  .ac-stop .b { flex: 1; min-width: 0; } .ac-stop .e { font-size: 11px; color: var(--mut); font-weight: 500; } .ac-stop .nn { font-size: 13px; font-weight: 800; } .ac-stop .l { font-size: 11px; color: var(--mut); font-weight: 400; }
+  .ac-toggle { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font: inherit; font-size: 11px; font-weight: 700; padding: 3px 8px 3px 10px; border-radius: 999px; border: 0; background: var(--acc); color: var(--acct); cursor: pointer; }
+  .ac-toggle svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
+  .ac-hood.closed .ac-toggle svg { transform: rotate(180deg); } .ac-hood.closed .ac-stops { display: none; }
+  .ac-stops-cap { font-size: 11px; font-weight: 700; color: var(--acc); margin-top: 7px; }
+  /* the sheets (always light, same as the app) */
+  .sh { background: #fff; color: #1a1a1a; border: 1px solid #ebe8de; border-radius: 24px; padding: 10px 20px 22px; box-shadow: 0 10px 26px rgba(0,0,0,0.10); font-weight: 700; }
+  .sh .grab { width: 38px; height: 4px; border-radius: 2px; background: #e0e0e0; margin: 4px auto 14px; }
+  .sh .ttl { font-size: 16px; font-weight: 800; }
+  .sh .lb { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .sh .in { border: 0.5px solid #ddd; background: #fff; border-radius: 12px; padding: 10px 12px; font-size: 14px; font-weight: 600; min-height: 42px; display: flex; align-items: center; word-break: break-word; }
+  .sh .in.ph { color: #bbb; }
+  .sh .in.ro { background: #F6F4EE; border-color: #eee; color: #555; }  /* fills itself from the pickup location */
+  .sh .c1 { position: relative; }
+  .sh .vr.hasact { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .sh .vr.hasact .vcol { min-width: 0; }
+  .sh .act { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 32px; height: 32px; border-radius: 999px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; font: inherit; font-size: 12px; font-weight: 700; padding: 0; cursor: pointer; text-decoration: none; transition: background 0.15s, border-color 0.15s; }
+  .sh .act:hover { background: #F6F4EE; border-color: #bbb; }
+  .sh .act.pill { padding: 0 12px; }
+  .sh .act svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .sh .act.done { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+  .sh .in.sel[data-opts] { cursor: pointer; user-select: none; }
+  .sh .ddm { max-height: 260px; overflow-y: auto; position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; background: #fff; border: 0.5px solid #ddd; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.16); z-index: 30; overflow: hidden; }
+  .sh .ddi { padding: 10px 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; }
+  .sh .tico { --ic: #fff; flex: 0 0 auto; width: 30px; height: 30px; display: inline-flex; margin: -3px 0; background: #1a1a1a; border-radius: 9px; padding: 3px; box-sizing: border-box; }  /* black rounded square, white icon */
+  .sh .tico svg { width: 100%; height: 100%; display: block; }
+  .sh .tico.eq { padding: 6px; }  /* the drawing sits the same distance from all four edges of its black square */
+  .sh .in.sel[data-key="element_type"] { gap: 10px; padding: 6px 30px 6px 6px; }  /* icon sits the same distance from the top, bottom and left edges */
+  .sh .in.sel[data-key="element_type"] .tico { margin: 0; }
+  .sh .ddi.hasico { align-items: center; justify-content: flex-start; gap: 10px; padding-top: 6px; padding-bottom: 6px; }
+  .sh .ddi.hasico .tico { margin: 0; } .sh .ddm:has(.hasico) { padding-bottom: 6px; }  /* space under the last icon matches the space on its left */
+  .sh .ddi.on::after { margin-left: auto; }
+  .sh .airwrap { position: relative; }
+  .sh .airwrap svg { position: absolute; right: 12px; top: 12px; pointer-events: none; }
+  .sh input.in.air { width: 100%; font: inherit; font-weight: 600; font-size: 14px; color: #1a1a1a; padding-right: 36px; outline: none; }
+  .sh input.in.air:focus { border-color: #1a1a1a; }
+  .sh .ddi.air { align-items: flex-start; } .sh .ddi small { display: block; font-weight: 400; font-size: 11px; color: #999; margin-top: 1px; }
+  .acw .sep { margin: 0 4px; }  /* space around the dot between the time and the element name */
+  .ac-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 700; padding: 3px 10px 3px 8px; border-radius: 999px; background: var(--acc); color: var(--acct); }
+  .ac-badge svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .ac-en .codes { display: inline-flex; align-items: center; gap: 1px; } .ac-ed.cities { display: flex; align-items: center; gap: 6px; } .arr { flex: 0 0 auto; }
+  .sh .optcap { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #aaa; margin: 8px 0 3px; }
+  .sh .optlist { border: 0.5px solid #e5e5e5; border-radius: 12px; background: #FAF9F5; max-height: 132px; overflow-y: scroll; padding: 3px 0; }
+  .sh .optlist::-webkit-scrollbar { width: 7px; } .sh .optlist::-webkit-scrollbar-track { background: transparent; } .sh .optlist::-webkit-scrollbar-thumb { background: #cfcdc4; border-radius: 4px; border: 1.5px solid #FAF9F5; }
+  .sh .optlist div { padding: 7px 12px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
+  .sh .optlist div.on::after { content: '\2713'; color: #E34234; }
+  .sh .stops-ed { position: relative; border: 0.5px solid #ddd; border-radius: 12px; padding: 4px; }
+  .sh .se { display: flex; align-items: center; gap: 10px; padding: 6px; } .sh .se + .se { border-top: 0.5px solid #eee; }
+  .sh .se.none { color: #aaa; font-size: 13px; font-weight: 600; padding: 10px 8px; }
+  .sh .se .tico { width: 28px; height: 28px; margin: 0; }
+  .sh .se .sb { flex: 1; min-width: 0; } .sh .se .sb b { display: block; font-size: 13px; font-weight: 700; } .sh .se .sb small { font-size: 11px; font-weight: 400; color: #999; }
+  .sh .se .rm { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ddd; background: #fff; color: #777; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
+  .sh .se .rm:hover { background: #F6F4EE; color: #E34234; border-color: #f0d0cb; }
+  .sh .se .rm svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; }
+  .sh .addstop { width: 100%; margin-top: 4px; padding: 9px; border: 1px dashed #ccc; border-radius: 10px; background: none; font: inherit; font-size: 12px; font-weight: 700; color: #777; cursor: pointer; }
+  .sh .addstop:hover { background: #F6F4EE; color: #1a1a1a; }
+  .sh .ddi.create { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .sh .ddi.create .tico { width: 26px; height: 26px; margin: 0; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
+  .sh .ddi:hover { background: #F6F4EE; } .sh .ddi.on { background: #FAF9F5; } .sh .ddi.on::after { content: '✓'; color: #E34234; }
+  .sh .oc, .sh .tags.oc { border: 1.5px solid #E34234 !important; }  /* red outline = this field shows on the card */
+  .sh .in.sel { padding-right: 30px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23999" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center / 18px; }
+  .sh .r2 { display: flex; gap: 10px; } .sh .c1 { flex: 1; min-width: 0; }
+  .sh .vr { margin-bottom: 2px; } .sh .vt { font-size: 14px; font-weight: 700; line-height: 1.25; }
+  .sh .vr > .lb { margin-bottom: 2px; }  /* peek: data field sits close to its data */
+  .sh .cb { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; padding: 13px 0 0; }
+  .sh .cb i { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #bbb; display: inline-flex; align-items: center; justify-content: center; font-style: normal; font-size: 12px; color: #fff; }
+  .sh .cb i.on { background: #1a1a1a; border-color: #1a1a1a; }
+  .sh .nrow { display: flex; gap: 10px; align-items: stretch; } .sh .nrow .in { flex: 1; }
+  .sh .starb { position: relative; flex: 0 0 44px; border: 0.5px solid #ddd; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ccc; }
+  .sh .starb.on { color: #F0A020; border-color: #F0A020; } .sh .starb svg { width: 20px; height: 20px; fill: currentColor; }
+  .sh .phs { display: flex; gap: 10px; } .sh .phs div { width: 64px; height: 64px; border-radius: 12px; border: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 22px; }
+  .sh .btns { display: flex; gap: 10px; margin-top: 22px; }
+  .sh .b1 { flex: 1; padding: 12px; border-radius: 999px; border: 1px solid #ddd; text-align: center; font-size: 13px; color: #555; } .sh .b1.del { color: #E34234; border-color: #f0d0cb; }
+  .sh .b2 { flex: 2; padding: 12px; border-radius: 999px; background: #1a1a1a; color: #fff; text-align: center; font-size: 13px; }
+  .sh .tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 42px; border: 0.5px solid #ddd; border-radius: 12px; padding: 5px 30px 5px 8px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23999" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center / 18px; }
+  .sh .tg { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700; } .sh .tg svg { width: 13px; height: 13px; fill: currentColor; }
+  .sh .opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; font-size: 13px; font-weight: 600; } .sh .opt.on { background: #FAF9F5; } .sh .opt b { margin-left: auto; color: #E34234; }
+  .sh .tic { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; } .sh .tic svg { width: 19px; height: 19px; fill: currentColor; }
+  .sh .list { border: 0.5px solid #e5e5e5; border-radius: 12px; overflow: hidden; margin-top: 10px; }
+  .an-flow { font-size: 13px; font-weight: 400; color: var(--muted); line-height: 1.5; margin-top: 14px; }
+  .an-flow b { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -353,7 +500,78 @@
         fill: #df483b;
       }
     
-    .ic-1.tile-rect{fill:var(--tile-fill,#fef4c6)}.ic-1:not(.tile-rect){fill:var(--mark-fill,#fef4c6)}.ic-2.tile-rect{fill:var(--tile-fill,#464e2d)}.ic-2:not(.tile-rect){fill:var(--mark-fill,#464e2d)}.ic-3.tile-rect{fill:var(--tile-fill,#270f11)}.ic-3:not(.tile-rect){fill:var(--mark-fill,#270f11)}.ic-10.tile-rect{fill:var(--tile-fill,#b4e8fd)}.ic-10:not(.tile-rect){fill:var(--mark-fill,#b4e8fd)}.ic-11.tile-rect{fill:var(--tile-fill,#280e11)}.ic-11:not(.tile-rect){fill:var(--mark-fill,#280e11)}.ic-12.tile-rect{fill:var(--tile-fill,#f1efe8)}.ic-12:not(.tile-rect){fill:var(--mark-fill,#f1efe8)}.ic-13.tile-rect{fill:var(--tile-fill,#df483b)}.ic-13:not(.tile-rect){fill:var(--mark-fill,#df483b)}.ic-4{stroke:var(--mark-stroke,#fef4c6)}.ic-5{stroke:var(--mark-stroke,#fef4c6)}.ic-7{stroke:var(--mark-stroke,#fef4c6)}.ic-8{stroke:var(--mark-stroke,#fef4c6)}.ic-9{stroke:var(--mark-stroke,#fef4c6)}.ic-6{stroke:var(--mark-stroke,#270f11)}.tile-rect{stroke:var(--tile-stroke,none);stroke-width:8px}</style><g id="itinSheet">
+
+      .jc-1 {
+        fill: #fef4c6;
+      }
+
+      .jc-2 {
+        fill: #fef4c6;
+      }
+
+      .jc-3 {
+        fill: #464e2d;
+      }
+
+      .jc-4 {
+        fill: #270f11;
+      }
+
+      .jc-5 {
+        stroke-width: 10px;
+      }
+
+      .jc-5, .jc-6, .jc-7 {
+        stroke: #270f11;
+      }
+
+      .jc-5, .jc-6, .jc-7, .jc-8, .jc-9, .jc-10, .jc-11 {
+        fill: none;
+        stroke-miterlimit: 10;
+      }
+
+      .jc-6 {
+        stroke-width: 10.13px;
+      }
+
+      .jc-7, .jc-9 {
+        stroke-width: 9px;
+      }
+
+      .jc-8 {
+        stroke: #fef4c6;
+        stroke-width: 8.66px;
+      }
+
+      .jc-12 {
+        fill: #b4e8fd;
+      }
+
+      .jc-13 {
+        fill: #b4e8fd;
+      }
+
+      .jc-14 {
+        fill: #f1efe8;
+      }
+
+      .jc-15 {
+        fill: #df483b;
+      }
+
+      .jc-9, .jc-10, .jc-11 {
+        stroke: #fef4c6;
+      }
+
+      .jc-10 {
+        stroke-width: 9.08px;
+      }
+
+      .jc-11 {
+        stroke-width: 8.17px;
+      }
+    
+    .ic-1.tile-rect{fill:var(--tile-fill,#fef4c6)}.ic-1:not(.tile-rect){fill:var(--mark-fill,#fef4c6)}.ic-2.tile-rect{fill:var(--tile-fill,#464e2d)}.ic-2:not(.tile-rect){fill:var(--mark-fill,#464e2d)}.ic-3.tile-rect{fill:var(--tile-fill,#270f11)}.ic-3:not(.tile-rect){fill:var(--mark-fill,#270f11)}.ic-10.tile-rect{fill:var(--tile-fill,#b4e8fd)}.ic-10:not(.tile-rect){fill:var(--mark-fill,#b4e8fd)}.ic-11.tile-rect{fill:var(--tile-fill,#280e11)}.ic-11:not(.tile-rect){fill:var(--mark-fill,#280e11)}.ic-12.tile-rect{fill:var(--tile-fill,#f1efe8)}.ic-12:not(.tile-rect){fill:var(--mark-fill,#f1efe8)}.ic-13.tile-rect{fill:var(--tile-fill,#df483b)}.ic-13:not(.tile-rect){fill:var(--mark-fill,#df483b)}.ic-4{stroke:var(--mark-stroke,#fef4c6)}.ic-5{stroke:var(--mark-stroke,#fef4c6)}.ic-7{stroke:var(--mark-stroke,#fef4c6)}.ic-8{stroke:var(--mark-stroke,#fef4c6)}.ic-9{stroke:var(--mark-stroke,#fef4c6)}.ic-6{stroke:var(--mark-stroke,#270f11)}.jc-1.tile-rect{fill:var(--tile-fill,#fef4c6)}.jc-1:not(.tile-rect){fill:var(--mark-fill,#fef4c6)}.jc-2.tile-rect{fill:var(--tile-fill,#fef4c6)}.jc-2:not(.tile-rect){fill:var(--mark-fill,#fef4c6)}.jc-3.tile-rect{fill:var(--tile-fill,#464e2d)}.jc-3:not(.tile-rect){fill:var(--mark-fill,#464e2d)}.jc-4.tile-rect{fill:var(--tile-fill,#270f11)}.jc-4:not(.tile-rect){fill:var(--mark-fill,#270f11)}.jc-12.tile-rect{fill:var(--tile-fill,#b4e8fd)}.jc-12:not(.tile-rect){fill:var(--mark-fill,#b4e8fd)}.jc-13.tile-rect{fill:var(--tile-fill,#b4e8fd)}.jc-13:not(.tile-rect){fill:var(--mark-fill,#b4e8fd)}.jc-14.tile-rect{fill:var(--tile-fill,#f1efe8)}.jc-14:not(.tile-rect){fill:var(--mark-fill,#f1efe8)}.jc-15.tile-rect{fill:var(--tile-fill,#df483b)}.jc-15:not(.tile-rect){fill:var(--mark-fill,#df483b)}.jc-5{stroke:var(--mark-stroke,#270f11)}.jc-6{stroke:var(--mark-stroke,#270f11)}.jc-7{stroke:var(--mark-stroke,#270f11)}.jc-8{stroke:var(--mark-stroke,#fef4c6)}.jc-9{stroke:var(--mark-stroke,#fef4c6)}.jc-10{stroke:var(--mark-stroke,#fef4c6)}.jc-11{stroke:var(--mark-stroke,#fef4c6)}.tile-rect{stroke:var(--tile-stroke,none);stroke-width:8px}</style><g id="itinSheet">
   <g>
     <rect class="ic-2 tile-rect" x="360.62" y="358.98" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
     <line class="ic-4" x1="428.31" y1="431.66" x2="428.31" y2="467.81"/>
@@ -390,7 +608,7 @@
     <line class="ic-6" x1="134.31" y1="383.7" x2="171.21" y2="420.59"/>
     <line class="ic-6" x1="163.66" y1="370.65" x2="184.9" y2="418.3"/>
     <circle class="ic-6" cx="188.07" cy="426.95" r="41.52"/>
-    <circle class="ic-3" cx="188.07" cy="426.95" r="6.11"/>
+    <circle class="ic-3" cx="210.7" cy="432.89" r="6.11"/>
   </g>
   <g>
     <rect class="ic-13 tile-rect" x="823.97" y="132.87" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
@@ -478,6 +696,103 @@
     <polyline class="ic-8" points="870.78 875.25 857.13 875.25 857.13 920.27"/>
     <polyline class="ic-8" points="862.92 864.99 862.92 838.06 905.48 838.06 905.48 854.48"/>
   </g>
+<g transform="translate(0 1080)">
+  <g>
+    <rect class="jc-1 tile-rect" x="112.49" y="132.87" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <path class="jc-4" d="M212.25,195.1c3.48,0,6.3,2.25,6.3,5.02v21.18h-76.17v-21.18c0-2.77,2.82-5.02,6.3-5.02s6.3,2.25,6.3,5.02v11.14h50.98v-11.14c0-2.77,2.82-5.02,6.3-5.02h0ZM212.25,186.1c-8.44,0-15.3,6.29-15.3,14.02v2.14h-32.98v-2.14c0-7.73-6.86-14.02-15.3-14.02s-15.3,6.29-15.3,14.02v30.18h94.17v-30.18c0-7.73-6.86-14.02-15.3-14.02h0Z"/>
+      <path class="jc-7" d="M152.58,191.45v-7c0-5.57,4.51-10.08,10.08-10.08h35.64c5.57,0,10.08,4.51,10.08,10.08v7"/>
+    </g>
+    <circle class="jc-4" cx="180.48" cy="191.45" r="5.77"/>
+  </g>
+  <g>
+    <rect class="jc-4 tile-rect" x="341.24" y="381.02" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <line class="jc-9" x1="437.67" y1="440.92" x2="380.7" y2="440.92"/>
+      <line class="jc-9" x1="437.67" y1="457.15" x2="380.7" y2="457.15"/>
+      <rect class="jc-9" x="359.64" y="433.17" width="17.57" height="31.63" rx="6.34" ry="6.34"/>
+      <rect class="jc-9" x="441.21" y="433.17" width="17.57" height="31.63" rx="6.34" ry="6.34"/>
+    </g>
+    <circle class="jc-1" cx="389.83" cy="427.39" r="5.77"/>
+    <circle class="jc-1" cx="403.02" cy="427.39" r="5.77"/>
+    <circle class="jc-1" cx="416.21" cy="427.39" r="5.77"/>
+    <circle class="jc-1" cx="429.4" cy="427.39" r="5.77"/>
+    <circle class="jc-1" cx="397.79" cy="470.31" r="5.77"/>
+  </g>
+  <g>
+    <rect class="jc-15 tile-rect" x="816.36" y="132.87" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <g>
+        <line class="jc-11" x1="868.54" y1="211.24" x2="862" y2="253.61"/>
+        <line class="jc-11" x1="900.12" y1="212.42" x2="906.48" y2="253.61"/>
+      </g>
+      <path class="jc-10" d="M866.51,210.28h33.67c3.26,0,5.91-2.65,5.91-5.91v-25.07c-8.71-4.83-28.39-8.5-43.52,0v27.05c0,2.17,1.76,3.93,3.93,3.93Z"/>
+      <path class="jc-10" d="M866.86,174.94v-9.93c0-4.04,4.93-7.34,10.95-7.34h13.04c6.03,0,10.95,3.3,10.95,7.34v9.93"/>
+      <line class="jc-11" x1="884.33" y1="157.67" x2="884.33" y2="171.71"/>
+      <ellipse class="jc-1" cx="884.33" cy="192.25" rx="5.24" ry="5.06"/>
+      <ellipse class="jc-1" cx="877.78" cy="151.64" rx="5.24" ry="5.06"/>
+      <ellipse class="jc-1" cx="890.88" cy="151.64" rx="5.24" ry="5.06"/>
+      <line class="jc-10" x1="865.56" y1="225.06" x2="903.11" y2="225.06"/>
+      <line class="jc-10" x1="865.56" y1="239.84" x2="903.11" y2="239.84"/>
+    </g>
+    <rect class="jc-15" x="853.99" y="252.43" width="59.56" height="4.15"/>
+  </g>
+  <g>
+    <rect class="jc-14 tile-rect" x="581.75" y="368.55" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <circle class="jc-4" cx="649.72" cy="393.61" r="5.77"/>
+      <line class="jc-5" x1="607.95" y1="403.54" x2="691.5" y2="413.35"/>
+      <line class="jc-5" x1="649.72" y1="408.44" x2="649.72" y2="434.73"/>
+      <line class="jc-5" x1="636.8" y1="434.73" x2="662.64" y2="434.73"/>
+      <line class="jc-5" x1="625.04" y1="464.77" x2="672.39" y2="464.77"/>
+      <path class="jc-6" d="M649.44,440.13h-15.31s-17.2,18.68,0,41.06h15.31"/>
+      <path class="jc-6" d="M649.44,440.13h15.31s17.2,18.68,0,41.06h-15.31"/>
+    </g>
+  </g>
+  <g>
+    <rect class="jc-1 tile-rect" x="816.36" y="368.55" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <polygon class="jc-5" points="897.49 404.53 871.17 418.14 844.85 404.53 844.85 454.9 871.17 468.5 897.49 454.9 923.82 468.5 923.82 418.14 897.49 404.53"/>
+      <line class="jc-5" x1="871.17" y1="418.14" x2="871.17" y2="468.5"/>
+      <line class="jc-5" x1="897.49" y1="404.53" x2="897.49" y2="454.9"/>
+    </g>
+    <circle class="jc-4" cx="858.16" cy="446.63" r="5.77"/>
+  </g>
+  <g>
+    <rect class="jc-3 tile-rect" x="581.75" y="132.87" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <g>
+      <circle class="jc-1" cx="636.8" cy="212.42" r="5.77"/>
+      <circle class="jc-1" cx="662.64" cy="212.42" r="5.77"/>
+    </g>
+    <g id="_3r8AJn" data-name="3r8AJn">
+      <path class="jc-8" d="M676.94,230.95h-54.54M622.39,230.96h0c-2.71-.02-4.89-2.22-4.89-4.92v-48.84c0-3.05,1.52-5.71,3.84-7.57,4.82-3.86,13.4-5.11,19.62-5.68l6.11-.32c1.85-.1,3.66-.11,5.52-.02l2.02.09c6.11.28,13.01,1.1,18.69,3.26,4.74,1.81,8.4,4.89,8.64,10.24v48.69c0,2.77-2.24,5.02-5.01,5.03h0"/>
+    </g>
+    <g>
+      <circle class="jc-2" cx="630.57" cy="235.68" r="8.44"/>
+      <circle class="jc-2" cx="668.87" cy="235.68" r="8.44"/>
+    </g>
+    <line class="jc-8" x1="617.5" y1="193.13" x2="681.95" y2="193.13"/>
+    <path class="jc-8" d="M683.59,187.94h.87c5.96,0,10.8-4.83,10.8-10.8h0s0,19.6,0,19.6"/>
+    <path class="jc-8" d="M615.86,187.94h-.87c-5.96,0-10.8-4.83-10.8-10.8h0s0,19.6,0,19.6"/>
+  </g>
+  <g>
+    <rect class="jc-12 tile-rect" x="341.24" y="132.87" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <path class="jc-4" d="M448.15,243.9c-8.14,0-12.47-3.27-15.95-5.9-3-2.27-5.18-3.92-10.02-3.92s-7.01,1.64-10.02,3.92c-3.48,2.63-7.81,5.9-15.95,5.9s-12.47-3.27-15.94-5.91c-3-2.27-5.18-3.92-10.02-3.92v-9.82c8.14,0,12.47,3.27,15.94,5.91,3,2.27,5.18,3.92,10.02,3.92s7.01-1.64,10.02-3.92c3.48-2.63,7.81-5.9,15.95-5.9s12.47,3.27,15.95,5.91c3,2.27,5.18,3.92,10.02,3.92v9.82Z"/>
+    <ellipse class="jc-4" cx="408.79" cy="159.52" rx="5.77" ry="5.57"/>
+    <g>
+      <path class="jc-4" d="M391.06,223.84c.96.71,1.61,1.2,2.17,1.53l-4.58-21.37,20.55-4.44,20.55,4.44-2.74,12.76c3.8.52,6.89,1.6,9.43,2.87l4.97-23.16-7.93-1.71v-11.29c0-7.69-5.64-13.96-12.58-13.96h-24.24c-6.93,0-12.58,6.26-12.58,13.96v11.47l-7.1,1.53,4.7,21.94c4.14,1.56,7.09,3.74,9.37,5.43ZM393.92,183.46c0-2.44,1.45-4.13,2.75-4.13h24.24c1.3,0,2.75,1.7,2.75,4.13v9.17l-14.46-3.12-15.29,3.3v-9.35Z"/>
+      <path class="jc-4" d="M434.69,227.81c-2.39-1.46-5.34-2.75-9.36-3.2l-.33,1.53,9.6,2.06.08-.38Z"/>
+      <path class="jc-4" d="M383.87,228.52l2.47,11.53,9.6-2.06-.85-3.95c-4.02-.24-6.06-1.75-8.8-3.78-.76-.56-1.56-1.15-2.43-1.74Z"/>
+    </g>
+  </g>
+  <g>
+    <rect class="jc-13 tile-rect" x="111.09" y="381.42" width="135.94" height="135.94" rx="36.37" ry="36.37"/>
+    <circle class="jc-4" cx="179.06" cy="487.38" r="5.77"/>
+    <g>
+      <path class="jc-4" d="M224.43,433.65l-.48-6.89-6.88-.53c-.2-.02-.95-.07-2.13-.07-.38,0-.8,0-1.25.02-.86-7.13-3.14-12.24-3.31-12.61l-2.86-6.28-6.63,1.91c-.41.12-6.1,1.81-12.31,6.09-2.25-2.71-4.05-4.29-4.25-4.46l-5.23-4.51-5.23,4.51c-.19.16-1.79,1.57-3.85,3.99-5.93-3.93-11.22-5.51-11.61-5.62l-6.63-1.91-2.86,6.28c-.17.38-2.46,5.5-3.31,12.66-.92-.05-1.74-.07-2.42-.07h0c-1.18,0-1.92.05-2.13.07l-6.88.53-.48,6.89c-.05.73-1.13,18.05,10.34,30.35,7.19,7.71,17.36,11.63,30.22,11.63.4,0,.81,0,1.21-.01l3.61-.07,3.61.07c.41,0,.81.01,1.21.01,12.86,0,23.03-3.91,30.22-11.63,11.46-12.3,10.39-29.62,10.34-30.35ZM194.44,420.99c.07-.05.15-.1.22-.14.21-.13.41-.25.62-.38,1.17-.7,2.29-1.28,3.29-1.76,0,0,.02,0,.03-.01.25-.12.5-.24.74-.34.01,0,.03-.01.04-.02.24-.11.47-.21.7-.31,0,0,0,0,0,0,.91-.39,1.67-.67,2.19-.86.01,0,.02,0,.04-.01.11-.04.21-.07.3-.1.02,0,.04-.01.06-.02.08-.03.14-.05.2-.07.01,0,.03,0,.04-.01.06-.02.11-.03.14-.04,0,0,0,0,0,0,.03,0,.05-.02.05-.02h0s0,0,0,0c0,0,.02.03.04.09.01.02.02.05.04.08,0,.02.01.03.02.05.02.05.05.11.08.18,0,.02.01.03.02.05.03.08.07.18.11.29,0,0,0,.02.01.03.13.34.3.78.49,1.32.05.13.09.27.14.41.02.05.03.11.05.16.09.29.19.59.29.92.03.1.06.21.09.31.08.28.16.58.24.89.03.12.07.24.1.37.1.38.19.78.28,1.19.03.15.07.3.1.45.09.43.18.87.26,1.33,0,.05.02.09.03.15.02.12.04.26.06.38.04.24.08.48.11.73.02.11.04.22.05.34.02.15.04.31.06.47-1.39.27-2.86.63-4.36,1.09s-3.05,1.01-4.6,1.69h0s0,0,0,0c-.49-1.48-1.05-2.9-1.67-4.24-.62-1.34-1.28-2.6-1.97-3.78.43-.3.86-.57,1.28-.84ZM155.33,419.18c.17-.49.32-.91.45-1.25.05-.14.1-.26.14-.37.05-.13.09-.23.13-.32.09-.22.15-.34.15-.34,0,0,.02,0,.04.01,0,0,.01,0,.02,0,.03,0,.06.02.11.03.01,0,.03,0,.05.01.05.02.1.03.17.05.02,0,.05.02.08.02.07.02.15.05.23.08.03,0,.05.02.08.03.1.03.21.07.33.12.02,0,.03.01.05.02.28.1.59.22.95.36.13.05.27.11.41.16.03.01.07.03.1.04.29.12.59.25.92.4.09.04.18.08.27.12.35.16.7.32,1.08.51.06.03.11.06.17.09.35.17.71.36,1.08.56.1.05.19.1.29.15.4.22.81.45,1.23.7.06.04.12.07.18.1.13.08.27.16.4.25.02,0,.03.02.05.03.06.03.11.07.17.1.24.15.48.3.72.46-.37.62-.74,1.27-1.1,1.94-1.08,2.01-2.07,4.23-2.86,6.64,0,0,0,0,0,0h0c-2.72-1.18-5.4-2-7.9-2.56.4-3.42,1.2-6.29,1.82-8.15ZM216.48,435.91c0,.15,0,.29,0,.46,0,.11,0,.23-.01.35,0,.17-.01.34-.02.52,0,.13-.02.28-.02.42-.01.19-.02.37-.04.57-.01.16-.03.32-.04.48-.02.2-.04.41-.06.62-.02.18-.04.36-.06.54-.02.22-.05.43-.08.66-.03.19-.05.39-.08.59-.03.23-.07.46-.11.7-.03.21-.07.41-.11.62-.04.24-.09.49-.14.73-.04.22-.09.44-.14.66-.05.25-.11.5-.17.76-.05.23-.11.46-.17.69-.07.26-.14.52-.21.78-.07.24-.14.47-.21.72-.08.26-.16.53-.25.79-.08.24-.16.49-.25.73-.09.26-.19.53-.3.8-.1.25-.19.5-.29.75-.11.27-.23.53-.34.8-.11.25-.22.5-.34.75-.12.26-.26.53-.39.79-.13.25-.26.51-.39.76-.14.26-.3.52-.45.78-.15.25-.29.51-.45.76-.16.26-.33.51-.5.76-.17.25-.33.5-.51.75-.18.25-.37.49-.56.73-.19.24-.37.49-.57.73-.2.24-.41.47-.62.7-.21.24-.42.48-.64.71-.22.22-.45.44-.68.65-.24.23-.47.47-.73.7-.22.2-.47.39-.7.58-.56.46-1.14.91-1.76,1.33-.25.17-.48.35-.74.52-.32.2-.66.39-.99.59-.29.17-.56.34-.86.5-.34.18-.71.35-1.06.52-.32.15-.63.31-.96.46-.37.16-.76.3-1.14.45-.35.14-.69.28-1.05.4-.4.14-.82.26-1.23.38-.38.11-.75.23-1.14.34-.43.11-.88.21-1.32.31-.41.09-.81.19-1.24.27-.46.09-.94.16-1.42.23-.44.07-.88.14-1.34.19-.49.06-1,.1-1.51.14-.32.03-.63.07-.96.09,0,0,.01-.01.02-.02-1.38.09-2.81.14-4.32.11-.04-2.9.16-5.54.54-7.96-1.23,1.53-2.64,3.08-4.25,4.65-1.67-1.61-3.11-3.22-4.37-4.8.4,2.46.6,5.15.57,8.12-1.48.03-2.87-.02-4.22-.11,0,0,.01.01.02.02-.38-.02-.73-.07-1.09-.1-.47-.04-.95-.08-1.4-.13-.5-.06-.98-.13-1.46-.21-.44-.07-.88-.13-1.3-.21-.47-.09-.92-.19-1.37-.3-.4-.09-.81-.17-1.19-.28-.45-.12-.87-.25-1.3-.39-.36-.11-.73-.21-1.08-.33-.43-.15-.83-.31-1.24-.48-.32-.13-.65-.24-.95-.38-.42-.18-.82-.39-1.23-.59-.26-.13-.54-.25-.8-.39-.48-.26-.93-.53-1.38-.8-.16-.1-.33-.18-.48-.28-.59-.38-1.16-.78-1.7-1.19-.16-.12-.3-.25-.45-.37-.38-.3-.75-.6-1.1-.91-.19-.17-.35-.34-.53-.51-.3-.28-.59-.56-.87-.84-.18-.19-.35-.38-.52-.57-.25-.28-.51-.56-.75-.84-.17-.2-.32-.41-.48-.61-.22-.28-.45-.57-.65-.85-.15-.21-.29-.43-.44-.64-.19-.29-.39-.57-.57-.86-.14-.22-.26-.44-.4-.66-.17-.29-.34-.58-.5-.87-.12-.22-.23-.45-.35-.67-.15-.29-.3-.58-.44-.88-.11-.23-.21-.45-.31-.68-.13-.29-.26-.59-.38-.88-.09-.22-.18-.45-.26-.67-.11-.29-.22-.58-.32-.87-.08-.22-.15-.44-.22-.66-.1-.29-.19-.58-.28-.86-.07-.22-.13-.43-.19-.65-.08-.29-.16-.57-.23-.85-.05-.21-.11-.42-.16-.63-.07-.28-.13-.55-.19-.82-.04-.2-.09-.4-.13-.6-.05-.27-.1-.53-.15-.8-.03-.19-.07-.38-.1-.57-.04-.26-.08-.51-.12-.76-.03-.18-.05-.36-.08-.53-.03-.25-.06-.48-.09-.72-.02-.16-.04-.33-.05-.48-.02-.23-.04-.45-.06-.68-.01-.15-.03-.29-.04-.43-.02-.22-.03-.42-.04-.62,0-.13-.02-.25-.02-.38,0-.2-.02-.38-.02-.57,0-.1,0-.21-.01-.31,0-.18,0-.34,0-.5,0-.08,0-.17,0-.25,0-.16,0-.29,0-.42,0-.06,0-.13,0-.18,0-.14,0-.24,0-.35,0-.03,0-.07,0-.1,0-.24.02-.37.02-.37,0,0,.09,0,.21-.01.06,0,.1,0,.18,0,.04,0,.1,0,.15,0,.1,0,.2,0,.32,0,.07,0,.16,0,.24,0,.13,0,.24,0,.39,0,.01,0,.02,0,.03,0,.18,0,.39,0,.61,0,.08,0,.16,0,.24,0,.19,0,.39.01.6.02.14,0,.27.01.42.02.11,0,.21.01.33.02,0,0,0,0,0,0,2.14.13,5.01.47,8.15,1.33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0h0s0,0,0,0c.09.03.18.05.27.08-.04-.01-.08-.02-.13-.03.33.09.65.19.98.29.17.05.34.1.52.16.4.13.8.27,1.2.42.1.04.2.07.3.11.47.18.94.37,1.4.57.04.02.08.03.12.05.49.21.97.44,1.46.68-.27-.14-.55-.27-.82-.4.3.14.6.29.9.44,0,0,0,0,0,0,2.85,1.43,5.65,3.43,8.07,6.14-.66-5.26.38-10.03,2.06-14.07,0-.01,0-.02.01-.03,2.21-5.29,5.51-9.29,7.51-11.4,0,0,0,0,0,0,1.03-1.09,1.71-1.68,1.71-1.68h0s0,0,0,0c0,0,0,0,.01,0,0,0,.01.01.03.02.01.01.01.01.03.03.04.04.1.09.18.17,0,0,0,0,0,0,.08.08.18.17.3.28,0,0,0,0,0,0,.12.11.25.24.4.39,0,0,0,0,0,0,.15.15.31.31.49.49,0,0,0,0,0,0,.18.18.36.38.56.59,0,0,0,0,0,0,.2.22.41.45.62.69,0,0,0,0,0,.01.22.25.44.51.68.79,0,0,0,0,0,0h0c1.43,1.72,3.11,4.03,4.57,6.79h0s0,0,0,0c1.06,2,2,4.24,2.65,6.68,0,0,0,0,0,0h0c.82,3.07,1.18,6.45.75,10.05,2.42-2.68,5.21-4.64,8.05-6.06,0,0,0,0,0,0,.03-.02.06-.03.1-.04.56-.28,1.11-.53,1.67-.77.07-.03.14-.06.2-.09.54-.22,1.07-.43,1.6-.62.08-.03.16-.06.24-.09.54-.19,1.07-.36,1.59-.51.06-.02.13-.04.19-.06.57-.17,1.14-.32,1.7-.45.02,0,.03,0,.05-.01,0,0,0,0,0,0,3.27-.78,6.17-1.01,8.12-1.07h0s.03,0,.04,0c.15,0,.29,0,.43,0,.19,0,.37,0,.54,0,.01,0,.02,0,.03,0,.15,0,.26,0,.39,0,.08,0,.17,0,.24,0,.13,0,.22,0,.32,0,.05,0,.1,0,.14,0,.08,0,.13,0,.18,0,.12,0,.2.01.2.01,0,0,0,.03,0,.1,0,0,0,0,0,.01,0,.06,0,.15.01.26,0,.04,0,.08,0,.12,0,.1,0,.19,0,.31,0,.07,0,.15,0,.22,0,.12,0,.24,0,.38,0,.09,0,.19,0,.29Z"/>
+      <path class="jc-4" d="M179.11,416.9s25.87,22.32,0,47.4c-25.87-25.08,0-47.4,0-47.4h0ZM179.11,406.33l-5.23,4.51c-.56.48-13.77,12.07-14.26,29.05-.31,10.76,4.37,20.91,13.92,30.16l5.57,5.4,5.57-5.4c9.55-9.25,14.23-19.4,13.92-30.16-.49-16.98-13.7-28.56-14.26-29.05l-5.23-4.51h0Z"/>
+    </g>
+  </g></g>
 </g></defs></svg>
 
 
@@ -595,6 +910,7 @@
     <section id="type">
       <h2>Typography</h2>
       <p class="lead">Itin fonts capture the boldness and playfulness of the logo, with accents that feel like your travel journal notes. Cal Sans is the primary font for the app, and additional fonts are reserved for use in marketing materials.</p>
+      <h3 id="type-typefaces">Typefaces</h3>
       <div class="grid g2" id="fonts"></div>
 
       <!-- Pairing preview hidden at Ryan's request; remove the "hidden" attribute to bring it back -->
@@ -642,19 +958,28 @@
     <section id="components">
       <h2>Components</h2>
       <p class="lead">The building blocks of the Itin experience.</p>
-      <h3>Symbols</h3>
+      <h3 id="comp-symbols">Symbols</h3>
       <div class="pchips" id="symModes" style="margin:8px 0 14px"><button class="pchip on" data-m="">Color</button><button class="pchip" data-m="bw">Black &amp; white</button><button class="pchip" data-m="outline">Outlined</button><button class="pchip" data-m="sticker">Stickers</button></div>
       <div class="symgrid" id="symbols"></div>
 
-      <h3>Element card</h3>
+      <h3 id="comp-element-card">Stop card</h3>
       <div class="pchips" id="elModes" style="margin:8px 0 14px"><button class="pchip on" data-m="">Classic</button><button class="pchip" data-m="outline">Outline</button><button class="pchip" data-m="icon">Bare</button><button class="pchip" data-m="text">Mono</button></div>
       <div class="elphones" id="elementCards"></div>
 
-      <h3>Interface</h3>
-      <div class="grid g2">
-        <div class="card"><div class="label">Buttons</div><div class="row"><button class="c-btn">Create trip</button><button class="c-btn sec">Cancel</button></div></div>
-        <div class="card"><div class="label">Chips and tags</div><div class="chiplist"><div class="chiprow"><div class="cf"><span class="c-city" id="cityTag"></span><small>City tag</small></div><div class="cf"><span class="c-chip">May 30</span><small>Day chip</small></div></div><div class="chiprow"><div class="cf"><span class="c-mc">7:30 PM PT</span><small>Time chip</small></div></div><div class="chiprow"><div class="cf"><span class="c-mc green">Reservation</span><small>Status · green</small></div><div class="cf"><span class="c-mc blue">Booked</span><small>Status · blue</small></div><div class="cf"><span class="c-mc amber">Free tour</span><small>Highlight · yellow</small></div></div></div></div>
+      <h3 id="anatomy">Stop anatomy</h3>
+      <p class="an-note">Every stop in one place: how it looks on the card, what shows when you tap it (the peek), and every field in the edit view. Use it to decide what changes, where information shows up, and how each piece works. The sample content here is filled in so you can see each field working.</p>
+      <div class="pchips" id="anTheme" style="margin:12px 0 4px"></div>
+      <div class="pchips" style="margin:8px 0 4px"><button class="pchip" id="anOptsBtn">Dropdown options: hidden</button></div>
+      <div class="an-legend">
+        <span><span class="sw-oc"></span>Red outline: shown on the card</span>
       </div>
+
+      <div class="an-h">Create a new stop</div>
+      <div class="an-scroll"><div class="an-add" id="anAdd"></div></div>
+
+      <div class="an-h">Every stop: card, peek, edit</div>
+      <div class="an-pick" id="anPick"></div>
+      <div class="an-scroll"><div class="an-grid" id="anGrid"></div></div>
     </section>
 
     <!-- ================= IMAGERY ================= -->
@@ -691,11 +1016,12 @@
     <section id="voice">
       <h2>Voice &amp; tone</h2>
       <p class="lead">Warm, clear and a little adventurous.</p>
+      <h3 id="voice-dos">Do say and don't say</h3>
       <table class="vt">
         <tr><th>Do say</th><th>Don&rsquo;t say</th></tr>
         <tr><td>&ldquo;Where to first?&rdquo;</td><td>&ldquo;Please input your destination parameters.&rdquo;</td></tr>
         <tr><td>&ldquo;You&rsquo;re all set, Ryan.&rdquo;</td><td>&ldquo;Account creation successful.&rdquo;</td></tr>
-        <tr><td>&ldquo;Add a stop&rdquo;</td><td>&ldquo;Create new itinerary element&rdquo;</td></tr>
+        <tr><td>&ldquo;Add a stop&rdquo;</td><td>&ldquo;Create new itinerary stop&rdquo;</td></tr>
         <tr><td>&ldquo;Nothing planned yet. Add your first stop.&rdquo;</td><td>&ldquo;No data found.&rdquo;</td></tr>
         <tr><td>&ldquo;You&rsquo;re offline. We&rsquo;ll sync when you&rsquo;re back.&rdquo;</td><td>&ldquo;Error 503: network request failed.&rdquo;</td></tr>
         <tr><td>&ldquo;Share this trip with your crew&rdquo;</td><td>&ldquo;Invite additional participants&rdquo;</td></tr>
@@ -710,6 +1036,7 @@
     <section id="motion">
       <h2>Motion</h2>
       <p class="lead">The load screen draws the logo as a route: first dot, then the line, then the last dot.</p>
+      <h3 id="motion-load">Load screen</h3>
       <iframe class="anim" id="anim" src="splash-loop.html#white/a" title="Logo animation"></iframe>
     </section>
 
@@ -782,7 +1109,7 @@ const TYPE_SCALE = [
   { k: 'Body',     size: 14, css: 'font-weight:400' },
   { k: 'Caption',  size: 11, css: 'font-weight:400;text-transform:none;color:var(--muted)' }
 ];
-const SYMBOLS = [["City", 118.1, 130.9], ["Accommodation", 358.6, 130.9], ["Flight", 587.4, 130.9], ["Car", 822.0, 130.9], ["Restaurant", 118.1, 357.0], ["Bar", 358.6, 357.0], ["Store", 593.2, 352.0], ["Museum", 821.8, 353.3], ["Coffee Shop", 117.7, 583.1], ["Ticket", 358.6, 583.1], ["Hike", 822.0, 583.1], ["Experience", 117.7, 806.6], ["Drive", 346.4, 809.2], ["Miscellaneous", 583.2, 809.2], ["Neighborhood", 823.0, 809.2]];  // [name, tile x, tile y] on the Itin Icons sheet
+const SYMBOLS = [["City", 118.1, 130.9], ["Stay", 358.6, 130.9], ["Flight", 587.4, 130.9], ["Car", 822.0, 130.9], ["Restaurant", 118.1, 357.0], ["Bar", 358.6, 357.0], ["Shop", 593.2, 352.0], ["Museum", 821.8, 353.3], ["Coffee", 117.7, 583.1], ["Event", 358.6, 583.1], ["Hike", 822.0, 583.1], ["Experience", 814.4, 1446.6], ["Drive", 346.4, 809.2], ["Miscellaneous", 583.2, 809.2], ["Neighborhood", 823.0, 809.2], ["Visit", 110.5, 1212.9], ["Bus", 579.8, 1212.9], ["Train", 814.4, 1212.9], ["Ferry", 339.2, 1212.9], ["Wellness", 109.1, 1459.4], ["Workout", 339.2, 1459.0], ["Funicular", 579.8, 1446.6]];  // [name, tile x, tile y] on the Itin Icons sheet
 
 // ============================================================
 // helpers
@@ -814,11 +1141,36 @@ const TRIP_ICONS = {
   store:  'M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5L8 9.5V20h6V9.5l2.5 1.5L21 6z',
   coffee: 'M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z'
 };
-const TRIP_SYM = { plane: 'Flight', fork: 'Restaurant', stay: 'Accommodation', store: 'Store', coffee: 'Coffee Shop' };
+const TRIP_SYM = { plane: 'Flight', fork: 'Restaurant', stay: 'Stay', store: 'Shop', coffee: 'Coffee' };
 function tripSym(key){ return symTint(TRIP_SYM[key] || 'Flight'); }
 function symTint(name){  // a symbol from the icon sheet, drawn in the theme's own colors (tile hidden)
   const s = SYMBOLS.find(x => x[0] === name);
   return '<svg viewBox="' + (s[1] - 4) + ' ' + (s[2] - 4) + ' 148 148" style="--tile-fill:none;--mark-fill:var(--ic);--mark-stroke:var(--ic)"><use href="#itinSheet"/></svg>';
+}
+// The same symbol, cropped to the artwork itself (a square with the drawing centered), so a tile can give it the same padding on every side
+const TIGHT = {};
+function tightBox(name){
+  if (TIGHT[name]) return TIGHT[name];
+  const s = SYMBOLS.find(x => x[0] === name), sh = document.getElementById('itinSheet');
+  const x0 = s[1] - 4, y0 = s[2] - 4;
+  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  sh.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon').forEach(e => {
+    if (e.classList.contains('tile-rect')) return;
+    let b, m; try { b = e.getBBox(); m = e.getCTM(); } catch (err) { return; }
+    if (!m || (!b.width && !b.height)) { if (!m) return; }
+    const sw = parseFloat(getComputedStyle(e).strokeWidth) || 0, hs = (getComputedStyle(e).stroke === 'none' ? 0 : sw) / 2;
+    const pts = [[b.x, b.y], [b.x + b.width, b.y], [b.x, b.y + b.height], [b.x + b.width, b.y + b.height]].map(([x, y]) => { const q = new DOMPoint(x, y).matrixTransform(m); return [q.x, q.y]; });
+    const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    if (cx < x0 || cx > x0 + 148 || cy < y0 || cy > y0 + 148) return;
+    minX = Math.min(minX, Math.min(...xs) - hs); maxX = Math.max(maxX, Math.max(...xs) + hs); minY = Math.min(minY, Math.min(...ys) - hs); maxY = Math.max(maxY, Math.max(...ys) + hs);
+  });
+  if (minX > maxX) return TIGHT[name] = { x: x0, y: y0, size: 148 };
+  const size = Math.max(maxX - minX, maxY - minY);
+  return TIGHT[name] = { x: (minX + maxX) / 2 - size / 2, y: (minY + maxY) / 2 - size / 2, size };
+}
+function symTight(name){
+  const t = tightBox(name);
+  return '<svg viewBox="' + t.x.toFixed(1) + ' ' + t.y.toFixed(1) + ' ' + t.size.toFixed(1) + ' ' + t.size.toFixed(1) + '" style="--tile-fill:none;--mark-fill:var(--ic);--mark-stroke:var(--ic)"><use href="#itinSheet"/></svg>';
 }
 function citySym(){      // just the City pin, cropped tight
   const s = SYMBOLS.find(x => x[0] === 'City'), x0 = s[1] + 2, y0 = s[2] + 2;
@@ -885,18 +1237,18 @@ $('#symModes').onclick = e => { const b = e.target.closest('.pchip'); if(!b) ret
 // ---------- element cards: one example per symbol (ideas to iterate on) ----------
 const ELEMENT_CARDS = [
   ['City',          'Portland, Oregon',                'Home base for three nights',        [['May 29 – Jun 1'], ['Arrive Friday', 'green']]],
-  ['Accommodation', 'The Hoxton, Portland',            '15 NW 4th Ave',                     [['🕒 Check-in 3:00 PM'], ['Confirmed', 'green']]],
+  ['Stay',          'The Hoxton, Portland',            '15 NW 4th Ave',                     [['🕒 Check-in 3:00 PM'], ['Confirmed', 'green']]],
   ['Flight',        'Ryan — Alaska 557',               'BWI → PDX',                         [['🕒 Lands 7:02 PM'], ['Booked', 'blue']]],
   ['Car',           'Rental pickup — Hertz',           'PDX Airport, Counter 4',            [['🕒 7:45 PM'], ['Reservation', 'green']]],
   ['Restaurant',    'Dinner at Fantino',               '15 NW 4th Ave, Portland',           [['🕒 7:30 PM PT'], ['Reservation', 'green']]],
-  ['Coffee Shop',   'Never Coffee',                    'Downtown',                          [['🕒 9:00 AM'], ['Must try', 'amber']]],
+  ['Coffee',        'Never Coffee',                    'Downtown',                          [['🕒 9:00 AM'], ['Must try', 'amber']]],
   ['Bar',           'Sunset drinks at The Roof',       'Rooftop, 12th and Burnside',        [['🕒 8:30 PM'], ['Walk-ins', 'amber']]],
-  ['Store',         "Powell's City of Books",          '1005 W Burnside St',                [['🕒 2:00 PM'], ['Browse']]],
+  ['Shop',          "Powell's City of Books",          '1005 W Burnside St',                [['🕒 2:00 PM'], ['Browse']]],
   ['Hike',          'Cape Lookout Trail',              '5 miles round trip',                [['🕒 9:00 AM'], ['Moderate', 'green']]],
   ['Neighborhood',  'Alberta Arts District',           'Galleries and street murals',       [['Afternoon'], ['Walk', 'green']]],
   ['Museum',        'Portland Art Museum',             '1219 SW Park Ave',                  [['🕒 11:00 AM'], ['Tickets booked', 'blue']]],
   ['Experience',    'Sunset sail on the Columbia',     '2 hours from the marina',           [['🕒 6:30 PM'], ['Booked', 'blue']]],
-  ['Ticket',        'Trail Blazers vs. Lakers',        'Moda Center, Section 112',          [['🕒 7:00 PM'], ['Tickets', 'blue']]],
+  ['Event',         'Trail Blazers vs. Lakers',        'Moda Center, Section 112',          [['🕒 7:00 PM'], ['Tickets', 'blue']]],
   ['Drive',         'Highway 101 to Cannon Beach',     '1 hr 45 min along the coast',       [['🕒 10:00 AM'], ['Scenic', 'amber']]],
   ['Miscellaneous', 'Pick up film from the lab',       'Bring the receipt',                 [['Anytime'], ['To do']]]
 ];
@@ -907,7 +1259,6 @@ $('#elementCards').innerHTML = THEMES.slice(0, 3).map(t =>
     '<span class="at-city">' + citySym() + ' Portland, Oregon</span>' +
     '<div class="ph-list">' + ELEMENT_CARDS.map(elCard).join('') + '</div></div></div><div class="elph-name">' + t.name + '</div></div>').join('');
 $('#elModes').onclick = e => { const b = e.target.closest('.pchip'); if(!b) return; document.querySelectorAll('#elModes .pchip').forEach(x => x.classList.toggle('on', x === b)); if(b.dataset.m) $('#elementCards').dataset.elmode = b.dataset.m; else delete $('#elementCards').dataset.elmode; };
-$('#cityTag').innerHTML = citySym() + ' Portland, Oregon';
 function sizePhones(){ document.querySelectorAll('.elph-frame').forEach(f => { const k = f.clientWidth / 375; f.firstElementChild.style.setProperty('--s', k); f.style.height = Math.round(680 * k) + 'px'; }); }
 sizePhones(); new ResizeObserver(sizePhones).observe($('#elementCards'));
 
@@ -915,9 +1266,33 @@ sizePhones(); new ResizeObserver(sizePhones).observe($('#elementCards'));
 // ---------- motion ----------
 
 // ---------- nav, theme, gaps ----------
-const links = [...document.querySelectorAll('#nav a')];
+const links = [...document.querySelectorAll('#nav > a')];
 const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-35% 0px -60% 0px' });
 document.querySelectorAll('main section').forEach(s => io.observe(s));
+// Sidebar dropdowns: every menu item that has subsections (its <h3> headings) gets a chevron and an indented list
+(function(){
+  const used = new Set([...document.querySelectorAll('[id]')].map(e => e.id)), groups = [];
+  document.querySelectorAll('#nav > a').forEach(link => {
+    const sec = document.getElementById(link.getAttribute('href').slice(1)); if(!sec) return;
+    const heads = [...sec.querySelectorAll('h3')].filter(h => h.textContent.trim());
+    if(!heads.length) return;
+    heads.forEach(h => { if(!h.id){ let base = sec.id + '-' + h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), id = base, n = 2; while(used.has(id)) id = base + '-' + n++; h.id = id; used.add(id); } });
+    link.insertAdjacentHTML('beforeend', '<span class="chev" aria-label="Show sections"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>');
+    const sub = document.createElement('div'); sub.className = 'subnav';
+    sub.innerHTML = heads.map(h => '<a href="#' + h.id + '">' + h.textContent.trim() + '</a>').join('');
+    link.after(sub);
+    const setOpen = o => { sub.classList.toggle('open', o); link.classList.toggle('open', o); };
+    link.querySelector('.chev').onclick = e => { e.preventDefault(); e.stopPropagation(); setOpen(!sub.classList.contains('open')); };
+    groups.push({ id: sec.id, setOpen, sub, heads });
+  });
+  // the section you're reading is open; the others close
+  const secIO = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) groups.forEach(g => g.setOpen(g.id === e.target.id)); }), { rootMargin: '-35% 0px -60% 0px' });
+  document.querySelectorAll('main section').forEach(sec => secIO.observe(sec));
+  // highlight the subsection you're reading
+  const subLinks = groups.flatMap(g => [...g.sub.querySelectorAll('a')]);
+  const headIO = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) subLinks.forEach(l => l.classList.toggle('cur', l.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-20% 0px -70% 0px' });
+  groups.forEach(g => g.heads.forEach(h => headIO.observe(h)));
+})();
 const root = document.documentElement;
 const savedTheme = (() => { try { return localStorage.getItem('itin-brand-theme'); } catch(e) { return null; } })();
 if(savedTheme === 'dark' || (!savedTheme && matchMedia('(prefers-color-scheme: dark)').matches)) root.dataset.theme = 'dark';
@@ -992,6 +1367,976 @@ $('#pageBodyBtn').onclick = e => {
   e.currentTarget.textContent = on ? 'Back to the original body font' : 'Use this body font across the whole page';
 };
 renderPairing();
+// ---------- Element anatomy: card / peek / edit for every element, plus the Add form ----------
+// The field lists below are copied from index.html (ELEMENT_TYPES, TYPE_FIELDS, HIDDEN_UNIVERSAL_FIELDS) so this page
+// shows what the app actually asks for. If a field changes in the app, update it here too (or ask Claude to sync).
+(function(){
+const ELEMENT_TYPES=[
+  {key:'city',label:'City',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>'},
+  {key:'accommodation',label:'Stay',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/>'},
+  {key:'flight',label:'Flight',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/>'},
+  {key:'car',label:'Car',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M18.9 6c-.2-.6-.7-1-1.4-1h-11c-.6 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16c-.8 0-1.5-.7-1.5-1.5S5.7 13 6.5 13s1.5.7 1.5 1.5S7.3 16 6.5 16zm11 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>'},
+  {key:'restaurant',label:'Restaurant',bg:'#FBEAF0',fg:'#993556',icon:'<path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/>'},
+  {key:'coffee',label:'Coffee',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>'},
+  {key:'bar',label:'Bar',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/>'},
+  {key:'store',label:'Shop',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/>'},
+  {key:'hike',label:'Hike',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/>'},
+  {key:'neighborhood',label:'Neighborhood',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/>'},
+  {key:'museum',label:'Museum',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M12 2L2 7v1.5h20V7L12 2zM4 10h2v8H4zm4.7 0h2v8h-2zm4.6 0h2v8h-2zm4.7 0h2v8h-2zM2 19h20v3H2z"/>'},
+  {key:'experience',label:'Experience',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M13 3v10H5L13 3zm2 4l4.5 6H15V7zM3.3 15h17.4l-1.8 3c-.4.6-1 1-1.7 1H6.8c-.7 0-1.3-.4-1.7-1l-1.8-3z"/>'},
+  {key:'ticket',label:'Event',bg:'#FBEAF0',fg:'#993556',icon:'<path fill-rule="evenodd" d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zM15 6.3h1v2.2h-1zm0 3.6h1v2.2h-1zm0 3.6h1v2.2h-1z"/>'},
+  {key:'drive',label:'Drive',bg:'#E6F1FB',fg:'#185FA5',icon:'<path style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" d="M9 21c0-4 6-3 6-7s-6-3-6-7 4-4 7-4"/>'},
+  {key:'visit',label:'Visit',bg:'#FEF5C2',fg:'#6B5A12'},
+  {key:'wellness',label:'Wellness',bg:'#E6F1FB',fg:'#185FA5'},
+  {key:'workout',label:'Workout',bg:'#EADDDD',fg:'#4A2C2C'},
+  {key:'bus',label:'Bus',bg:'#E4E8D8',fg:'#454F2A'},
+  {key:'train',label:'Train',bg:'#F9DCD8',fg:'#B6382C'},
+  {key:'ferry',label:'Ferry',bg:'#E6F1FB',fg:'#185FA5'},
+  {key:'funicular',label:'Funicular',bg:'#F1EFE8',fg:'#555'},
+  {key:'misc',label:'Miscellaneous',bg:'#F1EFE8',fg:'#777',icon:'<path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/>'}
+];
+const TYPE_FIELDS={
+  city:[
+    {key:'arrival_date',label:'Arrival Date',placeholder:'e.g. September 14, 2026'},
+    {key:'departure_date',label:'Departure Date',placeholder:'e.g. September 18, 2026'}
+  ],
+  accommodation:[
+    {key:'accommodation_type',label:'Accommodation Type',type:'select',options:['Hotel','Airbnb',"Friend's Place",'Vacation Home','Other'],fullWidth:true},
+    {key:'check_in_date',label:'Check-in Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'check_in_time',label:'Check-in Time',placeholder:'e.g. 3:00 PM',primaryTime:true},
+    {key:'check_out_date',label:'Check-out Date',required:true,placeholder:'e.g. September 18, 2026'},
+    {key:'check_out_time',label:'Check-out Time',placeholder:'e.g. 11:00 AM'},
+    {key:'booking_platform',label:'Booking Platform',placeholder:'e.g. Booking.com'},
+    {key:'phone',label:'Contact Info',placeholder:'e.g. +33 1 23 45 67 89'},
+    {key:'cancellation_policy',label:'Cancellation Policy',placeholder:'e.g. Free cancellation until Sep 10',fullWidth:true}
+  ],
+  flight:[
+    {key:'departure_airport',label:'Departure Airport',type:'airport',required:true,fullWidth:true},
+    {key:'arrival_airport',label:'Arrival Airport',type:'airport',required:true,fullWidth:true},
+    {key:'airline',label:'Airline',required:true,placeholder:'e.g. Delta'},
+    {key:'flight_number',label:'Flight Number',required:true,placeholder:'e.g. DL1234'},
+    {key:'departure_date',label:'Departure Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'departure_time',label:'Departure Time',required:true,placeholder:'e.g. 8:30 AM',primaryTime:true},
+    {key:'arrival_date',label:'Arrival Date',required:true,placeholder:'e.g. September 15, 2026'},
+    {key:'arrival_time',label:'Arrival Time',required:true,placeholder:'e.g. 4:10 AM'},
+    {key:'terminal',label:'Terminal',placeholder:'e.g. International Terminal G'},
+    {key:'gate',label:'Gate',placeholder:'e.g. G8'}
+  ],
+  car:[
+    {key:'pickup_location',label:'Pickup Location',type:'place',required:true,fullWidth:true},
+    {key:'dropoff_location',label:'Drop-off Location',type:'place',required:true,fullWidth:true},
+    {key:'rental_company',label:'Rental Company',required:true,placeholder:'e.g. Hertz'},
+    {key:'pickup_date',label:'Pickup Date',required:true,placeholder:'e.g. September 15, 2026'},
+    {key:'pickup_time',label:'Pickup Time',required:true,placeholder:'e.g. 9:00 AM',primaryTime:true},
+    {key:'dropoff_date',label:'Drop-off Date',required:true,placeholder:'e.g. September 20, 2026'},
+    {key:'dropoff_time',label:'Drop-off Time',required:true,placeholder:'e.g. 12:00 PM'}
+  ],
+  restaurant:[
+    {key:'meal',label:'Meal Type',type:'select',options:['Breakfast','Lunch','Dinner','Snack','Dessert'],fullWidth:true},
+    {key:'restaurant',label:'Restaurant',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 7:30 PM',primaryTime:true},
+    {key:'reservation',label:'Reservation',type:'checkbox'},
+    {key:'cancellation_fee',label:'Cancellation Fee',type:'checkbox'}
+  ],
+  coffee:[
+    {key:'coffee_shop',label:'Coffee Shop',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 9:00 AM',primaryTime:true}
+  ],
+  bar:[
+    {key:'bar_type',label:'Bar Type',type:'select',options:['Brewery','Club','Cocktail Bar','Pub','Speakeasy','Wine Bar'],fullWidth:true},
+    {key:'bar_name',label:'Bar Name',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 9:00 PM',primaryTime:true},
+    {key:'reservation',label:'Reservation',type:'checkbox'},
+    {key:'cancellation_fee',label:'Cancellation Fee',type:'checkbox'}
+  ],
+  store:[
+    {key:'shop_type',label:'Shop Type',type:'select',options:['Bookstore','Boutique','Gallery','Grocery','Mall','Market','Outlet','Souvenir Shop','Store','Thrift & Vintage'],fullWidth:true},
+    {key:'shop_location',label:'Shop Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 2:00 PM',primaryTime:true}
+  ],
+  hike:[
+    {key:'trail_name',label:'Trail Name',required:true,placeholder:'e.g. Calanques Coastal Trail',fullWidth:true},
+    {key:'start_point',label:'Start Point',type:'place',required:true,fullWidth:true},
+    {key:'end_point',label:'End Point',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 9:00 AM',primaryTime:true},
+    {key:'estimated_time',label:'Estimated Time',placeholder:'e.g. 3 hr'},
+    {key:'distance',label:'Distance',placeholder:'e.g. 8 km'}
+  ],
+  neighborhood:[
+    {key:'neighborhood_name',label:'Neighborhood Name',required:true,placeholder:'e.g. Le Marais',fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 10:00 AM',primaryTime:true}
+  ],
+  museum:[
+    {key:'museum_name',label:'Museum Name',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 2:00 PM',primaryTime:true},
+    {key:'ticket',label:'Ticket',type:'checkbox'}
+  ],
+  experience:[
+    {key:'experience_name',label:'Name',required:true,placeholder:'e.g. Sunset sailing tour',fullWidth:true},
+    {key:'experience_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 5:00 PM',primaryTime:true},
+    {key:'booking',label:'Booking',type:'checkbox'}
+  ],
+  ticket:[
+    {key:'event_name',label:'Event Name',required:true,placeholder:'e.g. Swan Lake',fullWidth:true},
+    {key:'event_venue',label:'Venue',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 7:00 PM',primaryTime:true},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  drive:[
+    {key:'drive_name',label:'Name',required:true,placeholder:'e.g. Georgian Military Road',fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Start Time',required:true,placeholder:'e.g. 8:30 AM',primaryTime:true}
+  ],
+  misc:[
+    {key:'misc_name',label:'Name',required:true,placeholder:'e.g. Print e-visa',fullWidth:true},
+    {key:'misc_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 9:00 AM',primaryTime:true},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ]
+  ,
+  // --- new elements (guide only for now; proposed fields) ---
+  visit:[
+    {key:'visit_name',label:'Name',required:true,placeholder:'e.g. Tea with family',fullWidth:true},
+    {key:'visit_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 4:00 PM',primaryTime:true}
+  ],
+  bus:[
+    {key:'pickup_point',label:'Pickup Point',type:'place',required:true,fullWidth:true},
+    {key:'dropoff_point',label:'Drop-off Point',type:'place',required:true,fullWidth:true},
+    {key:'operator',label:'Operator',required:true,placeholder:'e.g. FlixBus'},
+    {key:'line',label:'Bus Number',placeholder:'e.g. 45'},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'pickup_time',label:'Pickup Time',required:true,placeholder:'e.g. 9:30 AM',primaryTime:true},
+    {key:'dropoff_time',label:'Drop-off Time',placeholder:'e.g. 11:45 AM'},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  train:[
+    {key:'pickup_point',label:'Pickup Point',type:'place',required:true,fullWidth:true},
+    {key:'dropoff_point',label:'Drop-off Point',type:'place',required:true,fullWidth:true},
+    {key:'operator',label:'Operator',required:true,placeholder:'e.g. Georgian Railway'},
+    {key:'train_number',label:'Train Number',placeholder:'e.g. 703'},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'pickup_time',label:'Pickup Time',required:true,placeholder:'e.g. 8:00 AM',primaryTime:true},
+    {key:'dropoff_time',label:'Drop-off Time',placeholder:'e.g. 12:30 PM'},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  ferry:[
+    {key:'pickup_point',label:'Pickup Point',type:'place',required:true,fullWidth:true},
+    {key:'dropoff_point',label:'Drop-off Point',type:'place',required:true,fullWidth:true},
+    {key:'operator',label:'Operator',required:true,placeholder:'e.g. Sehir Hatlari'},
+    {key:'line',label:'Ferry Number',placeholder:'e.g. 12'},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'pickup_time',label:'Pickup Time',required:true,placeholder:'e.g. 10:30 AM',primaryTime:true},
+    {key:'dropoff_time',label:'Drop-off Time',placeholder:'e.g. 11:05 AM'},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  wellness:[
+    {key:'wellness_type',label:'Wellness Experience',type:'select',options:['Massage','Meditation','Other','Sauna','Spa','Yoga'],fullWidth:true},
+    {key:'wellness_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 8:00 AM',primaryTime:true},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  workout:[
+    {key:'workout_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 7:00 AM',primaryTime:true},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ],
+  funicular:[
+    {key:'funicular_location',label:'Location',type:'place',required:true,fullWidth:true},
+    {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
+    {key:'time',label:'Time',required:true,placeholder:'e.g. 6:00 PM',primaryTime:true},
+    {key:'booked',label:'Booked',type:'checkbox'}
+  ]
+};
+const HIDDEN_UNIVERSAL_FIELDS={
+  restaurant:['details','location','address','status','confirm','cost'],
+  city:['details','location','address','status','confirm','cost','link'],
+  flight:['details','location','address','status','confirm','cost','link'],
+  car:['details','location','address','status','confirm','cost'],
+  coffee:['details','location','address','status','confirm','cost'],
+  bar:['details','location','address','status','confirm','cost'],
+  store:['details','location','address','status','confirm','cost'],
+  hike:['details','location','address','status','confirm','cost'],
+  neighborhood:['details','location','address','status','confirm','cost'],
+  museum:['details','location','address','status','confirm','cost'],
+  experience:['details','location','address','status','confirm','cost'],
+  ticket:['details','location','address','status','confirm','cost'],
+  visit:['details','location','address','status','confirm','cost'],
+  wellness:['details','location','address','status','confirm','cost'],
+  workout:['details','location','address','status','confirm','cost'],
+  drive:['details','location','address','status','confirm','cost'],
+  bus:['details','location','address','status','confirm','cost'],
+  train:['details','location','address','status','confirm','cost'],
+  ferry:['details','location','address','status','confirm','cost'],
+  funicular:['details','location','address','status','confirm','cost'],
+  misc:['details','location','address','status','confirm','cost'],
+  accommodation:['details','location','status','cost']
+};
+const STATUS_LABELS={ idea:'Idea', planned:'Planned', booked:'Booked', confirmed:'Confirmed', cancelled:'Cancelled' };
+
+const AN_ORDER = ['city','accommodation','flight','car','restaurant','coffee','bar','store','hike','neighborhood','museum','experience','ticket','visit','wellness','workout','drive','bus','train','ferry','funicular','misc'];
+// What each element's sample looks like once it's filled in. f = the type's own fields; u = the fields every element has.
+const SAMPLE = {
+  city: { name:'Tbilisi, Georgia', f:{arrival_date:'October 26, 2026',departure_date:'October 30, 2026'}, u:{} },
+  accommodation: { name:'The Telegraph Hotel', stayNames:{ 'Airbnb':'Cozy Old Town Loft', "Friend's Place":"Nino's Apartment", 'Vacation Home':'Lakeview Cabin', 'Other':'Sunrise Guesthouse' }, locs:['31 Shota Rustaveli Ave, Tbilisi'], f:{accommodation_type:'Hotel',check_in_date:'October 26, 2026',check_in_time:'3:00 PM',check_out_date:'October 30, 2026',check_out_time:'11:00 AM',booking_platform:'Booking.com',phone:'+995 32 000 0000',cancellation_policy:'Free cancellation until October 22'}, u:{confirm:'1095068261',url:'telegraphhotel.com',addr:'31 Shota Rustaveli Ave, Tbilisi'} },
+  flight: { name:'GYD → TBS', time:'11:10 AM', locs:[], f:{airline:'Azerbaijan Airlines',flight_number:'J2 1081',departure_airport:'GYD',arrival_airport:'TBS',departure_date:'October 26, 2026',departure_time:'11:10 AM',arrival_date:'October 26, 2026',arrival_time:'11:50 AM',terminal:'1',gate:'B4'}, u:{confirm:'K4TQ9X'} },
+  car: { name:'Localrent', time:'8:00 AM', locs:['Localrent Tbilisi Office'], f:{pickup_location:'Localrent Tbilisi Office',dropoff_location:'Localrent Tbilisi Airport Desk',rental_company:'Localrent',pickup_date:'October 28, 2026',pickup_time:'8:00 AM',dropoff_date:'October 28, 2026',dropoff_time:'8:00 PM'}, u:{confirm:'LR-48213',url:'localrent.com',addr:'31 Rustaveli Ave, Tbilisi',addr2:'Tbilisi International Airport, Tbilisi'} },
+  restaurant: { name:'Qaytarma', time:'8:00 PM', locs:[], fav:true, f:{meal:'Dinner',restaurant:'Qaytarma',date:'October 25, 2026',time:'8:00 PM',reservation:'yes'}, u:{url:'qaytarma.example',addr:'Icherisheher, Baku'} },
+  coffee: { name:'Coffee Moffie', time:'9:00 AM', locs:[], f:{coffee_shop:'Coffee Moffie',date:'October 25, 2026',time:'9:00 AM'}, u:{addr:'14 Nizami St, Baku',url:'coffeemoffie.com'} },
+  bar: { name:'Vino Underground', time:'8:30 PM', locs:[], fav:false, f:{bar_type:'Wine Bar',bar_name:'Vino Underground',date:'October 26, 2026',time:'8:30 PM',reservation:'yes'}, u:{addr:'1 Machabeli St, Tbilisi',url:'vinounderground.example'} },
+  store: { name:'Dry Bridge Market', time:'1:30 PM', locs:[], fav:false, f:{shop_type:'Market',shop_location:'Dry Bridge Market',date:'October 27, 2026',time:'1:30 PM'}, u:{addr:'Dry Bridge, Tbilisi',url:'drybridgemarket.example'} },
+  hike: { name:'Gergeti Trinity Church trail', time:'12:00 PM', locs:[], fav:true, f:{trail_name:'Gergeti Trinity Church Trail',start_point:'Stepantsminda, Mtskheta-Mtianeti, Georgia',end_point:'Gergeti Trinity Church, Kazbegi, Georgia',date:'October 28, 2026',time:'12:00 PM',estimated_time:'3 hr',distance:'8 km'}, u:{url:'gergetitrail.example'} },
+  neighborhood: { name:'Old City (Icherisheher)', time:'10:00 AM', locs:[], fav:true, f:{neighborhood_name:'Old City (Icherisheher)',date:'October 25, 2026',time:'10:00 AM'}, u:{url:'icherisheher.example'},
+    stops:[{t:'museum',n:'Maiden Tower',l:'Icherisheher, Baku',time:'10:00 AM',fav:true},{t:'museum',n:'Palace of the Shirvanshahs',l:'Icherisheher, Baku',time:'11:00 AM'},{t:'coffee',n:'Tea break in a courtyard chaikhana',l:'Icherisheher, Baku',time:'11:45 AM',fav:true}] },
+  museum: { name:'Heydar Aliyev Center', time:'2:00 PM', locs:[], fav:true, f:{museum_name:'Heydar Aliyev Center',date:'October 25, 2026',time:'2:00 PM',ticket:'yes'}, u:{addr:'1 Heydar Aliyev Ave, Baku',confirm:'HAC-77120',url:'heydaraliyevcenter.example'} },
+  experience: { name:'Private sulfur bath at Orbeliani', time:'5:00 PM', locs:[], fav:false, f:{experience_name:'Private sulfur bath at Orbeliani',experience_location:'Orbeliani Baths',date:'October 26, 2026',time:'5:00 PM',booking:'yes'}, u:{addr:'Abanotubani Square, Tbilisi',confirm:'OB-5521',url:'orbelianibaths.example'} },
+  ticket: { name:'Swan Lake', time:'7:00 PM', locs:[], fav:false, f:{event_name:'Swan Lake',event_venue:'Tbilisi Opera and Ballet Theatre',date:'October 29, 2026',time:'7:00 PM',booked:'yes'}, u:{addr:'25 Rustaveli Ave, Tbilisi',confirm:'TOB-30918',url:'opera.ge'} },
+  drive: { name:'Georgian Military Road to Kazbegi', time:'8:30 AM', locs:[], fav:false, f:{drive_name:'Georgian Military Road to Kazbegi',date:'October 28, 2026',time:'8:30 AM'}, u:{url:'georgianmilitaryroad.example'},
+    stops:[{t:'museum',n:'Ananuri Fortress',l:'Ananuri, Georgia',time:'10:00 AM'},{t:'restaurant',n:'Lunch in Pasanauri',l:'Pasanauri, Georgia',time:'12:00 PM'},{t:'experience',n:'Friendship Monument',l:'Gudauri, Georgia',time:'1:30 PM'}] },
+  visit: { name:'Tea with Nino\'s family', time:'4:00 PM', locs:[], fav:false, f:{visit_name:'Tea with Nino\'s family',visit_location:'Nino\'s apartment',date:'October 27, 2026',time:'4:00 PM'}, u:{addr:'12 Chavchavadze Ave, Tbilisi',url:'georgianhospitality.example'} },
+  wellness: { name:'Vera Yoga Studio', time:'8:00 AM', locs:[], fav:false, f:{wellness_type:'Yoga',wellness_location:'Vera Yoga Studio',date:'October 27, 2026',time:'8:00 AM',booked:'yes'}, u:{addr:'Vera Yoga Studio, Tbilisi',url:'verayoga.example'} },
+  workout: { name:'Hotel gym session', time:'7:00 AM', locs:[], fav:false, f:{workout_location:'The Telegraph Hotel Gym',date:'October 26, 2026',time:'7:00 AM',booked:'yes'}, u:{addr:'3 Telegraph Ave, Tbilisi',url:'telegraphhotel.example'} },
+  bus: { name:'Bus to Sighnaghi', time:'9:30 AM', locs:[], fav:false, f:{pickup_point:'Ortachala Bus Station, Tbilisi, Georgia',dropoff_point:'Sighnaghi Bus Stop, Sighnaghi, Georgia',pickup_area:'Ortachala',dropoff_area:'Sighnaghi',operator:'Georgian Bus',line:'45',date:'October 28, 2026',pickup_time:'9:30 AM',dropoff_time:'11:45 AM',booked:'yes'}, u:{confirm:'BUS-2231',url:'georgianbus.example'} },
+  train: { name:'Train to Batumi', time:'8:00 AM', locs:[], fav:false, f:{pickup_point:'Tbilisi Central Station, Tbilisi, Georgia',dropoff_point:'Batumi Railway Station, Batumi, Georgia',pickup_area:'Tbilisi',dropoff_area:'Batumi',operator:'Georgian Railway',train_number:'703',date:'October 31, 2026',pickup_time:'8:00 AM',dropoff_time:'12:30 PM',booked:'yes'}, u:{confirm:'TR88213',url:'railway.ge'} },
+  ferry: { name:'Bosphorus ferry to Kadikoy', time:'10:30 AM', locs:[], fav:false, f:{pickup_point:'Eminonu Pier, Istanbul, Turkey',dropoff_point:'Kadikoy Pier, Istanbul, Turkey',pickup_area:'Eminonu',dropoff_area:'Kadikoy',operator:'Sehir Hatlari',line:'12',date:'November 3, 2026',pickup_time:'10:30 AM',dropoff_time:'11:05 AM',booked:'yes'}, u:{confirm:'SH-40117',url:'sehirhatlari.example'} },
+  funicular: { name:'Mtatsminda funicular', time:'6:00 PM', locs:[], fav:false, f:{funicular_location:'Mtatsminda Funicular',date:'October 27, 2026',time:'6:00 PM',booked:'yes'}, u:{addr:'Chonkadze St, Tbilisi',confirm:'FUN-5520',url:'funicular.example'} },
+  misc: { name:'Print e-visa and hotel confirmations', time:'9:00 AM', locs:[], fav:false, f:{misc_name:'Print e-visa and hotel confirmations',misc_location:'FedEx Office, Washington, D.C.',date:'October 22, 2026',time:'9:00 AM',booked:'no'}, u:{addr:'1200 K St NW, Washington, D.C.',confirm:'',url:'visa.example'} }
+};
+// every element ends with a free-text Notes field
+const NOTES = {
+  city:'Arrive late. Check the e-visa before landing.', accommodation:'Late check-in after 11 PM. Ask for a quiet room.', flight:'Window seat. Check in online 24 hours before.',
+  car:'Ask for snow tires. Return with a full tank.', restaurant:'Ask for the table by the window. Try the lamb dolma.', coffee:'Good spot for a morning work session.',
+  bar:'Try the orange wine flight. Cash only.', store:'Bring cash for the stalls and bargain politely.', hike:'Start early to beat the clouds. Bring layers.',
+  neighborhood:'Wear comfortable shoes. The lanes are cobblestone.', museum:'Closed Mondays. The audio guide is worth it.', experience:'Bring a swimsuit and flip-flops.',
+  ticket:'Doors open 30 minutes early. Dress smart.', visit:'Bring a small gift for the kids.', wellness:'Arrive 10 minutes early to change.',
+  workout:'The pool is on the roof.', drive:'Check Jvari Pass road conditions before leaving.', bus:'Buy water before boarding. Cash only for the driver.',
+  train:'Platform changes are announced late. Arrive 20 minutes early.', ferry:'Sit on the upper deck for the best views.', funicular:'Sunset is the busiest time. Go 20 minutes earlier.',
+  misc:'Print two copies.'
+};
+Object.keys(NOTES).forEach(k => { SAMPLE[k].u = Object.assign({}, SAMPLE[k].u, { notes: NOTES[k] }); });
+// a few airports to search; the code gives the full name and the city shown on the flight card
+const AIRPORTS = {
+  GYD:{name:'Heydar Aliyev International Airport',city:'Baku',country:'Azerbaijan'}, TBS:{name:'Tbilisi International Airport',city:'Tbilisi',country:'Georgia'},
+  EVN:{name:'Zvartnots International Airport',city:'Yerevan',country:'Armenia'}, IAD:{name:'Washington Dulles International Airport',city:'Washington, D.C.',country:'United States'},
+  DCA:{name:'Ronald Reagan Washington National Airport',city:'Washington, D.C.',country:'United States'}, BWI:{name:'Baltimore/Washington International Airport',city:'Baltimore',country:'United States'},
+  FRA:{name:'Frankfurt Airport',city:'Frankfurt',country:'Germany'}, IST:{name:'Istanbul Airport',city:'Istanbul',country:'Turkey'},
+  LHR:{name:'London Heathrow Airport',city:'London',country:'United Kingdom'}, CDG:{name:'Paris Charles de Gaulle Airport',city:'Paris',country:'France'},
+  DOH:{name:'Hamad International Airport',city:'Doha',country:'Qatar'}, DXB:{name:'Dubai International Airport',city:'Dubai',country:'United Arab Emirates'},
+  JFK:{name:'John F. Kennedy International Airport',city:'New York',country:'United States'}, LAX:{name:'Los Angeles International Airport',city:'Los Angeles',country:'United States'},
+  SFO:{name:'San Francisco International Airport',city:'San Francisco',country:'United States'}, PDX:{name:'Portland International Airport',city:'Portland',country:'United States'},
+  NRT:{name:'Narita International Airport',city:'Tokyo',country:'Japan'}, SYD:{name:'Sydney Kingsford Smith Airport',city:'Sydney',country:'Australia'}
+};
+const airportFull = c => AIRPORTS[c] ? AIRPORTS[c].name + ' (' + c + ')' : (c || '');
+const airportCity = c => AIRPORTS[c] ? AIRPORTS[c].city : '';
+const ARROW = (w, h) => '<svg class="arr" viewBox="0 0 16 12" width="' + w + '" height="' + h + '"><path d="M2 6h11M9.5 2.5L13 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const STOP_POOL = [
+  { for:'drive', t:'hike', n:'Gergeti Trinity Church trail', l:'Stepantsminda, Georgia', time:'3:30 PM' },
+  { for:'drive', t:'coffee', n:'Coffee at Gudauri lookout', l:'Gudauri, Georgia', time:'1:00 PM' },
+  { t:'museum', n:'Carpet Museum', l:'Icherisheher, Baku', time:'12:30 PM' },
+  { t:'store', n:'Old City Carpet Shop', l:'Icherisheher, Baku', time:'1:15 PM' },
+  { t:'restaurant', n:'Lunch at Shirvanshah Museum Restaurant', l:'Icherisheher, Baku', time:'1:30 PM' },
+  { t:'coffee', n:'Coffee at a courtyard cafe', l:'Icherisheher, Baku', time:'3:00 PM' }
+];
+const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg>';
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const typeOf = k => ELEMENT_TYPES.find(t => t.key === k);
+// Words people might type when they're looking for a stop (searching "massage" finds Wellness)
+const STOP_WORDS = {
+  city:'town village destination arrival departure place',
+  accommodation:'hotel airbnb hostel lodging lodge bnb resort inn sleep room villa vacation home friend place night',
+  flight:'plane airplane airport airline fly flying air boarding',
+  car:'rental rent drive vehicle pickup drop-off hertz',
+  restaurant:'food eat eating dinner lunch breakfast brunch dessert meal reservation dining',
+  coffee:'cafe espresso latte tea bakery breakfast drink',
+  bar:'drink drinks beer brewery wine cocktail pub club speakeasy nightlife happy hour',
+  store:'shop shopping market mall grocery boutique bookstore gift souvenir outlet gallery thrift vintage buy',
+  hike:'trail walk trek climb mountain nature outdoors trailhead',
+  neighborhood:'area district quarter old town walk explore stroll',
+  museum:'art gallery exhibit exhibition history culture monument castle landmark sights',
+  experience:'tour class activity adventure excursion lesson workshop tasting cooking boat show',
+  ticket:'concert show theater theatre game match sports performance music festival movie opera ballet',
+  visit:'friends family home dinner party host stay over see people',
+  wellness:'massage spa sauna yoga meditation relax relaxation hammam bath pamper treatment retreat',
+  workout:'gym fitness exercise run running swim swimming pilates training class lift',
+  drive:'road trip scenic route car highway',
+  bus:'coach transit shuttle transport ride',
+  train:'rail railway metro subway tram station',
+  ferry:'boat ship cruise water crossing sail',
+  funicular:'cable car tram gondola lift incline',
+  misc:'other note reminder task errand custom anything'
+};
+// For anything but a Hotel the stay gets its own Name (an Airbnb listing, a friend's place...); for a Hotel the Location is the name
+// A Friend's Place has no times, booking platform or confirmation number filled in
+const effective = (k, S) => {
+  const f = Object.assign({}, S.f), u = Object.assign({}, S.u || {});
+  if (k === 'accommodation' && f.accommodation_type === "Friend's Place"){ f.check_in_time = ''; f.check_out_time = ''; f.booking_platform = ''; u.confirm = ''; }
+  return { f, u };
+};
+const stayNameOf = S => (S.stayNames || {})[S.f.accommodation_type] || '';  // a sample name for each type that isn't a Hotel
+const stayNamed = S => { const t = S.f && S.f.accommodation_type; return !!t && t !== '—' && t !== 'Hotel'; };
+const symName = k => typeOf(k).label;
+const tagFor = (k, S) => k === 'restaurant' ? ((S.f && S.f.meal) || S.meal || 'Restaurant') : k === 'bar' ? ((S.f && S.f.bar_type) || 'Bar') : k === 'store' ? ((S.f && S.f.shop_type) || 'Shop') : k === 'wellness' ? ((S.f && S.f.wellness_type) || 'Wellness') : typeOf(k).label;
+const primaryKey = k => ((TYPE_FIELDS[k] || []).find(f => f.primaryTime) || {}).key;
+// which stored fields feed the card (title + locations + time + tag)
+const LOC_KEYS = { flight:['departure_airport','arrival_airport'], drive:['start_location','end_location'], car:['pickup_location','dropoff_location'], hike:['trailhead_address'], experience:['meeting_point'], ticket:['venue_name'], bus:['departure_stop','arrival_stop'], train:['departure_station','arrival_station'], ferry:['departure_port','arrival_port'], funicular:['departure_station','arrival_station'], workout:['facility_name'] };
+const cardKeys = k => new Set(['name','location_name','address'].concat(LOC_KEYS[k] || [], (k === 'city' || k === 'accommodation') ? [] : (primaryKey(k) || []), k === 'restaurant' ? ['meal', 'restaurant', 'reservation'] : [], k === 'coffee' ? ['coffee_shop'] : [], k === 'bar' ? ['bar_type', 'bar_name', 'reservation'] : [], k === 'store' ? ['shop_type', 'shop_location'] : [], k === 'hike' ? ['trail_name'] : [], k === 'neighborhood' ? ['neighborhood_name'] : [], k === 'museum' ? ['museum_name', 'ticket'] : [], k === 'experience' ? ['experience_name', 'booking'] : [], k === 'ticket' ? ['event_name', 'booked'] : [], k === 'visit' ? ['visit_name'] : [], k === 'wellness' ? ['wellness_type', 'wellness_location', 'booked'] : [], k === 'workout' ? ['workout_location', 'booked'] : [], k === 'funicular' ? ['funicular_location', 'booked'] : [], k === 'misc' ? ['misc_name', 'misc_location'] : [], k === 'drive' ? ['drive_name'] : [], (k === 'bus' || k === 'train' || k === 'ferry') ? ['pickup_point', 'dropoff_point', 'booked'] : [], k === 'bus' ? ['operator', 'line'] : [], k === 'train' ? ['operator', 'train_number'] : [], k === 'ferry' ? ['operator', 'line'] : [], k === 'flight' ? ['airline', 'flight_number'] : [], k === 'car' ? ['dropoff_time'] : []));  // the city tag and the hotel banner don't show a time
+
+// ----- peek: everything that has been filled out shows here (no row limit), in the same order as the edit view -----
+function peekOf(k, S){
+  const { f, u } = effective(k, S), rows = [], hid = new Set(HIDDEN_UNIVERSAL_FIELDS[k] || []);
+  const add = (label, val, keys) => { if (val) rows.push({ label, val, keys }); };
+  const fld = key => (TYPE_FIELDS[k] || []).find(x => x.key === key);
+  const addField = x => { if (x && f[x.key]) add(x.label, x.type === 'airport' ? airportFull(f[x.key]) : (x.type === 'checkbox' || x.type === 'bool') ? (f[x.key] === 'no' ? 'No' : 'Yes') : f[x.key], [x.key]); };
+  const addUni = (hidKey, label, val, keys) => { if (!hid.has(hidKey)) add(label, val, keys); };
+  if (k === 'city'){
+    add('Location', S.name, ['name']);
+    (TYPE_FIELDS.city || []).forEach(addField);
+  } else if (k === 'accommodation'){
+    addField(fld('accommodation_type'));
+    if (stayNamed(S)) add('Name', stayNameOf(S), ['name']);
+    if (stayNamed(S)) add('Location', u.addr, ['location_name','address']);   // not a Hotel: the address fills the Location
+    else { add('Location', S.name, ['name']); add('Address', u.addr, ['address']); }
+    ['check_in_date','check_in_time','check_out_date','check_out_time'].forEach(key => addField(fld(key)));
+    addField(fld('booking_platform'));
+    add('Confirmation', u.confirm, ['confirm']);
+    ['cancellation_policy','phone'].forEach(key => addField(fld(key)));
+    add('Link', u.url, ['url']);
+  } else if (k === 'ticket') {
+    const ef = key => TYPE_FIELDS.ticket.find(x => x.key === key);
+    addField(ef('event_name'));
+    addField(ef('event_venue'));
+    add('Address', u.addr, ['address']);
+    addField(ef('date'));
+    addField(ef('time'));
+    addField(ef('booked'));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'misc') {
+    const mc = key => TYPE_FIELDS.misc.find(x => x.key === key);
+    ['misc_name', 'misc_location'].forEach(key => addField(mc(key)));
+    add('Address', u.addr, ['address']);
+    ['date', 'time', 'booked'].forEach(key => addField(mc(key)));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'funicular') {
+    const fk = key => TYPE_FIELDS.funicular.find(x => x.key === key);
+    addField(fk('funicular_location'));
+    add('Address', u.addr, ['address']);
+    ['date', 'time', 'booked'].forEach(key => addField(fk(key)));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'workout') {
+    const wk = key => TYPE_FIELDS.workout.find(x => x.key === key);
+    addField(wk('workout_location'));
+    add('Address', u.addr, ['address']);
+    ['date', 'time', 'booked'].forEach(key => addField(wk(key)));
+    add('Link', u.url, ['url']);
+  } else if (k === 'wellness') {
+    const wf = key => TYPE_FIELDS.wellness.find(x => x.key === key);
+    ['wellness_type', 'wellness_location'].forEach(key => addField(wf(key)));
+    add('Address', u.addr, ['address']);
+    ['date', 'time', 'booked'].forEach(key => addField(wf(key)));
+    add('Link', u.url, ['url']);
+  } else if (k === 'visit') {
+    const vf = key => TYPE_FIELDS.visit.find(x => x.key === key);
+    addField(vf('visit_name'));
+    addField(vf('visit_location'));
+    add('Address', u.addr, ['address']);
+    addField(vf('date'));
+    addField(vf('time'));
+    add('Link', u.url, ['url']);
+  } else if (k === 'experience') {
+    const xf = key => TYPE_FIELDS.experience.find(x => x.key === key);
+    addField(xf('experience_name'));
+    addField(xf('experience_location'));
+    add('Address', u.addr, ['address']);
+    addField(xf('date'));
+    addField(xf('time'));
+    addField(xf('booking'));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'museum') {
+    const mf = key => TYPE_FIELDS.museum.find(x => x.key === key);
+    addField(mf('museum_name'));
+    add('Address', u.addr, ['address']);
+    addField(mf('date'));
+    addField(mf('time'));
+    addField(mf('ticket'));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'bus' || k === 'train' || k === 'ferry') {
+    const bf = key => TYPE_FIELDS[k].find(x => x.key === key);
+    (k === 'train' ? ['pickup_point', 'dropoff_point', 'operator', 'train_number', 'date'] : (k === 'ferry' || k === 'bus') ? ['pickup_point', 'dropoff_point', 'operator', 'line', 'date'] : ['pickup_point', 'dropoff_point', 'date']).concat([ 'pickup_time', 'dropoff_time', 'booked']).forEach(key => addField(bf(key)));
+    add('Confirmation', u.confirm, ['confirm']);
+    add('Link', u.url, ['url']);
+  } else if (k === 'drive') {
+    const df = key => TYPE_FIELDS.drive.find(x => x.key === key);
+    ['drive_name', 'date', 'time'].forEach(key => addField(df(key)));
+    if ((S.stops || []).length) rows.push({ label: 'Stops', val: S.stops.map(st => st.n).join('\n'), keys: ['stops'], pre: true });
+    add('Link', u.url, ['url']);
+  } else if (k === 'neighborhood') {
+    const nf = key => TYPE_FIELDS.neighborhood.find(x => x.key === key);
+    ['neighborhood_name', 'date', 'time'].forEach(key => addField(nf(key)));
+    if ((S.stops || []).length) rows.push({ label: 'Stops', val: S.stops.map(st => st.n).join('\n'), keys: ['stops'], pre: true });
+    add('Link', u.url, ['url']);
+  } else if (k === 'hike') {
+    const hf = key => TYPE_FIELDS.hike.find(x => x.key === key);
+    ['trail_name', 'start_point', 'end_point', 'date', 'time', 'estimated_time', 'distance'].forEach(key => addField(hf(key)));
+    add('Link', u.url, ['url']);
+  } else if (k === 'store') {
+    const sf = key => TYPE_FIELDS.store.find(x => x.key === key);
+    addField(sf('shop_type'));
+    addField(sf('shop_location'));
+    add('Address', u.addr, ['address']);
+    addField(sf('date'));
+    addField(sf('time'));
+    add('Link', u.url, ['url']);
+  } else if (k === 'bar') {
+    const bf = key => TYPE_FIELDS.bar.find(x => x.key === key);
+    addField(bf('bar_type'));
+    addField(bf('bar_name'));
+    add('Address', u.addr, ['address']);
+    addField(bf('date'));
+    addField(bf('time'));
+    addField(bf('reservation'));
+    addField(bf('cancellation_fee'));
+    add('Link', u.url, ['url']);
+  } else if (k === 'coffee') {
+    const cf = key => TYPE_FIELDS.coffee.find(x => x.key === key);
+    addField(cf('coffee_shop'));
+    add('Address', u.addr, ['address']);
+    addField(cf('date'));
+    addField(cf('time'));
+    add('Link', u.url, ['url']);
+  } else if (k === 'restaurant') {
+    const rf = key => TYPE_FIELDS.restaurant.find(x => x.key === key);
+    addField(rf('meal'));
+    addField(rf('restaurant'));
+    add('Address', u.addr, ['address']);
+    addField(rf('date'));
+    addField(rf('time'));
+    addField(rf('reservation'));
+    addField(rf('cancellation_fee'));
+    add('Link', u.url, ['url']);
+  } else if (k === 'car') {
+    const fld = key => TYPE_FIELDS.car.find(x => x.key === key);
+    addField(fld('pickup_location'));
+    add('Address', u.addr, ['address']);
+    addField(fld('dropoff_location'));
+    add('Address', u.addr2, ['address']);
+    addField(fld('rental_company'));
+    add('Confirmation', u.confirm, ['confirm']);
+    ['pickup_date', 'pickup_time', 'dropoff_date', 'dropoff_time'].forEach(key => addField(fld(key)));
+    add('Link', u.url, ['url']);
+  } else {
+    if (k !== 'flight') add('Name', S.name, ['name']);
+    (TYPE_FIELDS[k] || []).forEach(x => { addField(x); if (k === 'flight' && x.key === 'flight_number') add('Confirmation', u.confirm, ['confirm']); });
+    addUni('location', 'Location Name', u.loc, ['location_name']);
+    addUni('address', 'Address', u.addr, ['address']);
+    // a location the card shows but no field holds (restaurants, neighborhoods...) still appears
+    const hasLoc = !!(u.loc || u.addr) || (LOC_KEYS[k] || []).some(key => f[key]);
+    if (!hasLoc && S.locs && S.locs.length) add(S.locs.length > 1 ? 'Locations' : 'Location', S.locs.join(' · '), ['location_name','address']);
+    addUni('status', 'Booking Status', u.status ? (STATUS_LABELS[u.status] || u.status) : '', ['status']);
+    addUni('confirm', 'Confirmation', u.confirm, ['confirm']);
+    addUni('cost', 'Cost', u.cost, ['cost']);
+    addUni('link', 'Link', u.url, ['url']);
+  }
+  add('Notes', u.notes, ['notes']);
+  return { rows, keys: new Set(rows.flatMap(r => r.keys)) };
+}
+
+// ----- card -----
+function carCards(S){
+  const one = (when, time, loc, addr, gap) => '<div class="ac"' + (gap ? ' style="margin-top:10px"' : '') + '><div class="ac-ei">' + symTint('Car') + '</div><div class="ac-info"><div class="ac-eb">' + (time ? esc(time) + '<span class="sep">·</span>' : '') + 'Car ' + when + '</div><div class="ac-en">' + esc(loc || S.name) + '</div>' + (addr ? '<div class="ac-ed">' + esc(addr) + '</div>' : '') + '</div><div class="ac-star' + (S.fav ? ' on' : '') + '">' + STAR + '</div></div>';
+  const u = S.u || {};
+  return one('Pickup', S.f.pickup_time, S.f.pickup_location, u.addr) + one('Drop-off', S.f.dropoff_time, S.f.dropoff_location, u.addr2, true);
+}
+function flightCard(S){
+  const d = S.f.departure_airport, a = S.f.arrival_airport;
+  const title = (d || a) ? '<span class="codes">' + esc(d || '—') + ARROW(14, 10) + esc(a || '—') + '</span>' : esc(S.name || 'Flight');
+  const who = [S.f.airline, S.f.flight_number].filter(Boolean).join(' ');   // airline and flight number sit under the codes
+  const cities = who ? '<div class="ac-ed">' + esc(who) + '</div>' : '';
+  return '<div class="ac"><div class="ac-ei">' + symTint('Flight') + '</div><div class="ac-info"><div class="ac-eb">' + (S.time ? esc(S.time) + '<span class="sep">·</span>' : '') + 'Flight</div><div class="ac-en">' + title + '</div>' + cities +
+    '</div><div class="ac-star' + (S.fav ? ' on' : '') + '">' + STAR + '</div></div>';
+}
+function busCard(S, kind){
+  kind = kind || 'Bus';
+  const who = kind === 'Train' ? [S.f.operator, S.f.train_number].filter(Boolean).join(' ') : (kind === 'Bus' || kind === 'Ferry') ? [S.f.operator, S.f.line].filter(Boolean).join(' ') : '';
+  const d = S.f.pickup_area, a = S.f.dropoff_area;
+  const title = (d || a) ? '<span class="codes">' + esc(d || '—') + ARROW(14, 10) + esc(a || '—') + '</span>' : esc(S.name || kind);
+  return '<div class="ac"><div class="ac-ei">' + symTint(kind) + '</div><div class="ac-info"><div class="ac-eb">' + (S.f.pickup_time ? esc(S.f.pickup_time) + '<span class="sep">·</span>' : '') + kind + '</div><div class="ac-en">' + title + '</div>' + (who ? '<div class="ac-ed">' + esc(who) + '</div>' : '') +
+    (S.f.booked === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
+    '</div><div class="ac-star' + (S.fav ? ' on' : '') + '">' + STAR + '</div></div>';
+}
+function cardHTML(k, S, th){
+  const sty = '--bg:' + th.bg + ';--fg:' + th.fg + ';--acc:' + th.accent + ';--acct:' + th.accentText;
+  let inner;
+  if (k === 'city') inner = '<span class="ac-city">' + citySym() + esc(S.name) + '</span>';
+  else if (k === 'accommodation') inner = '<div class="ac-stay"><div class="circ">' + symTint('Stay') + '</div><div><div class="n">' + esc(stayNamed(S) ? stayNameOf(S) : S.name) + '</div><div class="a">' + esc((S.locs || [])[0] || '') + '</div></div></div>';
+  else if (k === 'flight') inner = flightCard(S);
+  else if (k === 'car') inner = carCards(S);
+  else if (k === 'bus') inner = busCard(S);
+  else if (k === 'train') inner = busCard(S, 'Train');
+  else if (k === 'ferry') inner = busCard(S, 'Ferry');
+  else {
+    const when = ((k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'wellness' || k === 'workout' || k === 'drive' || k === 'funicular' || k === 'misc') && S.f.time) ? S.f.time : S.time;
+    const eb = (when ? esc(when) + '<span class="sep">·</span>' : '') + esc(tagFor(k, S));
+    inner = '<div class="ac"><div class="ac-ei">' + symTint(symName(k)) + '</div><div class="ac-info"><div class="ac-eb">' + eb + '</div><div class="ac-en">' + esc(k === 'restaurant' ? (S.f.restaurant || S.name) : k === 'coffee' ? (S.f.coffee_shop || S.name) : k === 'bar' ? (S.f.bar_name || S.name) : k === 'store' ? (S.f.shop_location || S.name) : k === 'hike' ? (S.f.trail_name || S.name) : k === 'neighborhood' ? (S.f.neighborhood_name || S.name) : k === 'museum' ? (S.f.museum_name || S.name) : k === 'experience' ? (S.f.experience_name || S.name) : k === 'ticket' ? (S.f.event_name || S.name) : k === 'visit' ? (S.f.visit_name || S.name) : k === 'wellness' ? (S.f.wellness_location || S.name) : k === 'workout' ? (S.f.workout_location || S.name) : k === 'funicular' ? (S.f.funicular_location || S.name) : k === 'misc' ? (S.f.misc_name || S.name) : k === 'drive' ? (S.f.drive_name || S.name) : S.name) + '</div>' +
+      ((k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'wellness' || k === 'workout' || k === 'drive' || k === 'funicular') ? [] : (k === 'misc' ? [S.f.misc_location].filter(Boolean) : (S.locs || []))).map(l => '<div class="ac-ed">' + esc(l) + '</div>').join('') +
+      ((k === 'restaurant' || k === 'bar') && S.f.reservation === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Reservation</div>' : '') +
+      (k === 'museum' && S.f.ticket === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Ticket</div>' : '') +
+      (k === 'experience' && S.f.booking === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
+      ((k === 'ticket' || k === 'wellness' || k === 'workout' || k === 'funicular') && S.f.booked === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
+      ((S.stops && S.stops.length) ? '<button type="button" class="ac-toggle" aria-expanded="true"><span>Hide Stops</span><svg viewBox="0 0 24 24"><path d="M6 14.5l6-6 6 6"/></svg></button>' : '') +
+      '</div><div class="ac-star' + (S.fav ? ' on' : '') + '">' + STAR + '</div>';
+    if (S.stops && S.stops.length) inner = inner.replace('<div class="ac">', '<div class="ac ac-hood">') + '<div class="ac-stops">' + S.stops.map(s => '<div class="ac-stop"><div class="t">' + symTint(symName(s.t)) + '</div><div class="b"><div class="e">' + (s.time ? esc(s.time) + '<span class="sep">·</span>' : '') + esc(tagFor(s.t, {})) + '</div><div class="nn">' + esc(s.n) + '</div></div><div class="ac-star' + (s.fav ? ' on' : '') + '">' + STAR + '</div></div>').join('') + '</div>';
+    inner += '</div>';
+  }
+  return '<div class="acw" style="' + sty + '">' + inner + '</div>';
+}
+
+// ----- sheets -----
+function peekHTML(k, S){
+  const p = peekOf(k, S);
+  return '<div class="sh"><div class="grab"></div><div class="ttl">' + esc(typeOf(k).label) + '</div>' +
+    (function(){  // paired rows sit side by side when both are filled in: arrival/departure dates, and each check-in/out date with its time
+      const ICON = {
+        map: '<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>',
+        copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 017.5 4H15"/></svg>',
+        open: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 014 18.5v-11A1.5 1.5 0 015.5 6H10"/></svg>',
+        phone: '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v3a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/></svg>'
+      };
+      // Which icon a row gets: maps for places, copy for addresses and confirmation numbers, phone for phone numbers, open for links
+      const MAP_KEYS = ['location_name', 'restaurant', 'coffee_shop', 'bar_name', 'shop_location', 'museum_name', 'experience_location', 'event_venue', 'visit_location', 'wellness_location', 'workout_location', 'funicular_location', 'misc_location', 'pickup_point', 'dropoff_point', 'start_point', 'end_point', 'pickup_location', 'dropoff_location', 'start_location', 'end_location', 'trailhead_address', 'meeting_point', 'venue_name', 'facility_name',
+        'departure_airport', 'arrival_airport', 'departure_stop', 'arrival_stop', 'departure_station', 'arrival_station', 'departure_port', 'arrival_port'];
+      const attr = v => esc(v).replace(/"/g, '&quot;');
+      const action = r => {
+        const keys = r.keys || [];
+        const isMap = /^(Pickup )?Locations?( Name)?$/.test(r.label) || keys.some(x => MAP_KEYS.includes(x));
+        if (isMap){
+          const first = r.val.split(' · ')[0];
+          const q = (S.u && S.u.addr && /^(Pickup )?Location$|^Restaurant$|^Coffee Shop$|^Bar Name$|^Shop Location$|^Museum Name$|^Venue$/.test(r.label)) ? first + ', ' + S.u.addr : (S.u && S.u.addr2 && r.label === 'Drop-off Location') ? first + ', ' + S.u.addr2 : first;
+          return '<a class="act" href="https://maps.apple.com/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener" aria-label="Open in Maps" title="Open in Maps">' + ICON.map + '</a>';
+        }
+        if (keys.includes('phone')) return '<a class="act" href="tel:' + attr(r.val.replace(/[^+\d]/g, '')) + '" aria-label="Call" title="Call">' + ICON.phone + '</a>';
+        if (r.label === 'Address') return '<button type="button" class="act copy" data-copy="' + attr(r.val) + '" aria-label="Copy address" title="Copy address">' + ICON.copy + '</button>';
+        if (keys.includes('confirm') || keys.includes('pnr')) return '<button type="button" class="act copy" data-copy="' + attr(r.val) + '" aria-label="Copy confirmation number" title="Copy">' + ICON.copy + '</button>';
+        if (r.label === 'Link' || keys.includes('url') || keys.includes('barcode_qr_url')) return '<button type="button" class="act openlink" data-url="' + attr(r.val) + '" aria-label="Open link" title="Open link">' + ICON.open + '</button>';
+        return '';
+      };
+      // a row with a button: the button is centered against the whole field (label and value together)
+      const row = (r, extra) => {
+        const a = action(r), body = '<div class="lb">' + esc(r.label) + '</div><div class="vt"' + (r.pre ? ' style="white-space:pre-line"' : '') + '>' + esc(r.val) + '</div>';
+        return a ? '<div class="vr hasact' + (extra || '') + '"><div class="vcol">' + body + '</div>' + a + '</div>' : '<div class="vr' + (extra || '') + '">' + body + '</div>';
+      };
+      const cell = r => row(r, ' c1');
+      let out = '', i = 0;
+      while (i < p.rows.length){
+        const r = p.rows[i], nx = p.rows[i + 1];
+        const PAIRS = { 'Arrival Date': ['Departure Date', 'Arrival Time'], 'Departure Date': 'Departure Time', 'Check-in Date': 'Check-in Time', 'Check-out Date': 'Check-out Time', 'Confirmation': 'Booking Platform', 'Booking Platform': 'Confirmation', 'Airline': 'Flight Number', 'Terminal': 'Gate', 'Date': 'Time', 'Estimated Time': 'Distance', 'Pickup Time': 'Drop-off Time', 'Operator': ['Train Number', 'Line'], 'Rental Company': 'Confirmation', 'Pickup Date': 'Pickup Time', 'Drop-off Date': 'Drop-off Time' };
+        if (nx && [].concat(PAIRS[r.label] || []).includes(nx.label)){ out += '<div class="r2">' + cell(r) + cell(nx) + '</div>'; i += 2; }
+        else { out += row(r); i += 1; }
+      }
+      return out;
+    })() +
+    '<div class="btns"><div class="b2" style="flex:1">Edit</div></div></div>';
+}
+function badge(){ return ''; }  // markers removed: only the red outline (shows on the card) remains
+
+function fieldHTML(fd, val, ck, pk){
+  const label = esc(fd.label + (fd.required ? ' *' : '')) + badge([fd.key], ck, pk);
+  if (fd.type === 'checkbox') return '<div class="c1"><div class="cb"><i class="' + (val === 'yes' ? 'on' : '') + '">' + (val === 'yes' ? '✓' : '') + '</i>' + esc(fd.label) + badge([fd.key], ck, pk) + '</div></div>';
+  if (fd.type === 'place') {
+    return '<div class="c1"><div class="lb">' + label + '</div><div class="in' + (ck.has(fd.key) ? ' oc' : '') + (fd.required ? ' rq' : '') + '" style="justify-content:space-between;gap:10px">' + esc(val || '') + '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div></div>';
+  }
+  if (fd.type === 'airport') {
+    return '<div class="c1"><div class="lb">' + label + '</div><div class="airwrap"><input class="in air' + (ck.has(fd.key) ? ' oc' : '') + (fd.required ? ' rq' : '') + '" data-key="' + fd.key + '" value="' + esc(airportFull(val)).replace(/"/g, '&quot;') + '" autocomplete="off"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div></div>';
+  }
+  let shown = val, cls = 'in', opts = null;
+  if (fd.type === 'bool'){ cls += ' sel'; shown = val === 'yes' ? 'Yes' : val === 'no' ? 'No' : '—'; opts = ['—', 'Yes', 'No']; }
+  else if (fd.type === 'select'){ cls += ' sel'; shown = val || '—'; opts = ['—'].concat(fd.options); }
+  if (!val && !fd.type) { shown = ''; cls += ' ph'; }
+  if (ck.has(fd.key)) cls += ' oc';
+  if (fd.required) cls += ' rq';
+  return '<div class="c1"><div class="lb">' + label + '</div><div class="' + cls + '"' + (opts ? ' data-opts="' + encodeURIComponent(JSON.stringify(opts)) + '" data-key="' + fd.key + '"' : '') + '>' + esc(shown) + '</div>' + (opts ? optList(opts.filter(o => o !== '—'), shown) : '') + '</div>';
+}
+function editHTML(k, S, create){
+  if (create && !k) return '<div class="sh" style="min-height:440px"><div class="grab"></div><div class="ttl" style="margin-bottom:16px">Add a stop</div><div class="c1"><div class="in sel" data-key="element_type" data-opts="' + encodeURIComponent(JSON.stringify(AN_ORDER.map(key => typeOf(key).label))) + '"><span style="color:#999;font-weight:500;margin-left:6px">Select</span></div></div><div class="btns"><div class="b1">Cancel</div><div class="b2" style="opacity:.35">Add</div></div></div>';
+  const ck = create ? new Set() : cardKeys(k), pk = peekOf(k, S).keys, { f, u } = effective(k, S);   // the create form has no red outlines
+  const hid = new Set(HIDDEN_UNIVERSAL_FIELDS[k] || []);
+  const uni = (key, label, val, keys) => '<div class="c1"><div class="lb">' + label + badge(keys, ck, pk) + '</div><div class="in' + (val ? '' : ' ph') + (keys.some(x => ck.has(x)) ? ' oc' : '') + '">' + esc(val || '') + '</div></div>';
+  let h = '<div class="sh"><div class="grab"></div><div class="ttl"' + (create ? ' style="margin-bottom:16px"' : '') + '>' + (create ? 'Add a stop' : 'Edit ' + esc(typeOf(k).label)) + '</div>';
+  h += '<div class="c1">' + (create ? '' : '<div class="lb">Stop type</div>') + '<div class="in sel" data-key="element_type" data-opts="' + encodeURIComponent(JSON.stringify(AN_ORDER.map(key => typeOf(key).label))) + '"><span class="tico eq">' + symTight(symName(k)) + '</span><span>' + esc(typeOf(k).label) + '</span></div>' + optList(AN_ORDER.map(key => typeOf(key).label), typeOf(k).label) + '</div>';
+  const isCity = k === 'city', isStay = k === 'accommodation', geo = isCity || isStay;
+  let fields = TYPE_FIELDS[k] || [];
+  if (isStay){ const tf = fields.find(x => x.key === 'accommodation_type'); h += '<div class="r2">' + fieldHTML(tf, f[tf.key], ck, pk) + '</div>'; fields = fields.filter(x => x !== tf);
+    if (stayNamed(S)) h += '<div class="lb">Name</div><div class="in oc">' + esc(stayNameOf(S)) + '</div>'; }  // Accommodation Type sits at the very top; Name appears when it isn't a Hotel
+  if (geo) h += '<div class="lb">Location *</div><div class="in' + (create ? ' rq' : ' oc rq') + '" style="justify-content:space-between;gap:10px">' + esc((isStay && stayNamed(S)) ? (u.addr || '') : S.name) + '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>';
+  else if (k !== 'flight' && k !== 'car' && k !== 'restaurant' && k !== 'coffee' && k !== 'bar' && k !== 'store' && k !== 'hike' && k !== 'neighborhood' && k !== 'museum' && k !== 'experience' && k !== 'ticket' && k !== 'visit' && k !== 'wellness' && k !== 'workout' && k !== 'drive' && k !== 'bus' && k !== 'train' && k !== 'ferry' && k !== 'funicular' && k !== 'misc') h += '<div class="lb">Name' + badge(['name'], ck, pk) + '</div><div class="nrow"><div class="in oc">' + esc(S.name) + '</div><div class="starb oc' + (S.fav ? ' on' : '') + '">' + STAR + '</div></div>';
+  if (isStay && !stayNamed(S)) h += uni('addr', 'Address', u.addr, ['address']).replace('class="c1"', 'style="width:100%"');  // Hotel: Address sits right under Location (other types have no Address; the Location holds it)
+  if (!hid.has('details')) h += '<div class="lb">Details' + badge(['details'], ck, pk) + '</div><div class="in ph"></div>';
+  if (k === 'car') {
+    const cf = key => TYPE_FIELDS.car.find(x => x.key === key);
+    const SEARCH = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>';
+    const row2 = (x, y) => '<div class="r2">' + x + y + '</div>';
+    h += '<div class="lb">Pickup Location *</div><div class="in' + (ck.has('pickup_location') ? ' oc' : '') + ' rq" style="justify-content:space-between;gap:10px">' + esc(f.pickup_location || '') + SEARCH + '</div>';
+    h += '<div class="lb">Address</div><div class="in ro' + (ck.has('address') ? ' oc' : '') + '">' + esc(u.addr || '') + '</div>';
+    h += '<div class="lb">Drop-off Location *</div><div class="in' + (ck.has('dropoff_location') ? ' oc' : '') + ' rq" style="justify-content:space-between;gap:10px">' + esc(f.dropoff_location || '') + SEARCH + '</div>';
+    h += '<div class="lb">Address</div><div class="in ro' + (ck.has('address') ? ' oc' : '') + '">' + esc(u.addr2 || '') + '</div>';
+    h += row2(fieldHTML(cf('rental_company'), f.rental_company, ck, pk), uni('confirm', 'Confirmation Number', u.confirm, ['confirm']));
+    h += row2(fieldHTML(cf('pickup_date'), f.pickup_date, ck, pk), fieldHTML(cf('pickup_time'), f.pickup_time, ck, pk));
+    h += row2(fieldHTML(cf('dropoff_date'), f.dropoff_date, ck, pk), fieldHTML(cf('dropoff_time'), f.dropoff_time, ck, pk));
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'restaurant') {
+    const rf = key => TYPE_FIELDS.restaurant.find(x => x.key === key);
+    h += fieldHTML(rf('meal'), f.meal, ck, pk);
+    h += fieldHTML(rf('restaurant'), f.restaurant, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(rf('date'), f.date, ck, pk) + fieldHTML(rf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(rf('reservation'), f.reservation, ck, pk) + fieldHTML(rf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'coffee') {
+    const cf = key => TYPE_FIELDS.coffee.find(x => x.key === key);
+    h += fieldHTML(cf('coffee_shop'), f.coffee_shop, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(cf('date'), f.date, ck, pk) + fieldHTML(cf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'bar') {
+    const bf = key => TYPE_FIELDS.bar.find(x => x.key === key);
+    h += fieldHTML(bf('bar_type'), f.bar_type, ck, pk);
+    h += fieldHTML(bf('bar_name'), f.bar_name, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('date'), f.date, ck, pk) + fieldHTML(bf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('reservation'), f.reservation, ck, pk) + fieldHTML(bf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'store') {
+    const sf = key => TYPE_FIELDS.store.find(x => x.key === key);
+    h += fieldHTML(sf('shop_type'), f.shop_type, ck, pk);
+    h += fieldHTML(sf('shop_location'), f.shop_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(sf('date'), f.date, ck, pk) + fieldHTML(sf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'ticket') {
+    const ef = key => TYPE_FIELDS.ticket.find(x => x.key === key);
+    h += fieldHTML(ef('event_name'), f.event_name, ck, pk);
+    h += fieldHTML(ef('event_venue'), f.event_venue, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(ef('date'), f.date, ck, pk) + fieldHTML(ef('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(ef('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'misc') {
+    const mc = key => TYPE_FIELDS.misc.find(x => x.key === key);
+    h += fieldHTML(mc('misc_name'), f.misc_name, ck, pk);
+    h += fieldHTML(mc('misc_location'), f.misc_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(mc('date'), f.date, ck, pk) + fieldHTML(mc('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(mc('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'funicular') {
+    const fk = key => TYPE_FIELDS.funicular.find(x => x.key === key);
+    h += fieldHTML(fk('funicular_location'), f.funicular_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(fk('date'), f.date, ck, pk) + fieldHTML(fk('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(fk('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'workout') {
+    const wk = key => TYPE_FIELDS.workout.find(x => x.key === key);
+    h += fieldHTML(wk('workout_location'), f.workout_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(wk('date'), f.date, ck, pk) + fieldHTML(wk('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(wk('booked'), f.booked, ck, pk) + '</div>';
+    fields = [];
+  }
+  if (k === 'wellness') {
+    const wf = key => TYPE_FIELDS.wellness.find(x => x.key === key);
+    h += fieldHTML(wf('wellness_type'), f.wellness_type, ck, pk);
+    h += fieldHTML(wf('wellness_location'), f.wellness_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(wf('date'), f.date, ck, pk) + fieldHTML(wf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(wf('booked'), f.booked, ck, pk) + '</div>';
+    fields = [];
+  }
+  if (k === 'visit') {
+    const vf = key => TYPE_FIELDS.visit.find(x => x.key === key);
+    h += fieldHTML(vf('visit_name'), f.visit_name, ck, pk);
+    h += fieldHTML(vf('visit_location'), f.visit_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(vf('date'), f.date, ck, pk) + fieldHTML(vf('time'), f.time, ck, pk) + '</div>';
+    fields = [];
+  }
+  if (k === 'experience') {
+    const xf = key => TYPE_FIELDS.experience.find(x => x.key === key);
+    h += fieldHTML(xf('experience_name'), f.experience_name, ck, pk);
+    h += fieldHTML(xf('experience_location'), f.experience_location, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(xf('date'), f.date, ck, pk) + fieldHTML(xf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(xf('booking'), f.booking, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'museum') {
+    const mf = key => TYPE_FIELDS.museum.find(x => x.key === key);
+    h += fieldHTML(mf('museum_name'), f.museum_name, ck, pk);
+    h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
+    h += '<div class="r2">' + fieldHTML(mf('date'), f.date, ck, pk) + fieldHTML(mf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(mf('ticket'), f.ticket, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'hike') {
+    const hf = key => TYPE_FIELDS.hike.find(x => x.key === key);
+    h += fieldHTML(hf('trail_name'), f.trail_name, ck, pk);
+    h += fieldHTML(hf('start_point'), f.start_point, ck, pk);
+    h += fieldHTML(hf('end_point'), f.end_point, ck, pk);
+    h += '<div class="r2">' + fieldHTML(hf('date'), f.date, ck, pk) + fieldHTML(hf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(hf('estimated_time'), f.estimated_time, ck, pk) + fieldHTML(hf('distance'), f.distance, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'bus' || k === 'train' || k === 'ferry') {
+    const bf = key => TYPE_FIELDS[k].find(x => x.key === key);
+    h += fieldHTML(bf('pickup_point'), f.pickup_point, ck, pk);
+    h += fieldHTML(bf('dropoff_point'), f.dropoff_point, ck, pk);
+    if (k === 'train') h += '<div class="r2">' + fieldHTML(bf('operator'), f.operator, ck, pk) + fieldHTML(bf('train_number'), f.train_number, ck, pk) + '</div>';
+    if (k === 'bus') h += '<div class="r2">' + fieldHTML(bf('operator'), f.operator, ck, pk) + fieldHTML(bf('line'), f.line, ck, pk) + '</div>';
+    if (k === 'ferry') h += '<div class="r2">' + fieldHTML(bf('operator'), f.operator, ck, pk) + fieldHTML(bf('line'), f.line, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('date'), f.date, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('pickup_time'), f.pickup_time, ck, pk) + fieldHTML(bf('dropoff_time'), f.dropoff_time, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'drive') {
+    const df = key => TYPE_FIELDS.drive.find(x => x.key === key);
+    h += fieldHTML(df('drive_name'), f.drive_name, ck, pk);
+    h += '<div class="r2">' + fieldHTML(df('date'), f.date, ck, pk) + fieldHTML(df('time'), f.time, ck, pk) + '</div>';
+    const stops = S.stops || [];
+    h += '<div class="lb">Stops</div><div class="stops-ed">' + stops.map((st, i) =>
+      '<div class="se"><span class="tico">' + symTint(symName(st.t)) + '</span><div class="sb"><b>' + esc(st.n) + '</b><small>' + (st.time ? esc(st.time) + ' · ' : '') + esc(tagFor(st.t, {})) + '</small></div><button type="button" class="rm" data-i="' + i + '" aria-label="Remove from drive" title="Remove from drive"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>').join('') +
+      (stops.length ? '' : '<div class="se none">No stops yet</div>') + '<button type="button" class="addstop">+ Add stop</button></div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  if (k === 'neighborhood') {
+    const nf = key => TYPE_FIELDS.neighborhood.find(x => x.key === key);
+    h += fieldHTML(nf('neighborhood_name'), f.neighborhood_name, ck, pk);
+    h += '<div class="r2">' + fieldHTML(nf('date'), f.date, ck, pk) + fieldHTML(nf('time'), f.time, ck, pk) + '</div>';
+    const stops = S.stops || [];
+    h += '<div class="lb">Stops</div><div class="stops-ed">' + stops.map((st, i) =>
+      '<div class="se"><span class="tico">' + symTint(symName(st.t)) + '</span><div class="sb"><b>' + esc(st.n) + '</b><small>' + (st.time ? esc(st.time) + ' · ' : '') + esc(tagFor(st.t, {})) + '</small></div><button type="button" class="rm" data-i="' + i + '" aria-label="Remove from neighborhood" title="Remove from neighborhood"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>').join('') +
+      (stops.length ? '' : '<div class="se none">No stops yet</div>') + '<button type="button" class="addstop">+ Add stop</button></div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+    fields = [];
+  }
+  const held = isStay ? fields.filter(x => ['booking_platform', 'phone', 'cancellation_policy'].includes(x.key)) : [];
+  if (isStay) fields = fields.filter(x => !held.includes(x));
+  let i = 0;
+  while (i < fields.length){
+    const a = fields[i], b = fields[i + 1];
+    if (a.fullWidth || !b || b.fullWidth){ h += '<div class="r2">' + fieldHTML(a, f[a.key], ck, pk) + '</div>'; i += 1;
+ }
+    else { h += '<div class="r2">' + fieldHTML(a, f[a.key], ck, pk) + fieldHTML(b, f[b.key], ck, pk) + '</div>'; i += 2;
+      if (k === 'flight' && b.key === 'flight_number') h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>'; }
+  }
+  const pair = (a, b) => '<div class="r2">' + a + b + '</div>';
+  const none = '';
+  if (isStay){  // Confirmation Number | Booking Platform, Cancellation Policy, Contact Info, Link
+    const hf = key => held.find(x => x.key === key);
+    h += pair(uni('confirm', 'Confirmation Number', u.confirm, ['confirm']), fieldHTML(hf('booking_platform'), f.booking_platform, ck, pk));
+    h += '<div class="r2">' + fieldHTML(hf('cancellation_policy'), f.cancellation_policy, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(hf('phone'), f.phone, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+  }
+  if (isStay || k === 'car' || k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'wellness' || k === 'workout' || k === 'drive' || k === 'bus' || k === 'train' || k === 'ferry' || k === 'funicular' || k === 'misc') { /* placed above */ }
+  else {
+  if (!hid.has('location') || !hid.has('address')) h += pair(hid.has('location') ? none : uni('loc', 'Location Name', u.loc, ['location_name']), hid.has('address') ? none : uni('addr', 'Address', u.addr, ['address']));
+  if (!hid.has('status') || !hid.has('confirm')) h += pair(hid.has('status') ? none : '<div class="c1"><div class="lb">Booking Status' + badge(['status'], ck, pk) + '</div><div class="in sel" data-opts="' + encodeURIComponent(JSON.stringify(['—'].concat(Object.values(STATUS_LABELS)))) + '">' + esc(u.status ? STATUS_LABELS[u.status] : '—') + '</div>' + optList(Object.values(STATUS_LABELS), u.status ? STATUS_LABELS[u.status] : '') + '</div>', hid.has('confirm') ? none : uni('confirm', 'Confirmation Number', u.confirm, ['confirm']));
+  if (!hid.has('cost') || !hid.has('link')) h += pair(hid.has('cost') ? none : uni('cost', 'Cost', u.cost, ['cost']), hid.has('link') ? none : uni('url', 'Link', u.url, ['url']));
+  }
+  if (!isCity) h += '<div class="lb">Photos</div><div class="phs"><div>+</div></div>';
+  if (k === 'visit' || k === 'wellness' || k === 'workout') h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
+  h += '<div class="lb">Notes</div><div class="in' + (u.notes ? '' : ' ph') + '" style="min-height:76px;align-items:flex-start;line-height:1.4">' + esc(u.notes || '') + '</div>';
+  h += create ? '<div class="btns"><div class="b1">Cancel</div><div class="b2">Add</div></div></div>' : '<div class="btns"><div class="b1 del">Delete</div><div class="b2">Save</div></div></div>';
+  return h;
+}
+
+// ----- the Add form (top of the section) -----
+let createKey = null;
+function addFormHTML(){ return editHTML(createKey, stateOf('create').S, true); }
+const catIcon = t => t.icon ? '<svg viewBox="0 0 24 24">' + t.icon + '</svg>' : symTint(t.label).replace('<svg ', '<svg style="--tile-fill:none;--mark-fill:currentColor;--mark-stroke:currentColor;width:26px;height:26px" ');
+function categoryHTML(){
+  return '<div class="sh" style="padding-top:14px"><div class="ttl" style="font-size:13px;color:#999;text-transform:uppercase;letter-spacing:.5px">Category list (opens from the form)</div><div class="list">' +
+    AN_ORDER.map(key => { const t = typeOf(key); return '<div class="opt' + (key === 'restaurant' ? ' on' : '') + '"><div class="tic" style="background:' + t.bg + ';color:' + t.fg + '">' + catIcon(t) + '</div>' + esc(t.label) + '<b>' + (key === 'restaurant' ? '✓' : '') + '</b></div>'; }).join('') +
+    '</div><div class="an-flow">Pick one or more categories. The first one sets the icon and the tag on the card.</div></div>';
+}
+
+// ----- build -----
+let th = THEMES[0];
+let showOpts = false;   // the dropdown option lists are off by default; the button under the theme chips turns them on
+const optList = (opts, cur) => !showOpts ? '' : '<div class="optcap">Dropdown options</div><div class="optlist">' + opts.map(o => '<div class="' + (o === cur ? 'on' : '') + '">' + esc(o) + '</div>').join('') + '</div>';
+let sel = (function(){ try { const v = localStorage.getItem('itin-anatomy-el'); return (v === 'all' || AN_ORDER.includes(v)) ? v : AN_ORDER[0]; } catch(e) { return AN_ORDER[0]; } })();
+// Each row on screen keeps its own working copy, so switching the element type in an Edit card can carry the filled-in values over
+const STATE = {};
+const blankS = () => ({ name: '', time: '', locs: [], fav: false, f: {}, u: {} });
+const stateOf = k => STATE[k] || (STATE[k] = k === 'create' ? { type: createKey, S: blankS() } : { type: k, S: JSON.parse(JSON.stringify(SAMPLE[k])) });
+// Switching type: a field that exists in both elements keeps its value; the rest are dropped. Common fields (name, time, locations, star, status, confirmation, cost, link, notes) always carry.
+function transfer(S, newKey){
+  const f = {};
+  (TYPE_FIELDS[newKey] || []).forEach(fd => { if (S.f && S.f[fd.key]) f[fd.key] = S.f[fd.key]; });
+  const out = { name: S.name, time: S.time, locs: S.locs || [], fav: S.fav, f, u: Object.assign({}, S.u) };
+  if (newKey === 'restaurant' && f.meal) out.meal = f.meal;
+  if (newKey === 'neighborhood' && S.stops) out.stops = S.stops;
+  if (newKey === 'accommodation') out.stayNames = SAMPLE.accommodation.stayNames;
+  return out;
+}
+function switchType(row, newKey){
+  const st = stateOf(row); if (!newKey || st.type === newKey) return;
+  st.S = transfer(st.S, newKey); st.type = newKey;
+  if (sel !== 'all'){ delete STATE[row]; STATE[newKey] = st; sel = newKey; try { localStorage.setItem('itin-anatomy-el', sel); } catch(err) {} renderPicker(); }
+  render();
+}
+function renderPicker(){
+  $('#anPick').innerHTML = AN_ORDER.map(k => '<button class="an-ic' + (sel === k ? ' on' : '') + '" data-k="' + k + '" aria-pressed="' + (sel === k) + '">' + symTint(symName(k)) + '<span>' + esc(typeOf(k).label.replace('Miscellaneous', 'Misc')) + '</span></button>').join('') +
+    '<button class="an-ic all' + (sel === 'all' ? ' on' : '') + '" data-k="all" aria-pressed="' + (sel === 'all') + '">Show all</button>';
+}
+$('#anPick').onclick = e => { const b = e.target.closest('.an-ic'); if (!b) return; sel = b.dataset.k; Object.keys(STATE).forEach(k => delete STATE[k]); try { localStorage.setItem('itin-anatomy-el', sel); } catch(err) {} renderPicker(); render(); };
+function render(){
+  const rest = SAMPLE.restaurant;
+  const box = (title, sub, inner, row) => '<div class="an-box"' + (row ? ' data-row="' + row + '"' : '') + '><div class="an-col"><b>' + title + '</b>' + (sub ? '<span>' + sub + '</span>' : '') + '</div>' + inner + '</div>';
+  $('#anAdd').innerHTML =
+    box('Create form', 'Opens from the + at the top of an itin. Pick a stop, then its fields show up. An asterisk (*) marks what must be filled out to create the card.', addFormHTML(), 'create');
+  let g = '';
+  (sel === 'all' ? AN_ORDER : [sel]).forEach(k => {
+    const st = stateOf(k), S = st.S, t = typeOf(st.type), kk = st.type;
+    g += '<div class="an-rl"><span class="rlic">' + symTint(symName(kk)) + '</span><span>' + esc(t.label) + '</span><small>' + (kk === 'city' ? 'Shown as a tag under the date' : kk === 'accommodation' ? 'Shown as a banner under the date' : kk === 'neighborhood' ? 'Can hold several stops that sit inside the card' : '') + '</small></div>';
+    g += '<div class="an-stack">' +
+      box('Stop card', 'What you see in the itinerary list: time and tag, title, locations, star.', cardHTML(kk, S, th), k) +
+      box('Peek', 'What shows when you tap the card: everything that\'s been filled in.', peekHTML(kk, S), k) +
+      '</div>' + box('Edit', 'Every field for this stop. A red outline means it shows on the card.', editHTML(kk, S), k);
+  });
+  $('#anGrid').innerHTML = g;
+}
+$('#anTheme').innerHTML = THEMES.map((t, i) => '<button class="pchip' + (i === 0 ? ' on' : '') + '" data-i="' + i + '">' + t.name + '</button>').join('');
+$('#anOptsBtn').onclick = e => { showOpts = !showOpts; e.currentTarget.classList.toggle('on', showOpts); e.currentTarget.textContent = 'Dropdown options: ' + (showOpts ? 'shown' : 'hidden'); render(); };
+$('#anTheme').onclick = e => { const b = e.target.closest('.pchip'); if (!b) return; document.querySelectorAll('#anTheme .pchip').forEach(x => x.classList.toggle('on', x === b)); th = THEMES[+b.dataset.i]; render(); };
+// peek action buttons: copy puts the address on the clipboard; Open link shows what it would do (the sample links aren't live sites)
+document.addEventListener('click', e => {
+  const b = e.target.closest('.sh .act.copy, .sh .act.openlink'); if (!b) return;
+  const flash = (html, ms) => { const old = b.innerHTML; b.classList.add('done'); b.innerHTML = html; setTimeout(() => { b.classList.remove('done'); b.innerHTML = old; }, ms); };
+  if (b.classList.contains('copy')){
+    const fallback = () => { const t = document.createElement('textarea'); t.value = b.dataset.copy; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch(err) {} t.remove(); };
+    try { navigator.clipboard.writeText(b.dataset.copy).catch(fallback); } catch(err) { fallback(); }
+    flash('<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', 1300);
+  } else flash('<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', 1300);
+});
+// dropdowns in the examples work: tap a dropdown to open its options, pick one to fill it in
+function airMenu(input){
+  const wrap = input.closest('.c1'); wrap.querySelectorAll('.ddm').forEach(m => m.remove());
+  const q = input.value.trim().toLowerCase();
+  const matches = Object.keys(AIRPORTS).filter(c => !q || (c + ' ' + AIRPORTS[c].name + ' ' + AIRPORTS[c].city + ' ' + AIRPORTS[c].country).toLowerCase().includes(q) || airportFull(c).toLowerCase() === q).slice(0, 6);
+  if (!matches.length) return;
+  const m = document.createElement('div'); m.className = 'ddm';
+  m.innerHTML = matches.map(c => '<div class="ddi air" data-code="' + c + '" data-key="' + input.dataset.key + '"><span><b>' + c + '</b> · ' + esc(AIRPORTS[c].name) + '<small>' + esc(AIRPORTS[c].city + ', ' + AIRPORTS[c].country) + '</small></span></div>').join('');
+  wrap.appendChild(m);
+}
+document.addEventListener('focusin', e => { const i = e.target.closest && e.target.closest('input.air'); if (i){ i.select(); airMenu(i); } });
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('input.air'); if (i) airMenu(i); });
+document.addEventListener('mousedown', e => { if (e.target.closest('.ddm .ddi.air')) e.preventDefault(); });   // keep the cursor in the box while picking
+document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('input.air')) setTimeout(() => { if (!document.activeElement || !document.activeElement.closest('input.air')) render(); }, 150); });
+document.addEventListener('click', e => {
+  const tg = e.target.closest('.ac-toggle');
+  if (tg){ const c = tg.closest('.ac-hood'), shut = c.classList.toggle('closed'); tg.firstElementChild.textContent = shut ? 'Show Stops' : 'Hide Stops'; tg.setAttribute('aria-expanded', !shut); return; }
+  if (e.target.closest('.stopsearch') || e.target.closest('.typesearch')) return;
+  const rm = e.target.closest('.se .rm');
+  if (rm){ const row = rm.closest('[data-row]'); stateOf(row.dataset.row).S.stops.splice(+rm.dataset.i, 1); render(); return; }
+  const mk = e.target.closest('.ddm .ddi[data-create]');
+  if (mk){ const row = mk.closest('[data-row]'), name = mk.parentElement.querySelector('.stopsearch').value.trim(); if (name){ const st = stateOf(row.dataset.row).S; st.stops = (st.stops || []).concat([{ t:'misc', n:name, l:'', time:'' }]); render(); } return; }
+  const pick = e.target.closest('.ddm .ddi[data-pool]');
+  if (pick){ const row = pick.closest('[data-row]'); const st = stateOf(row.dataset.row).S; st.stops = (st.stops || []).concat([Object.assign({}, STOP_POOL[+pick.dataset.pool])]); render(); return; }
+  const add = e.target.closest('.addstop');
+  if (add){
+    const had = add.parentElement.querySelector('.ddm'); document.querySelectorAll('.sh .ddm').forEach(m => m.remove()); if (had) return;
+    const row = add.closest('[data-row]'), have = new Set((stateOf(row.dataset.row).S.stops || []).map(x => x.n));
+    const kind = stateOf(row.dataset.row).type, left = STOP_POOL.map((x, i) => [x, i]).filter(([x]) => (x.for || 'neighborhood') === kind && !have.has(x.n));
+    const m = document.createElement('div'); m.className = 'ddm'; m.style.cssText = 'left:0;right:0;top:100%;bottom:auto;margin:4px 0 0;max-height:210px;overflow-y:auto';
+    m.innerHTML = '<input class="stopsearch" placeholder="Search stops" autocomplete="off" style="width:calc(100% - 16px);margin:6px 8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font:inherit;font-size:13px;outline:none"><div class="stoplist">' + (left.length ? left.map(([x, i]) => '<div class="ddi hasico" data-pool="' + i + '"><span class="tico">' + symTint(symName(x.t)) + '</span><span>' + esc(x.n) + '</span></div>').join('') : '<div class="ddi" style="color:#999">Nothing left to add</div>') + '</div><div class="ddi create" data-create style="display:none"></div>';
+    add.parentElement.appendChild(m); m.querySelector('input').focus(); return;
+  }
+  if (e.target.closest('.airwrap')) return;
+  const airItem = e.target.closest('.ddm .ddi[data-code]');
+  if (airItem){ const rowBox = airItem.closest('[data-row]'); stateOf(rowBox.dataset.row).S.f[airItem.dataset.key] = airItem.dataset.code; render(); return; }
+  const item = e.target.closest('.ddm .ddi');
+  const field = e.target.closest('.sh .in.sel[data-opts]');
+  if (item){
+    const box = item.closest('.c1'), f = box.querySelector('.in.sel'); f.textContent = item.dataset.v;
+    box.querySelectorAll('.ddm').forEach(m => m.remove());
+    const rowBox = f.closest('[data-row]');
+    if (f.dataset.key === 'element_type' && rowBox && rowBox.dataset.row === 'create'){ createKey = AN_ORDER.find(key => typeOf(key).label === item.dataset.v) || null; delete STATE.create; render(); return; }
+    if (f.dataset.key === 'element_type' && rowBox){ switchType(rowBox.dataset.row, AN_ORDER.find(key => typeOf(key).label === item.dataset.v)); return; }
+    if (rowBox && f.dataset.key && !['element_type', 'accommodation_type'].includes(f.dataset.key)){   // remember the choice; the meal type also changes the card's top line
+      const st = stateOf(rowBox.dataset.row), fd = (TYPE_FIELDS[st.type] || []).find(x => x.key === f.dataset.key), v = item.dataset.v;
+      st.S.f[f.dataset.key] = v === '—' ? '' : (fd && fd.type === 'bool' ? v.toLowerCase() : v);
+      render(); return;
+    }
+    if (f.dataset.key === 'accommodation_type' && rowBox){ stateOf(rowBox.dataset.row).S.f.accommodation_type = item.dataset.v === '—' ? '' : item.dataset.v; render(); }
+    return;
+  }
+  const wasOpen = field && field.parentElement.querySelector('.ddm');
+  document.querySelectorAll('.sh .ddm').forEach(m => m.remove());
+  if (!field || wasOpen) return;
+  const opts = JSON.parse(decodeURIComponent(field.dataset.opts)), cur = field.textContent.trim();
+  const m = document.createElement('div'); m.className = 'ddm';
+  const isType = field.dataset.key === 'element_type';
+  m.innerHTML = opts.map(o => { const tk = isType ? AN_ORDER.find(key => typeOf(key).label === o) : null; return '<div class="ddi' + (o === cur ? ' on' : '') + (tk ? ' hasico' : '') + '" data-v="' + esc(o).replace(/"/g, '&quot;') + '">' + (tk ? '<span class="tico eq">' + symTight(symName(tk)) + '</span>' : '') + '<span>' + esc(o) + '</span></div>'; }).join('');
+  if (isType && field.closest('[data-row="create"]')){
+    m.querySelectorAll('.ddi').forEach(d => { const tk = AN_ORDER.find(key => typeOf(key).label === d.dataset.v); d.dataset.kw = (d.dataset.v + ' ' + (STOP_WORDS[tk] || '')).toLowerCase(); });
+    m.insertAdjacentHTML('afterbegin', '<input class="typesearch" placeholder="Search stops" autocomplete="off" style="width:calc(100% - 16px);margin:6px 8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font:inherit;font-size:13px;outline:none"><div class="ddi none" style="display:none;color:#999">No matching stop</div>');
+  }
+  field.parentElement.appendChild(m);
+  const ts = m.querySelector('.typesearch'); if (ts) ts.focus();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.sh .ddm').forEach(m => m.remove()); });
+renderPicker();
+render();
+})();
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('.stopsearch'); if (!i) return; const q = i.value.trim().toLowerCase(); const m = i.parentElement; let hit = 0; m.querySelectorAll('.ddi[data-pool]').forEach(d => { const on = d.textContent.toLowerCase().includes(q); d.style.display = on ? '' : 'none'; if (on) hit++; }); const mk = m.querySelector('.ddi[data-create]'); mk.style.display = (q && !hit) ? '' : 'none'; mk.innerHTML = '<span class="tico"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg></span><span>Create \u201C</span>'; mk.lastChild.textContent = 'Create \u201C' + i.value.trim() + '\u201D'; });
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('.typesearch'); if (!i) return; const words = i.value.trim().toLowerCase().split(/\s+/).filter(Boolean), m = i.parentElement; let hit = 0; m.querySelectorAll('.ddi[data-kw]').forEach(d => { const on = words.every(w => d.dataset.kw.includes(w)); d.style.display = on ? '' : 'none'; if (on) hit++; }); const none = m.querySelector('.ddi.none'); if (none) none.style.display = hit ? 'none' : ''; });
 </script>
 </body>
 </html>

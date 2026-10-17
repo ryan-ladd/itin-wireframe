@@ -2322,7 +2322,7 @@ function closeEditSheet(){
 // Each type lists the rows to show, in order; a row is skipped if its value comes back empty.
 const VIEW_SPEC={
   flight:[
-    {label:'Time', html:false, value:c=>(c.querySelector('.ed')||{}).textContent||''},
+    {label:'Time', html:false, value:c=>{const f=JSON.parse(c.dataset.fields||'{}'); return f.departure_datetime?(f.departure_datetime+(f.arrival_datetime?' → '+f.arrival_datetime:'')):((c.querySelector('.ec-eyebrow .tm')||{}).textContent||'');}},
     {label:'Route', html:true, value:c=>(c.querySelector('.en')||{}).innerHTML||''},
     {label:'Booking #', html:false, value:c=>{const f=JSON.parse(c.dataset.fields||'{}'); return f.pnr||f.confirmation_number||'';}}
   ],
@@ -2341,8 +2341,8 @@ function autoViewRows(card,type){
   if(name) rows.push({label:'Name',val:name});
   const time=primaryTimeValue(type,stored);
   if(time) rows.push({label:'Time',val:time});
-  const details=(card.querySelector('.ed')||{}).textContent||'';
-  if(details) rows.push({label:'Details',val:details});
+  const locs=[...card.querySelectorAll('.ed.loc')].map(e=>e.textContent);
+  if(locs.length) rows.push({label:locs.length>1?'Locations':'Location',val:locs.join(' · ')});
   (TYPE_FIELDS[type]||[]).forEach(f=>{
     if(f.primaryTime) return;
     if(!stored[f.key]) return;
