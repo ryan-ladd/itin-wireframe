@@ -149,11 +149,14 @@
   .nav-add { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; position: relative; z-index: 1; transition: transform 0.12s; }
   .nav-add:active { transform: scale(0.9); }
   .nav-add svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; }
-  .ni-avatar { width: 24px; height: 24px; border-radius: 50%; display: block; }
+  .ni-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: block; }
   .ni span { display: none; }
 
   /* HOME */
+  .home-sticky { position: sticky; top: 0; z-index: 20; background: #fff; padding-bottom: 12px; }
+  .home-sticky .search-bar { margin-bottom: 0; background: #F0F0F0; }
   .home-hdr { padding: 10px 20px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .home-logo { height: 26px; width: auto; display: block; }
   .home-title { font-size: 26px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
   .home-add { width: 34px; height: 34px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; cursor: pointer; line-height: 1; user-select: none; }
   .home-add:active { background: #000; }
@@ -164,15 +167,38 @@
   .search-bar { margin: 0 16px 14px; background: #F1EFE8; border-radius: 24px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; color: #999; font-size: 13px; }
   .search-bar input { border: none; background: none; outline: none; flex: 1; font-size: 13px; color: #1a1a1a; font-family: inherit; }
   .search-bar input::placeholder { color: #999; }
+  .today-box { margin: 0 16px 16px; padding: 16px 18px 17px; background: #fff; border: 1px solid #ececec; border-radius: 22px; }
+  .today-kicker { font-size: 13px; font-weight: 800; color: #777; letter-spacing: 0.2px; }
+  .today-loc { font-size: 13px; font-weight: 400; color: #999; margin-top: 3px; }
+  .today-title { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; color: #1a1a1a; margin-top: 3px; }
+  .today-box { cursor: pointer; --pal-bg: #F1EFE8; --pal-text: #0D0A1F; --pal-city-bg: #E34234; }
+  .today-box:active { background: #faf9f6; }
+  .today-box .ei { background: none !important; width: 44px; height: 44px; }
+  .today-box .ei svg.sym { width: 44px; height: 44px; }
+  .today-next-info { margin-top: -1px; }
+  .today-next-row { display: flex; align-items: flex-start; gap: 14px; }
+  .today-next { margin-top: 14px; padding-top: 14px; border-top: 1px solid #ececec; }
+  .today-pill { display: inline-block; margin-bottom: 10px; padding: 5px 12px; font-size: 11px; font-weight: 800; color: #999; letter-spacing: 0.8px; text-transform: uppercase; border: 1px solid #ddd; border-radius: 999px; }
+  .today-next-label { font-size: 11px; font-weight: 800; color: #999; letter-spacing: 0.6px; text-transform: uppercase; }
+  .today-next-name { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-top: 0; }
+  .today-next-sub { font-size: 12px; font-weight: 400; color: #999; margin-top: 1px; }
+  .today-sub { font-size: 13px; font-weight: 400; color: #999; margin-top: 8px; }
   .section-label { display: inline-block; margin: 0 20px 10px; padding: 5px 12px; font-size: 11px; font-weight: 800; color: #999; letter-spacing: 0.8px; text-transform: uppercase; border: 1px solid #ddd; border-radius: 999px; }
-  .trip-card { margin: 0 16px 20px; border-radius: 20px; overflow: hidden; cursor: pointer; border: 0.5px solid #e5e5e5; box-shadow: 0 10px 28px rgba(0,0,0,0.14); transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .past-toggle { display: flex; width: fit-content; align-items: center; gap: 6px; background: none; border: none; padding: 5px 0; margin: -10px 20px 6px; font-family: inherit; cursor: pointer; }
+  .past-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s cubic-bezier(0.34,1.35,0.5,1); }
+  .past-toggle[aria-expanded="true"] { margin-bottom: 9px; }
+  .past-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .past-list { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s ease; }
+  .past-list.open, .past-list.force { grid-template-rows: 1fr; }
+  .past-inner { min-height: 0; overflow: hidden; }
+  .trip-card { margin: 0 16px 20px; border-radius: 20px; overflow: hidden; cursor: pointer; transition: transform 0.12s ease; }
   .trip-card:active { transform: scale(0.985); }
   .trip-cover { height: 180px; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
   .trip-cover-bg { position: absolute; inset: 0; }
   .trip-cover-avatars { position: absolute; right: 12px; bottom: 12px; z-index: 2; }
   .trip-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%); }
   .trip-cover-info { position: relative; z-index: 1; padding: 14px 16px; color: white; }
-  .trip-body { padding: 13px 16px 14px; background: #fff; }
+  .trip-body { padding: 13px 16px 14px; background: #fff; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 20px 20px; }
   .trip-name { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; color: #1a1a1a; }
   .trip-dates { font-size: 12px; font-weight: 400; color: #999; margin-top: 3px; }
   .trip-meta { margin-top: 6px; display: flex; align-items: center; gap: 10px; }
@@ -193,6 +219,75 @@
   .hero-info { position: relative; z-index: 1; padding: 14px 20px; color: white; width: 100%; }
   .hero-name { font-size: 22px; font-weight: 800; letter-spacing: 0.2px; }
   .hero-sub { font-size: 13px; font-weight: 400; opacity: 0.85; margin-top: 3px; }
+  /* TRIP TABS: Itin / Research / Checklist */
+  .trip-tabs { position: sticky; top: 112px; z-index: 15; height: 46px; box-sizing: border-box; display: flex; align-items: stretch; gap: 26px; padding: 0 20px; background: var(--pal-bg); border-bottom: 0.5px solid var(--pal-line); transition: background-color 0.3s ease; }
+  .tt { position: relative; border: none; background: none; padding: 0; font-family: var(--itin-font); font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); cursor: pointer; transition: color 0.2s; }
+  .tt.on { color: var(--pal-text); }
+  .tt::after { content: ''; position: absolute; left: 0; right: 0; bottom: -0.5px; height: 2px; border-radius: 2px; background: var(--pal-text); transform: scaleX(0); transition: transform 0.25s ease; }
+  .tt.on::after { transform: scaleX(1); }
+  .trip-screen[data-tab="research"] .days-nav, .trip-screen[data-tab="checklist"] .days-nav,
+  .trip-screen[data-tab="research"] .day-sec, .trip-screen[data-tab="checklist"] .day-sec,
+  .trip-screen[data-tab="research"] .empty-state, .trip-screen[data-tab="checklist"] .empty-state { display: none !important; }
+  .tp-panel { display: none; padding: 16px 16px 24px; color: var(--pal-text); font-family: var(--itin-font); --ic: color-mix(in srgb, var(--pal-city-bg) 55%, var(--pal-text)); }
+  .trip-screen[data-tab="research"] .tp-research, .trip-screen[data-tab="checklist"] .tp-checklist { display: block; }
+  .rs-input { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border: 1px solid color-mix(in srgb, var(--pal-text) 25%, var(--pal-bg)); border-radius: 18px; }
+  .rs-input input { flex: 1; min-width: 0; border: none; background: none; outline: none; font-family: inherit; font-size: 14px; color: var(--pal-text); }
+  .rs-input input::placeholder { color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); }
+  .rs-input button { border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 700; color: color-mix(in srgb, var(--pal-text) 55%, var(--pal-bg)); cursor: pointer; }
+  .rs-bar { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 14px; }
+  .rs-seg { display: flex; padding: 3px; border-radius: 999px; background: color-mix(in srgb, var(--pal-text) 8%, var(--pal-bg)); border: 1px solid color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); }
+  .rs-seg button { border: none; background: none; padding: 7px 16px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); cursor: pointer; }
+  .rs-seg button.on { background: color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); color: var(--pal-text); }
+  .rs-suggest { border: none; background: none; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--pal-text); cursor: pointer; }
+  .rs-board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rs-card { border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--pal-text) 7%, var(--pal-bg)); border: 1px solid color-mix(in srgb, var(--pal-text) 12%, var(--pal-bg)); }
+  .rs-tile { height: 92px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--pal-city-bg) 30%, var(--pal-bg)); }
+  .rs-tile svg { width: 64px; height: 64px; }
+  .rs-tile { position: relative; }
+  .rs-right { display: flex; align-items: center; gap: 12px; }
+  .rs-view { display: flex; padding: 3px; border-radius: 999px; background: color-mix(in srgb, var(--pal-text) 8%, var(--pal-bg)); border: 1px solid color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); }
+  .rs-view button { width: 32px; height: 28px; border: none; background: none; border-radius: 999px; display: flex; align-items: center; justify-content: center; color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .rs-view button.on { background: color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); color: var(--pal-text); }
+  .rs-view svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+  .rs-view rect { fill: currentColor; stroke: none; }
+  .rs-card { position: relative; display: flex; flex-direction: column; }
+  .rs-card .rs-body { flex: 1; display: flex; flex-direction: column; }
+  .rs-card .rs-foot { margin-top: auto; padding-top: 10px; }
+  .tp-research.list .rs-board { grid-template-columns: 1fr; gap: 10px; }
+  .tp-research.list .rs-card { flex-direction: row; align-items: stretch; }
+  .tp-research.list .rs-tile { position: static; flex: 0 0 76px; height: auto; min-height: 76px; }
+  .tp-research.list .rs-tile svg.sym, .tp-research.list .rs-tile > svg { width: 44px; height: 44px; }
+  .tp-research.list .rs-body { flex: 1; min-width: 0; padding: 12px 52px 12px 14px; }
+  .tp-research.list .rs-add { top: 12px; right: 12px; }
+  .rs-add { position: absolute; top: 8px; right: 8px; height: 26px; min-width: 26px; box-sizing: border-box; padding: 0 7px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid color-mix(in srgb, var(--pal-text) 22%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--pal-bg) 45%, transparent); color: color-mix(in srgb, var(--pal-text) 80%, var(--pal-bg)); font-family: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.12s; }
+  .rs-add:active { transform: scale(0.92); }
+  .rs-add svg { width: 13px; height: 13px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s cubic-bezier(0.34,1.35,0.5,1); }
+  .rs-add.added { background: color-mix(in srgb, var(--pal-city-bg) 35%, transparent); border-color: color-mix(in srgb, var(--pal-city-bg) 70%, transparent); color: var(--pal-text); pointer-events: none; }
+  .rs-body { padding: 12px 12px 12px; }
+  .rs-name { font-size: 15px; font-weight: 800; line-height: 1.25; }
+  .rs-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .rs-vote { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid color-mix(in srgb, var(--pal-text) 35%, var(--pal-bg)); background: none; color: color-mix(in srgb, var(--pal-text) 60%, var(--pal-bg)); border-radius: 999px; padding: 5px 12px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+  .rs-vote svg { width: 11px; height: 11px; fill: currentColor; }
+  .rs-vote.on { background: var(--pal-city-bg); border-color: var(--pal-city-bg); color: var(--pal-city-text, var(--pal-bg)); }
+  .rs-more { color: color-mix(in srgb, var(--pal-text) 45%, var(--pal-bg)); font-size: 16px; letter-spacing: 2px; }
+  .rs-map { display: none; height: 320px; border-radius: 16px; align-items: center; justify-content: center; text-align: center; padding: 24px; font-size: 13px; color: color-mix(in srgb, var(--pal-text) 55%, var(--pal-bg)); background: color-mix(in srgb, var(--pal-text) 7%, var(--pal-bg)); border: 1px solid color-mix(in srgb, var(--pal-text) 12%, var(--pal-bg)); }
+  .tp-research.map .rs-board { display: none; } .tp-research.map .rs-map { display: flex; }
+  .ck-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .ck-title { font-size: 18px; font-weight: 800; }
+  .ck-count { font-size: 12px; font-weight: 700; color: color-mix(in srgb, var(--pal-text) 55%, var(--pal-bg)); }
+  .ck-bar { height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--pal-text) 14%, var(--pal-bg)); overflow: hidden; margin-bottom: 8px; }
+  .ck-bar i { display: block; height: 100%; width: 0; background: var(--pal-city-bg); transition: width 0.3s ease; }
+  .ck-item { display: flex; align-items: center; gap: 12px; padding: 13px 4px; border-bottom: 0.5px solid var(--pal-line); cursor: pointer; }
+  .ck-box { flex-shrink: 0; width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid color-mix(in srgb, var(--pal-text) 40%, var(--pal-bg)); display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
+  .ck-box svg { width: 14px; height: 14px; fill: none; stroke: var(--pal-bg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .ck-item.done .ck-box { background: var(--pal-city-bg); border-color: var(--pal-city-bg); }
+  .ck-item.done .ck-box svg { opacity: 1; stroke: var(--pal-city-text, var(--pal-bg)); }
+  .ck-text { flex: 1; font-size: 14px; font-weight: 600; }
+  .ck-item.done .ck-text { text-decoration: line-through; color: color-mix(in srgb, var(--pal-text) 45%, var(--pal-bg)); }
+  .ck-add { display: flex; gap: 10px; margin-top: 14px; }
+  .ck-add input { flex: 1; min-width: 0; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--pal-text) 25%, var(--pal-bg)); border-radius: 14px; background: none; outline: none; font-family: inherit; font-size: 14px; color: var(--pal-text); }
+  .ck-add input::placeholder { color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); }
+  .ck-add button { border: none; background: var(--pal-text); color: var(--pal-bg); border-radius: 14px; padding: 0 18px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
   .collab-row { position: sticky; top: 58px; z-index: 16; background: var(--pal-bg); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--pal-line); transition: background-color 0.3s ease; }
   .collab-left { display: flex; align-items: center; gap: 12px; }
   .collab-right { display: flex; align-items: center; gap: 18px; }
@@ -206,13 +301,13 @@
   .invite-btn:active { filter: brightness(0.92); }
 
   /* DAYS NAV */
-  .days-nav { position: sticky; top: 112px; z-index: 15; background: var(--pal-bg); display: flex; gap: 7px; padding: 12px 16px; overflow-x: auto; border-bottom: 0.5px solid var(--pal-line); scrollbar-width: none; transition: background-color 0.3s ease; }
+  .days-nav { position: sticky; top: 158px; z-index: 15; background: var(--pal-bg); display: flex; gap: 7px; padding: 12px 16px; overflow-x: auto; border-bottom: 0.5px solid var(--pal-line); scrollbar-width: none; transition: background-color 0.3s ease; }
   .days-nav::-webkit-scrollbar { display: none; }
   .dc { padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; border: 0.5px solid var(--pal-chip-border); color: var(--pal-chip-text); background: var(--pal-bg); transition: all 0.15s; }
   .dc.on { background: var(--pal-chip-on-bg); color: var(--pal-chip-on-text); border-color: var(--pal-chip-on-bg); }
 
   /* DAY SECTIONS */
-  .day-sec { display: block; scroll-margin-top: 166px; }
+  .day-sec { display: block; scroll-margin-top: 212px; }
   .dh { padding: 12px 20px 12px; }
   .dh-date { font-size: 19px; font-weight: 800; color: var(--pal-text); letter-spacing: -0.2px; }
   .dh-geo { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--pal-city-text); margin-top: 6px; padding: 4px 11px; background: var(--pal-city-bg); border-radius: 999px; }
@@ -364,12 +459,19 @@
   .view-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 
   /* TRIP SEARCH + FILTER */
-  .trip-search-row { display: none; position: sticky; top: 112px; z-index: 15; background: var(--pal-bg); padding: 10px 16px; border-bottom: 0.5px solid var(--pal-line); align-items: center; gap: 10px; }
-  .trip-search-row .search-bar { flex: 1; margin: 0; }
+  /* Search opens right under the toolbar; the field is outlined, so the screen's own background shows through */
+  .trip-search-row { display: none; position: sticky; top: 112px; z-index: 15; height: 56px; box-sizing: border-box; background: var(--pal-bg); padding: 8px 16px; align-items: center; gap: 12px; transition: background-color 0.3s ease; }
   .trip-screen.searching .trip-search-row { display: flex; }
-  .trip-screen.searching .days-nav { top: 166px; }
-  .search-cancel { border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 700; color: #1a1a1a; cursor: pointer; padding: 4px 2px; }
-  .search-cancel:active { color: #666; }
+  .ts-field { flex: 1; min-width: 0; height: 40px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; border: 1px solid color-mix(in srgb, var(--pal-text) 28%, var(--pal-bg)); border-radius: 999px; background: transparent; color: color-mix(in srgb, var(--pal-text) 55%, var(--pal-bg)); }
+  .ts-field:focus-within { border-color: var(--pal-text); color: var(--pal-text); }
+  .ts-field svg { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+  .ts-field input { flex: 1; min-width: 0; border: none; background: none; outline: none; font-family: var(--itin-font); font-size: 14px; color: var(--pal-text); }
+  .ts-field input::placeholder { color: color-mix(in srgb, var(--pal-text) 50%, var(--pal-bg)); }
+  .trip-screen.searching .trip-tabs { top: 168px; }
+  .trip-screen.searching .days-nav { top: 214px; }
+  .trip-screen.searching .day-sec { scroll-margin-top: 268px; }
+  .search-cancel { border: none; background: none; font-family: var(--itin-font); font-size: 13px; font-weight: 700; color: var(--pal-text); cursor: pointer; padding: 4px 2px; }
+  .search-cancel:active { opacity: 0.6; }
   .collab-icon.active { color: #0b3ef7; }
   .drag-icon { display: none; } /* six-dot handle hidden; cards now drag by press-and-hold (see Sortable setup) */
   .drag-icon:active { cursor: grabbing; color: #999; }
@@ -580,6 +682,76 @@
   .saved-hdr { padding: 10px 20px 12px; }
   .saved-title { font-size: 26px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
   .saved-sub { font-size: 12px; font-weight: 400; color: #999; margin-top: 2px; }
+  .saved-tabs { position: relative; display: flex; margin: 2px 16px 8px; padding: 3px; background: #F0F0F0; border-radius: 999px; }
+  .saved-tab-ind { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 999px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.12); transition: transform 0.35s cubic-bezier(0.34,1.35,0.5,1); }
+  .saved-tab { position: relative; z-index: 1; flex: 1; border: none; background: none; padding: 9px 4px; font-family: inherit; font-size: 12px; font-weight: 800; color: #999; cursor: pointer; white-space: nowrap; transition: color 0.2s; }
+  .saved-tab.on { color: #1a1a1a; }
+  .saved-search { margin: 4px 16px 4px; background: #F0F0F0; }
+  .saved-panel { display: none; }
+  .saved-panel.on { display: block; }
+  .saved-star { width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #bbb; cursor: pointer; transition: transform 0.12s; }
+  .saved-star svg { width: 17px; height: 17px; display: block; }
+  .saved-star path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+  .saved-star.on { color: #E34234; }
+  .saved-star.on path { fill: currentColor; }
+  .want-search { position: relative; z-index: 5; }
+  .want-bar { gap: 8px; }
+  .want-pin { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: #999; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .want-results { display: none; position: absolute; left: 16px; right: 16px; top: calc(100% + 2px); background: #fff; border: 1px solid #e5e5e5; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); overflow: hidden; }
+  .want-results.show { display: block; }
+  .want-res { display: flex; gap: 10px; align-items: center; padding: 9px 12px; cursor: pointer; border-bottom: 0.5px solid #f2f2f2; }
+  .want-res:last-child { border-bottom: none; }
+  .want-res:active { background: #F9F8F4; }
+  .want-res .saved-icon { width: 34px; height: 34px; }
+  .want-none { padding: 14px; font-size: 13px; color: #999; text-align: center; }
+  .want-list { --pal-bg: #F1EFE8; --pal-text: #0D0A1F; --pal-ed: color-mix(in srgb, var(--pal-text) 65%, var(--pal-bg)); padding: 8px 16px 20px; }
+  .wt-card { margin-bottom: 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--pal-text) 16%, var(--pal-bg)); background: color-mix(in srgb, var(--pal-text) 6%, var(--pal-bg)); overflow: hidden; cursor: pointer; transition: transform 0.12s; }
+  .wt-card:active { transform: scale(0.985); }
+  .wt-inner { padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; }
+  .wt-inner .saved-icon { width: 38px; height: 38px; }
+  .wt-info { flex: 1; min-width: 0; }
+  .wt-name { font-size: 14px; font-weight: 800; color: var(--pal-text); }
+  .wt-desc { font-size: 12px; font-weight: 400; color: var(--pal-ed); margin-top: 2px; line-height: 1.4; }
+  .wt-loc { font-size: 12px; font-weight: 400; color: var(--pal-ed); margin-top: 1px; }
+  .pl-chips { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; padding: 6px 16px 4px; }
+  .pl-chips::-webkit-scrollbar { display: none; }
+  .pl-chip { flex-shrink: 0; border: 1px solid #ddd; background: #fff; color: #777; border-radius: 999px; padding: 6px 12px; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+  .pl-chip.on { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+  .pl-head { display: flex; align-items: center; gap: 8px; width: 100%; margin: 4px 0 0; padding: 12px 6px; border: none; background: none; border-bottom: 0.5px solid #f2f2f2; font-family: inherit; font-size: 11px; font-weight: 800; color: #999; letter-spacing: 0.8px; text-transform: uppercase; text-align: left; cursor: pointer; }
+  .pl-head .pl-count { margin-left: auto; font-weight: 700; letter-spacing: 0.2px; }
+  .pl-head svg { width: 14px; height: 14px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s cubic-bezier(0.34,1.35,0.5,1); }
+  .pl-grp.open .pl-head svg { transform: rotate(180deg); }
+  .pl-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+  .pl-grp.open .pl-body { grid-template-rows: 1fr; }
+  .pl-body-in { min-height: 0; overflow: hidden; }
+  #type-sheet.want-mode #add-fields > .ef-label:nth-of-type(1)::after,
+  #type-sheet.want-mode #add-fields .ef-row .ef-col:first-child .ef-label::after,
+  #type-sheet.want-mode #add-fields .ef-label:has(+ #nf-cat-box)::after { content: " *"; color: #E34234; }
+  .saved-icon.want-pinicon { display: flex; align-items: center; justify-content: center; background: #F0F0F0; border-radius: 10px; }
+  .want-pinicon svg { width: 20px; height: 20px; fill: none; stroke: #1a1a1a; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .want-add { flex-shrink: 0; border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; border-radius: 999px; padding: 6px 11px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+  .want-add:active { background: #1a1a1a; color: #fff; }
+  .want-row .saved-name { white-space: normal; }
+  .addit-cover { width: 54px; height: 54px; border-radius: 12px; flex-shrink: 0; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; background-color: #1a1a1a; color: #fff; font-size: 24px; }
+  .pl-searchrow { display: flex; align-items: center; gap: 8px; padding: 4px 16px; }
+  .pl-searchrow .saved-search { flex: 1; min-width: 0; margin: 0; height: 36px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
+  .pl-share { flex: 0 0 36px; width: 36px; height: 36px; padding: 0; border: none; border-radius: 50%; background: #F0F0F0; color: #1a1a1a; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s, color 0.15s, transform 0.12s; }
+  .pl-share:active { transform: scale(0.92); }
+  .pl-share.on { background: #1a1a1a; color: #fff; }
+  .pl-share svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pick-box { flex-shrink: 0; width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid #bbb; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
+  .pick-box svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .saved-row.picked .pick-box { background: #E34234; border-color: #E34234; }
+  .saved-row.picked .pick-box svg { opacity: 1; }
+  .share-bar { display: none; position: absolute; left: 16px; right: 16px; bottom: 108px; z-index: 28; gap: 10px; align-items: center; }
+  .share-bar.show { display: flex; }
+  .share-cancel { flex-shrink: 0; border: 1px solid #ddd; background: #fff; border-radius: 999px; padding: 14px 20px; font-family: inherit; font-size: 14px; font-weight: 800; color: #1a1a1a; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+  .share-go { flex: 1; border: none; background: #1a1a1a; color: #fff; border-radius: 999px; padding: 14px 20px; font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+  .share-go:disabled { background: #cfcfcf; box-shadow: none; cursor: default; }
+  .share-text { width: 100%; box-sizing: border-box; resize: none; line-height: 1.45; font-size: 14px; margin-top: 4px; }
+  .saved-icon { width: 44px; height: 44px; flex-shrink: 0; display: block; }
+  .saved-heart { width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .saved-heart svg { width: 20px; height: 20px; fill: #E34234; }
   .saved-list { padding: 4px 16px 20px; }
   .saved-row { display: flex; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 0.5px solid #f2f2f2; cursor: pointer; }
   .saved-row:active { background: #F9F8F4; }
@@ -591,9 +763,32 @@
   .saved-empty .star-hint { color: #F0A020; font-size: 22px; display: block; margin-bottom: 8px; }
 
   /* PROFILE (person) TAB */
-  .prof-hero { height: 156px; position: relative; background-size: cover; background-position: center; }
+  .prof-hero { height: 210px; position: relative; background-size: cover; background-position: center; }
   .prof-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.28)); }
-  .prof-edit { position: absolute; top: 52px; right: 16px; z-index: 2; background: rgba(255,255,255,0.92); border: none; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #1a1a1a; cursor: pointer; }
+  .prof-rows { padding: 12px 16px 0; }
+  .prof-row { display: flex; align-items: center; gap: 14px; background: #F0F0F0; border-radius: 18px; padding: 16px 18px; margin-bottom: 10px; cursor: pointer; }
+  .prof-row:active { background: #E6E6E6; }
+  .prof-row-i { width: 22px; height: 22px; flex-shrink: 0; }
+  .prof-row-i.star { fill: #E34234; }
+  .prof-row-i.pin { fill: #E34234; stroke: none; }
+  .prof-row-i.pin circle { fill: #F0F0F0; }
+  .prof-row-l { flex: 1; font-size: 16px; font-weight: 800; color: #1a1a1a; }
+  .prof-row-c { font-size: 15px; font-weight: 500; color: #999; }
+  .prof-row-chev { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: #999; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-left: -6px; }
+  .prof-crew-search { margin: 10px 16px 6px; background: #F0F0F0; padding: 11px 16px; gap: 10px; }
+  .prof-search-i { width: 17px; height: 17px; flex-shrink: 0; fill: none; stroke: #999; stroke-width: 2.2; stroke-linecap: round; }
+  .prof-crew { padding: 4px 20px 0; }
+  .crew-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; }
+  .crew-ava { width: 38px; height: 38px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+  .crew-name { font-size: 16px; font-weight: 800; color: #1a1a1a; }
+  .crew-pill { display: inline-block; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: #E34234; color: #fff; font-size: 12px; font-weight: 800; vertical-align: 1px; }
+  .prof-foot { text-align: center; padding: 20px 20px 0; }
+  .prof-foot-b { display: block; width: 100%; border: none; background: none; font-family: inherit; font-size: 16px; font-weight: 800; color: #1a1a1a; padding: 12px 0; cursor: pointer; }
+  .prof-foot-b.out { color: #E34234; }
+  .country-chip.add { background: none; border: 1.5px solid #ccc; color: #1a1a1a; cursor: pointer; }
+  .prof-edit { position: absolute; top: 52px; right: 16px; z-index: 2; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.92); border: none; border-radius: 50%; color: #1a1a1a; cursor: pointer; }
+  .prof-edit svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .prof-edit svg path { fill: currentColor; stroke: none; }
   .prof-edit:active { background: #fff; }
   .prof-ava { width: 88px; height: 88px; border-radius: 50%; border: 4px solid #fff; background-size: cover; background-position: center; margin: -52px auto 0; position: relative; z-index: 1; box-shadow: 0 3px 12px rgba(0,0,0,0.18); }
   .prof-head { text-align: center; padding: 0 20px 6px; }
@@ -605,7 +800,7 @@
   .prof-stat-l { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
   .prof-section-title { padding: 20px 20px 0; font-size: 14px; font-weight: 800; color: #1a1a1a; }
   .country-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px 20px; }
-  .country-chip { display: inline-flex; align-items: center; gap: 7px; background: #F1EFE8; border-radius: 999px; padding: 8px 13px; font-size: 13px; font-weight: 700; color: #1a1a1a; }
+  .country-chip { display: inline-flex; align-items: center; gap: 7px; background: #F0F0F0; border-radius: 999px; padding: 8px 13px; font-size: 13px; font-weight: 700; color: #1a1a1a; }
   .country-chip .cf { font-size: 16px; line-height: 1; }
 
   /* NEW ITIN CREATE SCREEN */
@@ -614,9 +809,11 @@
   .new-hdr-btn.cancel { color: #999; }
   .new-hdr-btn.create { color: #E34234; }
   .new-hdr-btn.create:disabled { color: #ddd; cursor: default; }
-  .new-hdr-title { font-size: 16px; font-weight: 800; color: #1a1a1a; }
-  .new-form { padding: 6px 18px 40px; }
-  .ni-avatars { display: flex; flex-wrap: wrap; gap: 12px; }
+  .new-hdr-title { display: flex; align-items: center; gap: 3px; font-size: 16px; font-weight: 800; color: #1a1a1a; }
+  .new-hdr-logo { height: 20px; width: auto; display: block; position: relative; top: -2px; }
+  .new-form { padding: 6px 18px 18px; }
+  #s-new .content { padding-bottom: 0; }
+  .ni-avatars { display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 8px; }
   .ni-person { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; width: 54px; }
   .ni-ava { width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; border: 2.5px solid transparent; position: relative; background-color: #EAE8E0; }
   .ni-person.on .ni-ava { border-color: #E34234; }
@@ -625,10 +822,37 @@
   .ni-person.owner .ni-ava::after { background: #1a1a1a; }
   .ni-add .ni-ava { border: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 22px; }
   .ni-pname { font-size: 10px; font-weight: 700; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 54px; text-align: center; }
-  .loc-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
-  .loc-chip { display: inline-flex; align-items: center; gap: 7px; background: #F1EFE8; border-radius: 999px; padding: 6px 8px 6px 12px; font-size: 12px; font-weight: 700; color: #1a1a1a; }
-  .loc-chip .x { cursor: pointer; color: #999; font-size: 13px; line-height: 1; }
-  .cover-drop { margin-top: 2px; height: 150px; border-radius: 16px; border: 1.5px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #aaa; cursor: pointer; background-size: cover; background-position: center; font-size: 12px; font-weight: 700; }
+  .ni-select { position: relative; }
+  .ni-sel-btn { display: flex; align-items: center; justify-content: space-between; text-align: left; cursor: pointer; }
+  .ni-sel-btn .ph { color: #999; }
+  .ni-sel-btn svg { width: 18px; height: 18px; fill: #999; flex-shrink: 0; transition: transform 0.2s; }
+  .ni-select.open .ni-sel-btn { border-color: #1a1a1a; }
+  .ni-select.open .ni-sel-btn svg { transform: rotate(180deg); }
+  .ni-menu { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 30; max-height: 252px; overflow-y: auto; background: #fff; border: 0.5px solid #ddd; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.14); padding: 6px; }
+  .ni-select.open .ni-menu { display: block; }
+  .ni-opt { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #1a1a1a; cursor: pointer; }
+  .ni-opt:hover, .ni-opt:active { background: #F0F0F0; }
+  .ni-opt.on { font-weight: 800; }
+  .ni-opt svg { width: 16px; height: 16px; fill: none; stroke: #E34234; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .loc-chips { display: flex; flex-direction: column; gap: 8px; margin-top: 9px; }
+  .date-wrap { position: relative; }
+  .date-wrap .date-ph { display: none; position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #999; pointer-events: none; font-family: inherit; }
+  .date-wrap.empty .date-ph { display: block; }
+  .date-wrap.empty input::-webkit-datetime-edit { color: transparent; }
+  .nl-dates .date-wrap .date-ph { left: 11px; font-size: 13px; }
+  .nl-row { border: 0.5px solid #ddd; background: #fff; border-radius: 14px; padding: 10px 12px 12px; }
+  .nl-ghost { opacity: 0.45; }
+  .sortable-fallback { opacity: 0.92; box-shadow: 0 8px 24px rgba(0,0,0,0.18); background: #fff; z-index: 9999; }
+  .nl-top { display: flex; align-items: center; gap: 8px; }
+  .nl-drag { cursor: grab; color: #bbb; font-size: 17px; line-height: 1; padding: 2px 2px 2px 0; touch-action: none; user-select: none; }
+  .nl-drag:active { cursor: grabbing; }
+  .nl-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 800; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nl-row .x { cursor: pointer; color: #999; font-size: 13px; line-height: 1; padding: 4px; }
+  .nl-dates { display: flex; gap: 8px; margin-top: 10px; }
+  .nl-dates label { flex: 1; min-width: 0; }
+  .nl-dates label > span { display: block; font-size: 10px; font-weight: 800; color: #999; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 4px; }
+  .nl-dates .ef-input { padding: 8px 10px; font-size: 13px; }
+  .cover-drop { margin-top: 2px; height: 150px; border-radius: 16px; border: 0.5px solid #ddd; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #aaa; cursor: pointer; background-size: cover; background-position: center; font-size: 12px; font-weight: 700; }
   .cover-drop.has { border: none; }
   .cover-drop svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .type-pills { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -987,15 +1211,30 @@
   <div class="screen active" id="s-home">
     <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
     <div class="content">
+      <div class="home-sticky">
       <div class="home-hdr">
-        <div class="home-title">itin</div>
+        <div class="home-title"><svg class="home-logo" viewBox="326 438 428 167" role="img" aria-label="itin" fill="none" stroke="currentColor" stroke-width="30" stroke-miterlimit="10"><path d="M628.07,517.16c-10.78.01-24.47,3.54-33.65,29.73,0,0-8.71,27.98-29.41,28.21-22.87.25-41.42-31.94-41.42-71.33"/> <path d="M356.43,503.61c0,39.57,18.72,71.64,41.8,71.64"/> <path d="M628.07,517.17c10.96,0,20.75,10.3,27.17,26.42,0,0,11.49,31.5,34.8,31.5h6.4"/> <path d="M523.14,503.61c0,39.57-18.72,71.64-41.8,71.64"/> <path d="M397.73,575.25c23.09,0,41.8-32.08,41.8-71.64v-50.29"/> <path d="M439.53,503.61c0,39.57,18.72,71.64,41.8,71.64"/> <line x1="396.3" y1="518.17" x2="482.76" y2="490.71"/> <circle fill="currentColor" stroke="none" cx="723.57" cy="575.08" r="15.1"/> <circle fill="currentColor" stroke="none" cx="523.14" cy="477.93" r="15.1"/> <circle fill="currentColor" stroke="none" cx="356.43" cy="477.93" r="15.1"/></svg></div>
         <div class="home-actions">
           <span class="home-filter" onclick="openFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
-          <span class="home-add" onclick="openNewItin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
         </div>
       </div>
       <div class="search-bar"><input id="trip-search" type="text" placeholder="Search itins..." oninput="filterTrips(this.value)"></div>
-      <div class="section-label" data-section="upcoming">Upcoming</div>
+      </div>
+      <div class="today-box" onclick="go('s-caucasus')">
+        <div class="today-kicker">October 29, 2026</div>
+        <div class="today-title">Tbilisi, Georgia</div>
+        <div class="today-next">
+          <div class="today-pill">Next up · in 1h 20m</div>
+          <div class="today-next-row">
+          <div class="ei" data-etype="ticket"></div>
+          <div class="today-next-info">
+            <div class="today-next-label">7:00 PM</div>
+            <div class="today-next-name">Swan Lake</div>
+            <div class="today-next-sub">Tbilisi Opera and Ballet Theatre</div>
+          </div>
+          </div>
+        </div>
+      </div>
 
       <div class="trip-card" data-search="caucasus trip baku azerbaijan tbilisi georgia yerevan armenia" data-people="ryan charles" data-when="upcoming" data-status="draft" onclick="go('s-caucasus')">
         <div class="trip-cover">
@@ -1012,7 +1251,8 @@
         </div>
       </div>
 
-      <div class="section-label" data-section="past">Past</div>
+      <button class="section-label past-toggle" id="past-toggle" data-section="past" aria-expanded="false" onclick="togglePast()">Past trips<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="past-list" id="past-list"><div class="past-inner">
 
       <div class="trip-card" data-search="pacific coast road trip cannon beach haystack sixt emry oregon california" data-people="ryan emily" data-when="past" data-status="draft" onclick="go('s-trip')">
         <div class="trip-cover">
@@ -1058,6 +1298,7 @@
         </div>
       </div>
 
+      </div></div>
       <div class="empty-state" id="trip-empty">No itins match your search.</div>
     </div>
     <div class="nav">
@@ -1066,7 +1307,7 @@
       <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
-      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+      <a class="ni" onclick="openProfile()"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Profile</span></a>
     </div>
   </div>
 
@@ -1098,13 +1339,8 @@
           <span class="collab-icon" onclick="openMap()" aria-label="Map"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
           <span class="collab-icon" id="trip-filter-icon" onclick="openTripFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
           <span class="collab-icon" onclick="toggleTripSearch()" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-          <button class="collab-add" onclick="openAddMenu()" aria-label="Add element"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button class="collab-add" onclick="openAddMenu()" aria-label="Add stop"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
         </div>
-      </div>
-
-      <div class="trip-search-row">
-        <div class="search-bar"><input id="el-search" type="text" placeholder="Search this itin..." oninput="filterElements(this.value)"></div>
-        <button class="search-cancel" onclick="closeTripSearch()">Cancel</button>
       </div>
 
       <div class="days-nav">
@@ -1302,7 +1538,7 @@
         <div class="spacer"></div>
       </div>
 
-      <div class="empty-state" id="el-empty">No elements match.</div>
+      <div class="empty-state" id="el-empty">No stops match.</div>
 
     </div>
     <div class="nav">
@@ -1311,7 +1547,7 @@
       <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni" onclick="openSheet()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Share</span></a>
-      <a class="ni" onclick="toast('Settings — coming soon')"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Settings</span></a>
+      <a class="ni" onclick="toast('Settings — coming soon')"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Settings</span></a>
     </div>
   </div>
 
@@ -1343,7 +1579,7 @@
           <span class="collab-icon" onclick="openMap()" aria-label="Map"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
           <span class="collab-icon" onclick="openTripFilter()" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M9 18h6"/></svg></span>
           <span class="collab-icon" onclick="toggleTripSearch()" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-          <button class="collab-add" onclick="openAddMenu()" aria-label="Add element"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button class="collab-add" onclick="openAddMenu()" aria-label="Add stop"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
         </div>
       </div>
 
@@ -1511,7 +1747,7 @@
       <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni" onclick="openSheet()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Share</span></a>
-      <a class="ni" onclick="toast('Settings — coming soon')"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Settings</span></a>
+      <a class="ni" onclick="toast('Settings — coming soon')"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Settings</span></a>
     </div>
   </div>
 
@@ -1519,24 +1755,41 @@
   <div class="screen" id="s-profile">
     <div class="sbar" style="position:absolute;top:0;left:0;right:0;z-index:3;background:transparent;"><span class="sbar-t" style="color:#fff;">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#fff" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-opacity="0.5"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#fff"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#fff" stroke-opacity="0.5" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
     <div class="content">
-      <div class="prof-hero" style="background-image:url('Photos/Australia.jpg');">
+      <div class="prof-hero" style="background-image:url('Photos/Japan.jpg');">
         <div class="prof-hero-overlay"></div>
-        <button class="prof-edit" onclick="toast('Edit profile — coming soon')">Edit profile</button>
+        <button class="prof-edit" onclick="toast('Edit profile — coming soon')" aria-label="Edit profile" title="Edit profile"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
       </div>
       <div class="prof-ava" style="background-image:url('Photos/Ryan%20Profile%20Pic.jpg');"></div>
       <div class="prof-head">
         <div class="prof-name">Ryan Ladd</div>
-        <div class="prof-handle">@ryanladd</div>
-        <div class="prof-bio">Road trips, ramen, and chasing good light. Always planning the next one.</div>
+        <div class="prof-handle">@ryan</div>
         <div class="prof-stats">
-          <div class="prof-stat"><div class="prof-stat-n">12</div><div class="prof-stat-l">Countries</div></div>
-          <div class="prof-stat"><div class="prof-stat-n">18</div><div class="prof-stat-l">Trips</div></div>
-          <div class="prof-stat"><div class="prof-stat-n">2</div><div class="prof-stat-l">Published</div></div>
+          <div class="prof-stat"><div class="prof-stat-n">1</div><div class="prof-stat-l">Countries</div></div>
+          <div class="prof-stat"><div class="prof-stat-n">5</div><div class="prof-stat-l">Trips</div></div>
+          <div class="prof-stat"><div class="prof-stat-n">0</div><div class="prof-stat-l">Published</div></div>
         </div>
       </div>
       <div class="prof-section-title">Countries visited</div>
       <div class="country-grid" id="prof-countries"></div>
-      <div style="text-align:center;padding:0 20px 120px;"><button class="ob-link" onclick="obStart()" style="color:#E34234;">Replay onboarding</button></div>
+
+      <div class="prof-section-title">Saved</div>
+      <div class="prof-rows">
+        <div class="prof-row" onclick="openSaved('itins')"><svg class="prof-row-i star" viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg><span class="prof-row-l">Favorite itins</span><span class="prof-row-c" id="prof-c-itins"></span><svg class="prof-row-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        <div class="prof-row" onclick="openSaved('places')"><svg class="prof-row-i star" viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg><span class="prof-row-l">Favorite places</span><span class="prof-row-c" id="prof-c-places"></span><svg class="prof-row-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        <div class="prof-row" onclick="openSaved('want')"><svg class="prof-row-i pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg><span class="prof-row-l">Want to go</span><span class="prof-row-c" id="prof-c-want"></span><svg class="prof-row-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+      </div>
+
+      <div class="prof-section-title">Travel crew</div>
+      <div class="search-bar prof-crew-search"><svg class="prof-search-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="text" placeholder="Find people by name or @handle" oninput="filterCrew(this.value)"></div>
+      <div class="prof-crew" id="prof-crew">
+        <div class="crew-row" data-search="emil m @emil"><div class="crew-ava" style="background-image:url('Photos/Charles.png');"></div><div class="crew-name">Emil M</div></div>
+        <div class="crew-row" data-search="emily @emily requested"><div class="crew-ava" style="background-image:url('Photos/Emily%20Profile%20Pic.jpeg');"></div><div class="crew-name">Emily<span class="crew-pill">Requested</span></div></div>
+      </div>
+
+      <div class="prof-foot">
+        <button class="prof-foot-b" onclick="obStart()">Replay onboarding</button>
+        <button class="prof-foot-b out" onclick="toast('Sign out — coming soon')">Sign out</button>
+      </div>
     </div>
     <div class="nav">
       <div class="nav-indicator"></div>
@@ -1544,7 +1797,7 @@
       <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
-      <a class="ni on"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+      <a class="ni on"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Profile</span></a>
     </div>
   </div>
 
@@ -1554,9 +1807,37 @@
     <div class="content">
       <div class="saved-hdr">
         <div class="saved-title">Saved</div>
-        <div class="saved-sub">Published itins you've starred</div>
       </div>
-      <div class="saved-list" id="saved-list"></div>
+      <div class="saved-tabs" id="saved-tabs" role="tablist">
+        <div class="saved-tab-ind"></div>
+        <button class="saved-tab on" role="tab" data-tab="itins" onclick="setSavedTab('itins')">Favorite Itins</button>
+        <button class="saved-tab" role="tab" data-tab="places" onclick="setSavedTab('places')">Favorite Places</button>
+        <button class="saved-tab" role="tab" data-tab="want" onclick="setSavedTab('want')">Want to Go</button>
+      </div>
+      <div class="saved-panel on" id="saved-panel-itins">
+        <div class="search-bar saved-search"><input id="saved-search" type="text" placeholder="Search favorite itins..." oninput="filterSavedItins(this.value)"></div>
+        <div class="saved-list" id="saved-list"></div>
+        <div class="saved-empty" id="saved-nomatch" style="display:none">No favorite itins match your search.</div>
+      </div>
+      <div class="saved-panel" id="saved-panel-places">
+        <div class="pl-searchrow">
+          <div class="search-bar saved-search"><input id="places-search" type="text" placeholder="Search favorite places..." oninput="placesSearch(this.value)"></div>
+          <button class="pl-share" id="pl-share" onclick="toggleShareMode()" aria-label="Share a list of places"><svg viewBox="0 0 24 24"><path d="M12 15V3.5M8 7l4-4 4 4"/><path d="M6 11H5.5A1.5 1.5 0 004 12.5v7A1.5 1.5 0 005.5 21h13a1.5 1.5 0 001.5-1.5v-7a1.5 1.5 0 00-1.5-1.5H18"/></svg></button>
+        </div>
+        <div class="pl-chips" id="places-chips"></div>
+        <div class="saved-list" id="saved-places"></div>
+      </div>
+      <div class="saved-panel" id="saved-panel-want">
+        <div class="want-search">
+          <div class="search-bar saved-search want-bar"><svg class="want-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg><input id="want-search" type="text" placeholder="Search the map to add a place..." autocomplete="off" oninput="wantSearch(this.value)"></div>
+          <div class="want-results" id="want-results"></div>
+        </div>
+        <div class="saved-list" id="saved-want"></div>
+      </div>
+    </div>
+    <div class="share-bar" id="share-bar">
+      <button class="share-cancel" onclick="toggleShareMode()">Cancel</button>
+      <button class="share-go" id="share-go" onclick="openShareSheet()" disabled>Select places to share</button>
     </div>
     <div class="nav">
       <div class="nav-indicator"></div>
@@ -1564,7 +1845,7 @@
       <a class="ni" onclick="go('s-explore')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni on"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
-      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+      <a class="ni" onclick="openProfile()"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Profile</span></a>
     </div>
   </div>
 
@@ -1573,13 +1854,19 @@
     <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-i"><span style="display:flex;align-items:center;"><svg width="18" height="12" viewBox="0 0 18 12" fill="#1a1a1a"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></svg></span><span style="display:flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.8" r="1.2" fill="#1a1a1a" stroke="none"/></svg></span><span style="display:flex;align-items:center;"><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#1a1a1a" stroke-opacity="0.35"/><rect x="2" y="2" width="19" height="9" rx="2" fill="#1a1a1a"/><path d="M24.5 4.5c1 .3 1 3.7 0 4" stroke="#1a1a1a" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round"/></svg></span></div></div>
     <div class="new-hdr">
       <button class="new-hdr-btn cancel" onclick="go('s-home')">Cancel</button>
-      <div class="new-hdr-title">New itin</div>
+      <div class="new-hdr-title"><span>New</span><svg class="new-hdr-logo" viewBox="326 438 428 167" role="img" aria-label="itin" fill="none" stroke="currentColor" stroke-width="30" stroke-miterlimit="10"><path d="M628.07,517.16c-10.78.01-24.47,3.54-33.65,29.73,0,0-8.71,27.98-29.41,28.21-22.87.25-41.42-31.94-41.42-71.33"/> <path d="M356.43,503.61c0,39.57,18.72,71.64,41.8,71.64"/> <path d="M628.07,517.17c10.96,0,20.75,10.3,27.17,26.42,0,0,11.49,31.5,34.8,31.5h6.4"/> <path d="M523.14,503.61c0,39.57-18.72,71.64-41.8,71.64"/> <path d="M397.73,575.25c23.09,0,41.8-32.08,41.8-71.64v-50.29"/> <path d="M439.53,503.61c0,39.57,18.72,71.64,41.8,71.64"/> <line x1="396.3" y1="518.17" x2="482.76" y2="490.71"/> <circle fill="currentColor" stroke="none" cx="723.57" cy="575.08" r="15.1"/> <circle fill="currentColor" stroke="none" cx="523.14" cy="477.93" r="15.1"/> <circle fill="currentColor" stroke="none" cx="356.43" cy="477.93" r="15.1"/></svg></div>
       <button class="new-hdr-btn create" id="new-create" onclick="createItin()">Create</button>
     </div>
     <div class="content">
       <div class="new-form">
         <div class="ef-label">Trip name</div>
-        <input class="ef-input" id="ni-name" type="text" placeholder="e.g. Pacific Coast Road Trip" oninput="refreshCreateBtn()">
+        <input class="ef-input" id="ni-name" type="text" placeholder="Give your trip a fun name" oninput="refreshCreateBtn()">
+
+        <div class="ef-label">Trip type</div>
+        <div class="ni-select" id="ni-select">
+          <button type="button" class="ef-input ni-sel-btn" onclick="toggleTypeMenu(event)" aria-haspopup="listbox"><span id="ni-sel-label" class="ph">Select a trip type</span><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></button>
+          <div class="ni-menu" id="ni-menu" role="listbox"></div>
+        </div>
 
         <div class="ef-label">Travelers</div>
         <div class="ni-avatars" id="ni-people"></div>
@@ -1587,16 +1874,16 @@
         <div class="ef-row" style="margin-top:2px;">
           <div class="ef-col">
             <div class="ef-label">Start date</div>
-            <input class="ef-input" id="ni-start" type="date">
+            <div class="date-wrap empty"><input class="ef-input" id="ni-start" type="date"><span class="date-ph">Select date</span></div>
           </div>
           <div class="ef-col">
             <div class="ef-label">End date</div>
-            <input class="ef-input" id="ni-end" type="date">
+            <div class="date-wrap empty"><input class="ef-input" id="ni-end" type="date"><span class="date-ph">Select date</span></div>
           </div>
         </div>
 
         <div class="ef-label">Locations</div>
-        <input class="ef-input" id="ni-loc" type="text" placeholder="Add a city or place, press Enter" onkeydown="addLocation(event)">
+        <input class="ef-input" id="ni-loc" type="text" placeholder="Add a city" onkeydown="addLocation(event)">
         <div class="loc-chips" id="ni-locs"></div>
 
         <div class="ef-label">Cover photo</div>
@@ -1606,13 +1893,6 @@
         </div>
         <input type="file" id="ni-cover-file" accept="image/*" hidden>
 
-        <div class="ef-label">Trip type</div>
-        <div class="type-pills" id="ni-types">
-          <button class="chip" onclick="pickType2(this)">Vacation</button>
-          <button class="chip" onclick="pickType2(this)">Trip</button>
-          <button class="chip" onclick="pickType2(this)">Roadtrip</button>
-          <button class="chip" onclick="pickType2(this)">Backpacking</button>
-        </div>
       </div>
     </div>
   </div>
@@ -1646,7 +1926,7 @@
             <div class="ob-card">
               <div class="trip-screen ob-mock ob-trip"><div class="dh"><div class="dh-date">Saturday, Oct 24</div><div class="dh-geo"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><div class="einfo"><div class="en">Baku, Azerbaijan</div></div></div></div><div class="ec ob-lift"><div class="ec-inner" style="align-items:center;"><div class="ei" style="background:#E6F1FB;"><svg viewBox="0 0 24 24" style="color:#185FA5;"><path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/></svg></div><div class="einfo"><div class="en">FRA<span style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;opacity:0.55;margin:0 2px;">→</span>GYD</div><div class="ed">5:10 – 11:55 PM</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div><div class="ec ec-stay"><div class="ec-inner"><div class="ei"><svg viewBox="0 0 24 24"><path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/></svg></div><div class="einfo"><div class="en">Art Gallery Hotel Baku</div><div class="stay-label">105, AZ1010 Neftchilar Ave</div></div></div></div><div class="ec"><div class="ec-inner"><div class="ei" style="background:#FBEAF0;"><svg viewBox="0 0 24 24" style="color:#993556;"><path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/></svg></div><div class="einfo"><div class="meal-label">Lunch</div><div class="en">Lolita</div></div><div class="ea"><span class="drag-icon">⠿</span></div></div></div></div>
               <div class="ob-h">Build it day by day</div>
-              <div class="ob-p">Organize the messy details of your trip with smart elements, Drag to reorder anything.</div>
+              <div class="ob-p">Organize the messy details of your trip with smart stops. Drag to reorder anything.</div>
             </div>
             <div class="ob-card">
               <div class="ob-mock">
@@ -1749,7 +2029,7 @@
       <a class="ni on"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13.31 13.31L8.4 15.6L10.69 10.69L15.6 8.4z"/></svg><span>Explore</span></a>
       <button class="nav-add" onclick="openNewItin()" aria-label="New trip"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <a class="ni" onclick="openSaved()"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg><span>Saved</span></a>
-      <a class="ni" onclick="openProfile()"><svg viewBox="0 0 24 24" style="width:22px;height:22px;"><circle cx="12" cy="7" r="4.5"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6v2H4v-2z"/></svg><span>Profile</span></a>
+      <a class="ni" onclick="openProfile()"><img class="ni-avatar" src="Photos/Ryan%20Profile%20Pic.jpg" alt=""><span>Profile</span></a>
     </div>
   </div>
 
@@ -1947,22 +2227,22 @@
   <div class="sheet-scrim" id="trip-filter-scrim" onclick="closeTripFilter()"></div>
   <div class="sheet" id="trip-filter-sheet">
     <div class="sheet-grab"></div>
-    <div class="sheet-title">Filter elements</div>
-    <div class="filter-group-label">Element</div>
+    <div class="sheet-title">Filter stops</div>
+    <div class="filter-group-label">Stop</div>
     <div class="chips">
       <button class="chip" data-group="etype" data-value="flight">Flight</button>
       <button class="chip" data-group="etype" data-value="car">Car</button>
       <button class="chip" data-group="etype" data-value="drive">Drive</button>
-      <button class="chip" data-group="etype" data-value="accommodation">Accommodation</button>
+      <button class="chip" data-group="etype" data-value="accommodation">Stay</button>
       <button class="chip" data-group="etype" data-value="restaurant">Restaurant</button>
-      <button class="chip" data-group="etype" data-value="coffee">Coffee Shop</button>
+      <button class="chip" data-group="etype" data-value="coffee">Coffee</button>
       <button class="chip" data-group="etype" data-value="bar">Bar</button>
-      <button class="chip" data-group="etype" data-value="store">Store</button>
+      <button class="chip" data-group="etype" data-value="store">Shop</button>
       <button class="chip" data-group="etype" data-value="hike">Hike</button>
       <button class="chip" data-group="etype" data-value="neighborhood">Neighborhood</button>
       <button class="chip" data-group="etype" data-value="museum">Museum</button>
       <button class="chip" data-group="etype" data-value="experience">Experience</button>
-      <button class="chip" data-group="etype" data-value="ticket">Ticket</button>
+      <button class="chip" data-group="etype" data-value="ticket">Event</button>
       <button class="chip" data-group="etype" data-value="misc">Miscellaneous</button>
     </div>
     <div class="filter-group-label">Saved</div>
@@ -1971,14 +2251,14 @@
     </div>
     <div class="filter-actions">
       <button class="filter-clear" onclick="clearTripFilters()">Clear all</button>
-      <button class="filter-apply" onclick="closeTripFilter()">Show elements</button>
+      <button class="filter-apply" onclick="closeTripFilter()">Show stops</button>
     </div>
   </div>
 
   <div class="sheet-scrim" id="edit-scrim" onclick="closeEditSheet()"></div>
   <div class="sheet" id="edit-sheet">
     <div class="sheet-grab"></div>
-    <div class="sheet-title" id="edit-sheet-title">Edit element</div>
+    <div class="sheet-title" id="edit-sheet-title">Edit stop</div>
     <div class="ef-label">Name</div>
     <div class="ef-namerow"><input class="ef-input" id="ef-name" type="text"><button type="button" class="ef-heart-btn" id="ef-fav" onclick="this.classList.toggle('on')" aria-label="Favorite"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg></button></div>
     <div id="ef-details-group">
@@ -2042,6 +2322,26 @@
     </div>
   </div>
 
+
+  <div class="sheet-scrim" id="share-scrim" onclick="closeShareSheet()"></div>
+  <div class="sheet" id="share-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Share a quick list</div>
+    <div class="sheet-sub" id="share-sub"></div>
+    <textarea class="ef-input share-text" id="share-text" rows="9"></textarea>
+    <div class="filter-actions">
+      <button class="filter-clear" onclick="copyShareText()">Copy</button>
+      <button class="filter-apply" onclick="sendShareText()">Text it</button>
+    </div>
+  </div>
+
+  <div class="sheet-scrim" id="addit-scrim" onclick="closeAddToItin()"></div>
+  <div class="sheet" id="addit-sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-title">Add to itin</div>
+    <div class="sheet-sub" id="addit-sub"></div>
+    <div class="itin-list" id="addit-list"></div>
+  </div>
 
   <div class="sheet-scrim" id="region-scrim" onclick="closeRegion()"></div>
   <div class="sheet" id="region-sheet">
@@ -2135,8 +2435,12 @@ document.getElementById('pw-input').addEventListener('keydown',function(e){ if(e
 
 // --- Screen + day navigation ---
 // The currently-visible trip detail screen (Pacific = s-trip, Caucasus = s-caucasus)
-function activeTrip(){ return document.querySelector('.screen.active.trip-screen') || document.getElementById('s-trip'); }
+let addTripOverride=null;   // set while "Add to itin" (Want to Go) fills the add-element form for a trip that isn't on screen
+function activeTrip(){ return (addTripOverride&&document.getElementById(addTripOverride)) || document.querySelector('.screen.active.trip-screen') || document.getElementById('s-trip'); }
 function go(id){
+  // remember which nav slot was lit on the screen we're leaving, so the new nav's highlight can slide from it
+  const prevNav=document.querySelector('.screen.active .nav');
+  const prevIdx=prevNav ? [...prevNav.querySelectorAll('.ni')].indexOf(prevNav.querySelector('.ni.on')) : -1;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const screen=document.getElementById(id);
   screen.classList.add('active');
@@ -2145,7 +2449,16 @@ function go(id){
   if(screen.classList.contains('trip-screen')){ screen.classList.remove('scrolled'); document.querySelectorAll('.day-notes-input').forEach(autoGrow); }
   if(id==='s-explore') showExploreMap();
   const nav=screen.querySelector('.nav');
-  if(nav) positionIndicator(nav, nav.querySelector('.ni.on')||nav.querySelector('.ni'), false);
+  if(nav){
+    const items=[...nav.querySelectorAll('.ni')];
+    const target=nav.querySelector('.ni.on')||items[0];
+    const from=items[prevIdx];
+    if(from && target && from!==target){
+      positionIndicator(nav, from, false);   // start where the last screen's highlight was
+      void nav.offsetWidth;
+      positionIndicator(nav, target, true);  // then glide to the new tab
+    } else positionIndicator(nav, target, false);
+  }
 }
 
 // --- Sliding nav highlight ---
@@ -2159,22 +2472,8 @@ function positionIndicator(nav, ni, animate){
   if(!animate){ void ind.offsetWidth; ind.style.transition=''; }
 }
 function initNav(nav){
-  const items=nav.querySelectorAll('.ni');
-  const ind=nav.querySelector('.nav-indicator');
-  positionIndicator(nav, nav.querySelector('.ni.on')||items[0], false);
-  items.forEach(ni=>{
-    ni.addEventListener('click',function(){
-      items.forEach(x=>x.classList.remove('on'));
-      ni.classList.add('on');
-      if(ind) ind.classList.remove('hidden');
-      positionIndicator(nav, ni, true);
-    });
-  });
-  const addBtn=nav.querySelector('.nav-add');
-  if(addBtn) addBtn.addEventListener('click',function(){
-    items.forEach(x=>x.classList.remove('on'));
-    if(ind) ind.classList.add('hidden');
-  });
+  // each screen's nav keeps its own tab lit; go() slides the highlight across when the screen changes
+  positionIndicator(nav, nav.querySelector('.ni.on')||nav.querySelector('.ni'), false);
 }
 document.querySelectorAll('.nav').forEach(initNav);
 function sd(i,el){
@@ -2291,7 +2590,7 @@ function openEditSheet(card){
   editingCard=card;
   editingType=card.dataset.type||elType(card);
   const typeMeta=ELEMENT_TYPES.find(t=>t.key===editingType);
-  document.getElementById('edit-sheet-title').textContent='Edit '+(typeMeta?typeMeta.label:'element');
+  document.getElementById('edit-sheet-title').textContent='Edit '+(typeMeta?typeMeta.label:'stop');
   const stored=JSON.parse(card.dataset.fields||'{}');
   document.getElementById('ef-name').value=(card.querySelector('.en')||{}).textContent||'';
   document.getElementById('ef-fav').classList.toggle('on',!!card.dataset.fav);
@@ -2359,7 +2658,7 @@ function openViewSheet(card){
   viewingCard=card;
   const type=card.dataset.type||elType(card);
   const typeMeta=ELEMENT_TYPES.find(t=>t.key===type);
-  document.getElementById('view-sheet-title').textContent=typeMeta?typeMeta.label:'Element';
+  document.getElementById('view-sheet-title').textContent=typeMeta?typeMeta.label:'Stop';
   const rowsEl=document.getElementById('view-rows');
   rowsEl.innerHTML='';
   const rows=VIEW_SPEC[type]
@@ -2439,19 +2738,25 @@ function saveElement(){
         :'<div class="pt pt-ph" style="background:'+esc(p.bg)+';" title="'+esc(p.title)+'"></div>').join('');
   } else if(ptRow) ptRow.remove();
   closeEditSheet();
-  toast('Element updated');
+  toast('Stop updated');
 }
 function deleteElement(){
   if(!editingCard) return closeEditSheet();
   editingCard.remove();
   closeEditSheet();
-  toast('Element deleted');
+  toast('Stop deleted');
 }
 
 // --- Search + filters (Home) ---
 let searchQuery='';
 const filters={ people:new Set(), when:new Set(), status:new Set() };
 
+function togglePast(){
+  const list=document.getElementById('past-list'), btn=document.getElementById('past-toggle');
+  const open=!list.classList.contains('open');
+  list.classList.toggle('open',open);
+  btn.setAttribute('aria-expanded',open||list.classList.contains('force'));
+}
 function filterTrips(q){ searchQuery=q.trim().toLowerCase(); applyFilters(); }
 
 function applyFilters(){
@@ -2477,6 +2782,10 @@ function applyFilters(){
     label.style.display = has ? '' : 'none';
   });
   document.getElementById('trip-empty').style.display = anyVisible ? 'none' : 'block';
+  // while searching/filtering, show past matches even if the accordion is closed
+  const pl=document.getElementById('past-list');
+  pl.classList.toggle('force', !!(searchQuery||filters.people.size||filters.when.size||filters.status.size));
+  document.getElementById('past-toggle').setAttribute('aria-expanded', pl.classList.contains('open')||pl.classList.contains('force'));
   const active = filters.people.size||filters.when.size||filters.status.size;
   document.querySelector('.home-filter').classList.toggle('active', !!active);
 }
@@ -2728,18 +3037,18 @@ function copyText(text,msg){
 // --- Add-element type picker ---
 const ELEMENT_TYPES=[
   {key:'city',label:'City',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>'},
-  {key:'accommodation',label:'Accommodation',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/>'},
+  {key:'accommodation',label:'Stay',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M7 13c1.7 0 3-1.3 3-3S8.7 7 7 7 4 8.3 4 10s1.3 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.2-1.8-4-4-4z"/>'},
   {key:'flight',label:'Flight',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M12 2c-.8 0-1.4 1-1.4 2.3v4.4L2.8 13v2.1l7.8-2.3v4.4l-2.1 1.6V21l3.5-1 3.5 1v-1.2l-2.1-1.6v-4.4l7.8 2.3V13l-7.8-4.3V4.3C13.4 3 12.8 2 12 2z"/>'},
   {key:'car',label:'Car',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M18.9 6c-.2-.6-.7-1-1.4-1h-11c-.6 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16c-.8 0-1.5-.7-1.5-1.5S5.7 13 6.5 13s1.5.7 1.5 1.5S7.3 16 6.5 16zm11 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>'},
   {key:'restaurant',label:'Restaurant',bg:'#FBEAF0',fg:'#993556',icon:'<path d="M6 2v6a2.5 2.5 0 001.5 2.3V22h1v-11.7A2.5 2.5 0 0010 8V2H9v4.5h-.5V2h-1v4.5H7V2H6zM18 2c-2.8 0-5 2.2-5 4v8h2.5v8h2V2z"/>'},
-  {key:'coffee',label:'Coffee Shop',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>'},
+  {key:'coffee',label:'Coffee',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M20 3H4v10c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>'},
   {key:'bar',label:'Bar',bg:'#FAEEDA',fg:'#854F0B',icon:'<path d="M7.5 3.5c0 4 2 6.5 4.5 6.5s4.5-2.5 4.5-6.5H7.5zM11 10h2v8h-2zM8.5 18h7v1.7h-7z"/>'},
-  {key:'store',label:'Store',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/>'},
+  {key:'store',label:'Shop',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M15 2.5C14 4 10 4 9 2.5L3 6l2.5 5 2.5-1.5V20h6V9.5l2.5 1.5L21 6z"/>'},
   {key:'hike',label:'Hike',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M2 20L9 6l4 7 2.5-4L22 20H2z"/>'},
   {key:'neighborhood',label:'Neighborhood',bg:'#E1F5EE',fg:'#0F6E56',icon:'<path d="M12 2L6 11h3l-4 6h5v5h4v-5h5l-4-6h3L12 2z"/>'},
   {key:'museum',label:'Museum',bg:'#EEEDFE',fg:'#533AB7',icon:'<path d="M12 2L2 7v1.5h20V7L12 2zM4 10h2v8H4zm4.7 0h2v8h-2zm4.6 0h2v8h-2zm4.7 0h2v8h-2zM2 19h20v3H2z"/>'},
   {key:'experience',label:'Experience',bg:'#E6F1FB',fg:'#185FA5',icon:'<path d="M13 3v10H5L13 3zm2 4l4.5 6H15V7zM3.3 15h17.4l-1.8 3c-.4.6-1 1-1.7 1H6.8c-.7 0-1.3-.4-1.7-1l-1.8-3z"/>'},
-  {key:'ticket',label:'Ticket',bg:'#FBEAF0',fg:'#993556',icon:'<path fill-rule="evenodd" d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zM15 6.3h1v2.2h-1zm0 3.6h1v2.2h-1zm0 3.6h1v2.2h-1z"/>'},
+  {key:'ticket',label:'Event',bg:'#FBEAF0',fg:'#993556',icon:'<path fill-rule="evenodd" d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zM15 6.3h1v2.2h-1zm0 3.6h1v2.2h-1zm0 3.6h1v2.2h-1z"/>'},
   {key:'drive',label:'Drive',bg:'#E6F1FB',fg:'#185FA5',icon:'<path style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" d="M9 21c0-4 6-3 6-7s-6-3-6-7 4-4 7-4"/>'},
   {key:'misc',label:'Miscellaneous',bg:'#F1EFE8',fg:'#777',icon:'<path d="M12 3a9 9 0 00-9 9 7 7 0 007 7 5 5 0 005-5 3 3 0 00-3-3 1 1 0 00-1 1c0 .6.4 1 1 1a1 1 0 011 1 3 3 0 01-3 3 5 5 0 01-5-5 7 7 0 017-7 9 9 0 019 9 1 1 0 002 0A11 11 0 0012 3z"/>'}
 ];
@@ -2757,7 +3066,7 @@ const TYPE_FIELDS={
   ],
   accommodation:[
     {key:'property_name',label:'Property Name',required:true,placeholder:'e.g. Hotel Le Marais'},
-    {key:'accommodation_type',label:'Accommodation Type',type:'select',options:['hotel','vacation_rental','hostel','resort','other']},
+    {key:'accommodation_type',label:'Stay Type',type:'select',options:['hotel','vacation_rental','hostel','resort','other']},
     {key:'check_in_date',label:'Check-in Date',required:true,placeholder:'e.g. 2026-09-14'},
     {key:'check_in_time',label:'Check-in Time',placeholder:'e.g. 3:00 PM',primaryTime:true},
     {key:'check_out_date',label:'Check-out Date',required:true,placeholder:'e.g. 2026-09-18'},
@@ -2820,7 +3129,7 @@ const TYPE_FIELDS={
     {key:'dress_code',label:'Dress Code',placeholder:'e.g. Smart casual'}
   ],
   store:[
-    {key:'store_category',label:'Store Category',placeholder:'e.g. Souvenirs / Market'},
+    {key:'store_category',label:'Shop Type',placeholder:'e.g. Souvenirs / Market'},
     {key:'hours',label:'Hours',placeholder:'e.g. 10:00am–7:00pm'},
     {key:'phone',label:'Phone',placeholder:'e.g. +33 1 11 22 33 44'},
     {key:'items_of_interest',label:'Items of Interest',placeholder:'e.g. Ceramic bowls, local olive oil'}
@@ -2864,7 +3173,7 @@ const TYPE_FIELDS={
     {key:'event_name',label:'Event Name',required:true,placeholder:'e.g. Coldplay: Music of the Spheres Tour'},
     {key:'venue_name',label:'Venue Name',required:true,placeholder:'e.g. Accor Arena'},
     {key:'event_datetime',label:'Event Time',required:true,placeholder:'e.g. 2026-09-19T20:00:00+02:00',primaryTime:true},
-    {key:'ticket_type',label:'Ticket Type',type:'select',options:['concert','sports','theater','movie','attraction','other']},
+    {key:'ticket_type',label:'Event Type',type:'select',options:['concert','sports','theater','movie','attraction','other']},
     {key:'seat_section',label:'Seat Section',placeholder:'e.g. Floor A'},
     {key:'seat_row',label:'Seat Row',placeholder:'e.g. 12'},
     {key:'seat_number',label:'Seat Number',placeholder:'e.g. 8'},
@@ -3000,6 +3309,7 @@ const NF_TZ=[
   {id:'Australia/Sydney',abbr:'AET',label:'Sydney (AET)'}
 ];
 const TRIP_TZ={ 's-trip':'America/Los_Angeles', 's-caucasus':'Asia/Tbilisi' };
+let nfWant=null;   // {trip} while the add-element form is filling a Want to Go place
 let nfCats=[], nfPlace=null, nfResults=[], nfSearchT=null, nfSearchSeq=0, nfListOpen=false;
 function openAddMenu(){ pendingAddBtn=null; openTypeSheet(); } // itin + button → active day
 function dayIndexOf(screen,daySec){ return [...screen.querySelectorAll('.day-sec')].indexOf(daySec); }
@@ -3027,10 +3337,27 @@ function openTypeSheet(cats,dayIdx){
   // Wait for the open transition before focusing, or the browser scrolls the page to the off-screen field.
   setTimeout(()=>document.getElementById('nf-name').focus({preventScroll:true}),320);
 }
+// Want to Go → "Add to itin": the same add-element form, prefilled with the place so it can be
+// categorized and given a date (both required) before it lands on that itin's day.
+function openWantToItin(place,tripId,tripName,opts){
+  opts=opts||{};
+  addTripOverride=tripId; pendingAddBtn=null;
+  openTypeSheet(opts.cats||[],0);
+  nfWant={trip:tripName,done:opts.done};
+  document.getElementById('type-sheet').classList.add('want-mode');
+  document.getElementById('nf-name').value=place.n;
+  document.getElementById('nf-loc').value=place.n+', '+place.loc;
+  document.getElementById('nf-loc-pin').classList.add('on');
+  const day=document.getElementById('nf-day');
+  day.insertAdjacentHTML('afterbegin','<option value="">Select a date</option>');
+  day.value='';
+}
 function closeTypeSheet(){
   document.getElementById('type-scrim').classList.remove('show');
   document.getElementById('type-sheet').classList.remove('show');
   pendingAddBtn=null;
+  addTripOverride=null; nfWant=null;
+  document.getElementById('type-sheet').classList.remove('want-mode');
 }
 function nfPopulateDays(){
   const sel=document.getElementById('nf-day');
@@ -3103,7 +3430,12 @@ function nfFmtTime(t){
 
 function saveAddElement(){
   const name=document.getElementById('nf-name').value.trim();
-  if(!name){ toast('Add a name to save this element'); return; }
+  if(!name){ toast('Add a name to save this stop'); return; }
+  if(nfWant){   // coming from Want to Go: category and date are required
+    if(!nfCats.length){ toast('Pick a category'); return; }
+    if(document.getElementById('nf-day').value===''){ toast('Pick a date'); return; }
+  }
+  const wantTrip=nfWant;
   const cats=nfCats.length?nfCats.slice():['misc'];
   const t=ELEMENT_TYPES.find(x=>x.key===cats[0]);
   const loc=document.getElementById('nf-loc').value.trim();
@@ -3142,7 +3474,8 @@ function saveAddElement(){
   addFavButton(card);
   if(typeof timeToLeft==='function'&&TIME_LEFT){ timeToLeft(card); updateTzVisibility(card.closest('.trip-screen')); }
   closeTypeSheet();
-  toast((cats.length>1?'Element':t.label)+' added');
+  if(wantTrip){ if(wantTrip.done) wantTrip.done(); toast('Added '+name+' to '+wantTrip.trip); return; }
+  toast((cats.length>1?'Stop':t.label)+' added');
   card.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
@@ -3280,7 +3613,7 @@ function elType(ec){
 
 // Element card icons: the style guide's symbol sheet (#itinSheet, inlined at the top of <body>).
 // Each symbol is drawn in the card's own colors; `data-etype` on .ei remembers the type for filters/map.
-const SYMBOL_POS={"City":[118.1,130.9],"Accommodation":[358.6,130.9],"Flight":[587.4,130.9],"Car":[822.0,130.9],"Restaurant":[118.1,357.0],"Bar":[358.6,357.0],"Store":[593.2,352.0],"Museum":[821.8,353.3],"Coffee Shop":[117.7,583.1],"Ticket":[358.6,583.1],"Hike":[822.0,583.1],"Experience":[117.7,806.6],"Drive":[346.4,809.2],"Miscellaneous":[583.2,809.2],"Neighborhood":[823.0,809.2]};
+const SYMBOL_POS={"City":[118.1,130.9],"Stay":[358.6,130.9],"Flight":[587.4,130.9],"Car":[822.0,130.9],"Restaurant":[118.1,357.0],"Bar":[358.6,357.0],"Shop":[593.2,352.0],"Museum":[821.8,353.3],"Coffee":[117.7,583.1],"Event":[358.6,583.1],"Hike":[822.0,583.1],"Experience":[117.7,806.6],"Drive":[346.4,809.2],"Miscellaneous":[583.2,809.2],"Neighborhood":[823.0,809.2]};
 function symSvg(key){
   const t=ELEMENT_TYPES.find(x=>x.key===key)||ELEMENT_TYPES.find(x=>x.key==='misc');
   const q=SYMBOL_POS[t.label];
@@ -3294,21 +3627,26 @@ function useSymbolIcon(ec){  // swap a card's old glyph for the guide symbol (ac
   ei.dataset.etype=key; ei.innerHTML=symSvg(key);
 }
 document.querySelectorAll('.ec').forEach(useSymbolIcon);
+// Home box icon: the brand guide's own tile artwork, colored artwork (tile + mark)
+document.querySelectorAll('.today-box .ei').forEach(ei=>{
+  const t=ELEMENT_TYPES.find(x=>x.key===ei.dataset.etype), q=SYMBOL_POS[t.label];
+  ei.innerHTML='<svg class="sym" viewBox="'+(q[0]-4)+' '+(q[1]-4)+' 148 148"><use href="#itinSheet"/></svg>';
+});
 
 // Day notes: textarea grows with its content
 function autoGrow(t){ t.style.height='auto'; if(t.scrollHeight) t.style.height=t.scrollHeight+'px'; }
 
 function toggleTripSearch(){
-  if(activeTrip().id!=='s-trip'){ toast('Add stops first to search this itin'); return; }
-  const scr=document.getElementById('s-trip');
+  const scr=activeTrip();
   if(scr.classList.contains('searching')){ closeTripSearch(); return; }
   scr.classList.add('searching');
-  setTimeout(()=>document.getElementById('el-search').focus(),60);
+  setTimeout(()=>{ const i=scr.querySelector('.trip-search-row input'); if(i) i.focus({preventScroll:true}); },60);
 }
 function closeTripSearch(){
-  document.getElementById('s-trip').classList.remove('searching');
-  const inp=document.getElementById('el-search');
-  inp.value=''; elSearchQuery='';
+  const scr=activeTrip();
+  scr.classList.remove('searching');
+  const inp=scr.querySelector('.trip-search-row input'); if(inp) inp.value='';
+  elSearchQuery='';
   applyElementFilters();
 }
 function filterElements(q){ elSearchQuery=q.trim().toLowerCase(); applyElementFilters(); }
@@ -3332,12 +3670,13 @@ document.querySelectorAll('#trip-filter-sheet .chip').forEach(chip=>{
 function applyElementFilters(){
   const active=!!(elSearchQuery||elFilters.etype.size||elFilters.saved.size);
   let any=false;
-  document.querySelectorAll('#s-trip .day-sec').forEach(sec=>{
+  const scr=activeTrip();
+  scr.querySelectorAll('.day-sec').forEach(sec=>{
     const dh=sec.querySelector('.dh');
     const dayTxt=dh?dh.textContent.toLowerCase():'';
     let dayHas=false;
     sec.querySelectorAll('.ec').forEach(ec=>{
-      const hay=(ec.textContent+' '+dayTxt).toLowerCase();
+      const hay=(ec.textContent+' '+(ec.dataset.fields||'').replace(/&quot;/g,'"')+' '+(ec.dataset.stops||'')+' '+dayTxt).toLowerCase();
       const okSearch=!elSearchQuery||hay.includes(elSearchQuery);
       const okType=!elFilters.etype.size||elFilters.etype.has(elType(ec));
       const okSaved=!elFilters.saved.size||
@@ -3360,8 +3699,20 @@ function applyElementFilters(){
     const dn=sec.querySelector('.drive-note'); if(dn) dn.style.display=active?'none':'';
     const nb=sec.querySelector('.day-notes'); if(nb) nb.style.display=active?'none':'';
   });
-  document.getElementById('el-empty').style.display=(active&&!any)?'block':'none';
-  document.getElementById('trip-filter-icon').classList.toggle('active', !!(elFilters.etype.size||elFilters.saved.size));
+  // Research ideas and checklist items follow the same search
+  let otherAny=false;
+  scr.querySelectorAll('.rs-card, .ck-item').forEach(el=>{
+    const vis=!elSearchQuery||el.textContent.toLowerCase().includes(elSearchQuery);
+    el.style.display=vis?'':'none'; if(vis) otherAny=true;
+  });
+  const tab=scr.dataset.tab||'itin';
+  const empty=scr.querySelector('.ts-empty');
+  if(empty){
+    empty.textContent=tab==='itin'?'No stops match your search.':(tab==='research'?'No ideas match your search.':'No items match your search.');
+    empty.style.display=(elSearchQuery&&(tab==='itin'?!any:!otherAny))?'block':'none';
+  }
+  const legacy=document.getElementById('el-empty'); if(legacy) legacy.style.display='none';
+  const fi=document.getElementById('trip-filter-icon'); if(fi) fi.classList.toggle('active', !!(elFilters.etype.size||elFilters.saved.size));
 }
 
 // --- EXPLORE (compass) MAP ---
@@ -3445,22 +3796,27 @@ function closeRegion(){
 
 // --- PROFILE ---
 const PROFILE_COUNTRIES=[
-  ['🇺🇸','United States'],['🇯🇵','Japan'],['🇦🇺','Australia'],['🇮🇹','Italy'],
-  ['🇿🇦','South Africa'],['🇫🇷','France'],['🇬🇧','United Kingdom'],['🇲🇽','Mexico'],
-  ['🇨🇦','Canada'],['🇪🇸','Spain'],['🇹🇭','Thailand'],['🇮🇸','Iceland']
+  ['🇺🇸','United States']
 ];
+function filterCrew(q){
+  q=(q||'').trim().toLowerCase();
+  document.querySelectorAll('#prof-crew .crew-row').forEach(r=>{ r.style.display=(!q||r.dataset.search.includes(q))?'':'none'; });
+}
 function openProfile(){
   const grid=document.getElementById('prof-countries');
   if(grid && !grid.childElementCount){
     grid.innerHTML=PROFILE_COUNTRIES.map(c=>
-      '<span class="country-chip"><span class="cf">'+c[0]+'</span>'+c[1]+'</span>').join('');
+      '<span class="country-chip"><span class="cf">'+c[0]+'</span>'+c[1]+'</span>').join('')+
+      '<span class="country-chip add" onclick="toast(\'Add a country — coming soon\')">+ Add</span>';
   }
+  const set=(id,n)=>{ const e=document.getElementById(id); if(e) e.textContent=n?n:''; };
+  set('prof-c-itins',savedItins.size); set('prof-c-places',SAVED_PLACES.length); set('prof-c-want',SAVED_WANT.length);
   go('s-profile');
 }
 
 // --- SAVED (favorited published itins) ---
 // Seed one favorite so the Saved tab is populated by default (Tokyo in 5 Days).
-let savedItins=new Set(['japan-0']);
+let savedItins=new Set(['japan-0','california-0','italy-0','montana-0']);
 function itinById(id){
   const dash=id.lastIndexOf('-');
   const key=id.slice(0,dash), i=+id.slice(dash+1);
@@ -3477,7 +3833,17 @@ function toggleSaveItin(e,id){
   renderSaved();
   toast(nowSaved?'Saved to your list':'Removed from Saved');
 }
-function openSaved(){ renderSaved(); go('s-saved'); }
+function filterSavedItins(q){
+  q=(q||'').trim().toLowerCase();
+  let any=false;
+  document.querySelectorAll('#saved-list .saved-row').forEach(r=>{
+    const vis=!q||(r.dataset.search||'').includes(q);
+    r.style.display=vis?'':'none'; if(vis) any=true;
+  });
+  const nm=document.getElementById('saved-nomatch');
+  if(nm) nm.style.display=(!any&&document.querySelectorAll('#saved-list .saved-row').length)?'block':'none';
+}
+function openSaved(tab){ renderSaved(); go('s-saved'); setSavedTab(typeof tab==='string'?tab:'itins'); }
 function renderSaved(){
   const wrap=document.getElementById('saved-list');
   if(!wrap) return;
@@ -3493,14 +3859,298 @@ function renderSaved(){
     const cover=it.cover.charAt(0)==='#'
       ? 'style="background:'+it.cover+';">'+r.flag
       : 'style="background-image:url(\''+esc(it.cover)+'\');">';
-    return '<div class="saved-row" onclick="toast(\'Itin preview — coming soon\')">'+
+    return '<div class="saved-row" data-search="'+esc((it.name+' '+r.name+' '+it.by).toLowerCase())+'" onclick="toast(\'Itin preview — coming soon\')">'+
       '<div class="saved-cover" '+cover+'</div>'+
       '<div class="saved-meta"><div class="saved-name">'+it.name+'</div>'+
-      '<div class="saved-by">'+r.flag+' '+r.name+' · '+it.days+' days · '+it.by+'</div></div>'+
-      '<span class="itin-save on" data-id="'+id+'" onclick="toggleSaveItin(event,\''+id+'\')">★</span>'+
+      '<div class="saved-by">'+it.days+' days • '+it.by+'</div></div>'+
+      '<span class="saved-star on" data-id="'+id+'" onclick="toggleSaveItin(event,\''+id+'\')">'+STAR_ICON+'</span>'+
     '</div>';
   }).join('');
+  const si=document.getElementById('saved-search'); if(si&&si.value) filterSavedItins(si.value);
 }
+
+
+// Saved tabs: Favorite Itins / Favorite Places / Want to Go
+// Star from the brand guide's element-card examples: outline when off, filled in the accent when on
+const STAR_ICON='<svg viewBox="0 0 24 24"><path d="M12 2.8l2.85 5.95 6.4.85-4.7 4.45 1.2 6.45L12 17.35 6.25 20.5l1.2-6.45-4.7-4.45 6.4-.85L12 2.8z"/></svg>';
+const SAVED_TABS=['itins','places','want'];
+function setSavedTab(tab){
+  const i=SAVED_TABS.indexOf(tab); if(i<0) return;
+  document.querySelectorAll('#saved-tabs .saved-tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  document.querySelector('#saved-tabs .saved-tab-ind').style.transform='translateX('+(i*100)+'%)';
+  SAVED_TABS.forEach(t=>document.getElementById('saved-panel-'+t).classList.toggle('on',t===tab));
+  const c=document.querySelector('#s-saved .content'); if(c) c.scrollTop=0;
+}
+// Sample favorite places (icons are the brand guide's colored element symbols)
+const SAVED_PLACES=[
+  { k:'restaurant', n:'Fantino',                  loc:'Portland, Oregon' },
+  { k:'coffee',     n:'Never Coffee',             loc:'Portland, Oregon' },
+  { k:'museum',     n:'Portland Art Museum',      loc:'Portland, Oregon' },
+  { k:'museum',     n:'Maiden Tower',             loc:'Baku, Azerbaijan' },
+  { k:'restaurant', n:'Qaytarma',                 loc:'Baku, Azerbaijan' },
+  { k:'hike',       n:'Narikala Fortress',        loc:'Tbilisi, Georgia' },
+  { k:'store',      n:'Fabrika',                  loc:'Tbilisi, Georgia' },
+  { k:'coffee',     n:'Stamba Hotel Café',        loc:'Tbilisi, Georgia' },
+  { k:'experience', n:'Yerevan Brandy Company',   loc:'Yerevan, Armenia' },
+  { k:'museum',     n:'Cafesjian Center for the Arts', loc:'Yerevan, Armenia' },
+  { k:'store',      n:'Nishiki Market',           loc:'Kyoto, Japan' }
+];
+let placesQuery='', placesType='all';
+// Want to Go: places saved from a map search, shown as element tiles (brand guide symbols)
+const SAVED_WANT=[
+  { k:'hike',         n:'Fushimi Inari Taisha',  loc:'Kyoto, Japan' },
+  { k:'museum',       n:'Kinkaku-ji',            loc:'Kyoto, Japan' },
+  { k:'restaurant',   n:'Pastéis de Belém',      loc:'Lisbon, Portugal' },
+  { k:'store',        n:'Time Out Market',       loc:'Lisbon, Portugal' },
+  { k:'museum',       n:'Jardin Majorelle',      loc:'Marrakech, Morocco' },
+  { k:'restaurant',   n:'Café Nomad',            loc:'Marrakech, Morocco' },
+  { k:'hike',         n:'Torres del Paine',      loc:'Patagonia, Chile' },
+  { k:'experience',   n:'Blue Lagoon',           loc:'Grindavík, Iceland' },
+  { k:'restaurant',   n:'Pujol',                 loc:'Mexico City, Mexico' }
+];
+// Sample "map" results for the search bar (a real build would call a places/geocoding API)
+const MAP_RESULTS=[
+  { k:'museum',       n:'Sagrada Família',         loc:'Barcelona, Spain' },
+  { k:'coffee',       n:'Café de Flore',           loc:'Paris, France' },
+  { k:'hike',         n:'Machu Picchu',            loc:'Cusco Region, Peru' },
+  { k:'store',        n:'Borough Market',          loc:'London, England' },
+  { k:'store',        n:'Tsukiji Outer Market',    loc:'Tokyo, Japan' },
+  { k:'city',         n:'Positano',                loc:'Amalfi Coast, Italy' },
+  { k:'experience',   n:'Cappadocia Balloon Ride', loc:'Göreme, Türkiye' },
+  { k:'bar',          n:'Harry’s New York Bar',    loc:'Paris, France' },
+  { k:'neighborhood', n:'Alfama',                  loc:'Lisbon, Portugal' },
+  { k:'restaurant',   n:'Osteria Francescana',     loc:'Modena, Italy' }
+];
+function nativeSym(key,size){
+  const t=ELEMENT_TYPES.find(x=>x.key===key)||ELEMENT_TYPES.find(x=>x.key==='misc');
+  const q=SYMBOL_POS[t.label];
+  return '<svg class="saved-icon" viewBox="'+(q[0]-4)+' '+(q[1]-4)+' 148 148"><use href="#itinSheet"/></svg>';
+}
+// Collapsible city groups (Favorite Places + Want to Go): sorted A–Z, all closed to start
+const openCities={ places:new Set(), want:new Set() };
+function groupHtml(listKey, items, rowFn, force){
+  const groups=[]; items.forEach(p=>{ let g=groups.find(x=>x.loc===p.loc); if(!g){ g={loc:p.loc,items:[]}; groups.push(g); } g.items.push(p); });
+  groups.sort((a,b)=>a.loc.localeCompare(b.loc));
+  return groups.map(g=>{
+    const open=force||openCities[listKey].has(g.loc);
+    return '<div class="pl-grp'+(open?' open':'')+'" data-loc="'+g.loc+'">'+
+      '<button class="pl-head" onclick="toggleCity(this,\''+listKey+'\')"><span>'+g.loc+'</span><span class="pl-count">'+g.items.length+'</span>'+
+        '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
+      '<div class="pl-body"><div class="pl-body-in">'+g.items.map(rowFn).join('')+'</div></div></div>';
+  }).join('');
+}
+function toggleCity(btn,listKey){
+  const grp=btn.parentElement, loc=grp.dataset.loc;
+  const open=!grp.classList.contains('open');
+  grp.classList.toggle('open',open);
+  if(open) openCities[listKey].add(loc); else openCities[listKey].delete(loc);
+}
+function typeLabel(k){ const t=ELEMENT_TYPES.find(x=>x.key===k); return t?t.label:'Place'; }
+function placesSearch(q){ placesQuery=(q||'').trim().toLowerCase(); renderPlaces(); }
+function setPlacesType(k){ placesType=k; renderPlaces(); }
+function renderPlaces(){
+  const chips=document.getElementById('places-chips'), box=document.getElementById('saved-places');
+  if(!box) return;
+  const kinds=[...new Set(SAVED_PLACES.map(p=>p.k))];
+  chips.innerHTML=['all'].concat(kinds).map(k=>
+    '<button class="pl-chip'+(k===placesType?' on':'')+'" onclick="setPlacesType(\''+k+'\')">'+(k==='all'?'All':typeLabel(k))+'</button>').join('');
+  const hits=SAVED_PLACES.filter(p=>(placesType==='all'||p.k===placesType)&&
+    (!placesQuery||(p.n+' '+p.loc+' '+typeLabel(p.k)).toLowerCase().includes(placesQuery)));
+  if(!hits.length){ box.innerHTML='<div class="saved-empty">No favorite places match.</div>'; return; }
+  const rowFn=p=>{
+    const idx=SAVED_PLACES.indexOf(p), on=sharePicked.has(idx);
+    return '<div class="saved-row'+(shareMode&&on?' picked':'')+'" onclick="'+(shareMode?'togglePick('+idx+')':'toast(\'Place details — coming soon\')')+'">'+
+      (shareMode?'<span class="pick-box"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>':'')+nativeSym(p.k)+
+      '<div class="saved-meta"><div class="saved-name">'+p.n+'</div><div class="saved-by">'+typeLabel(p.k)+'</div></div>'+
+      '<span class="saved-star on">'+STAR_ICON+'</span></div>';
+  };
+  box.innerHTML=groupHtml('places',hits,rowFn,!!(placesQuery||placesType!=='all'||shareMode));
+}
+// Share a quick list: tap the share icon, check places, then text them to a friend
+let shareMode=false; const sharePicked=new Set();
+function toggleShareMode(){
+  shareMode=!shareMode; sharePicked.clear();
+  document.getElementById('pl-share').classList.toggle('on',shareMode);
+  document.getElementById('share-bar').classList.toggle('show',shareMode);
+  updateShareBar(); renderPlaces();
+}
+function togglePick(i){
+  if(sharePicked.has(i)) sharePicked.delete(i); else sharePicked.add(i);
+  updateShareBar(); renderPlaces();
+}
+function updateShareBar(){
+  const n=sharePicked.size, b=document.getElementById('share-go');
+  b.disabled=!n; b.textContent=n?'Share '+n+(n===1?' place':' places'):'Select places to share';
+}
+function shareListText(){
+  const picked=[...sharePicked].map(i=>SAVED_PLACES[i]);
+  const groups={}; picked.forEach(p=>{ (groups[p.loc]=groups[p.loc]||[]).push(p); });
+  return 'A few of my favorite places:\n\n'+Object.keys(groups).sort().map(loc=>
+    loc+'\n'+groups[loc].map(p=>'• '+p.n+' ('+typeLabel(p.k)+')').join('\n')).join('\n\n')+'\n\nShared from itin';
+}
+function openShareSheet(){
+  if(!sharePicked.size) return;
+  document.getElementById('share-sub').textContent=sharePicked.size+(sharePicked.size===1?' place':' places')+' · edit the message before you send it';
+  document.getElementById('share-text').value=shareListText();
+  document.getElementById('share-scrim').classList.add('show');
+  document.getElementById('share-sheet').classList.add('show');
+}
+function closeShareSheet(){
+  document.getElementById('share-scrim').classList.remove('show');
+  document.getElementById('share-sheet').classList.remove('show');
+}
+function copyShareText(){
+  const t=document.getElementById('share-text').value;
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copied to clipboard')).catch(()=>toast('Copy not available here'));
+}
+function sendShareText(){
+  const t=document.getElementById('share-text').value;
+  closeShareSheet(); toggleShareMode();
+  toast('Opening Messages…');
+  window.location.href='sms:?&body='+encodeURIComponent(t);
+}
+function renderSavedExtras(){
+  renderPlaces();
+  renderWant();
+}
+function wantIcon(){
+  return '<span class="saved-icon want-pinicon"><svg viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span>';
+}
+function renderWant(){
+  const box=document.getElementById('saved-want');
+  if(!box) return;
+  const rowFn=p=>'<div class="saved-row want-row" onclick="toast(\'Place details — coming soon\')">'+wantIcon()+
+        '<div class="saved-meta"><div class="saved-name">'+p.n+'</div></div>'+
+        '<button class="want-add" onclick="openAddToItin(event,'+SAVED_WANT.indexOf(p)+')">Add to itin</button></div>';
+  box.innerHTML=groupHtml('want',SAVED_WANT,rowFn,false);
+}
+const ADD_ITINS=[
+  { id:'s-caucasus', name:'Caucasus Trip',           dates:'Oct 23 – Nov 3, 2026', cover:"url('Photos/Yerevan.jpg')" },
+  { id:'s-trip',     name:'Pacific Coast Road Trip', dates:'May 29 – Jun 5, 2026', cover:"url('Photos/Cannon%20Beach.jpg')" }
+];
+let addTarget=null;
+function openAddToItin(e,i){
+  if(e) e.stopPropagation();
+  addTarget=SAVED_WANT[i]; if(!addTarget) return;
+  document.getElementById('addit-sub').textContent=addTarget.n+' · '+addTarget.loc;
+  document.getElementById('addit-list').innerHTML=ADD_ITINS.map((t,j)=>
+    '<div class="itin-item" onclick="addPlaceToItin('+j+')"><div class="addit-cover" style="background-image:'+t.cover+';"></div>'+
+    '<div class="itin-meta"><div class="itin-name">'+t.name+'</div><div class="itin-by">'+t.dates+'</div></div></div>').join('')+
+    '<div class="itin-item" onclick="closeAddToItin();openNewItin()"><div class="addit-cover">+</div>'+
+    '<div class="itin-meta"><div class="itin-name">New itin</div><div class="itin-by">Start a trip with this place</div></div></div>';
+  document.getElementById('addit-scrim').classList.add('show');
+  document.getElementById('addit-sheet').classList.add('show');
+}
+function closeAddToItin(){
+  document.getElementById('addit-scrim').classList.remove('show');
+  document.getElementById('addit-sheet').classList.remove('show');
+}
+function addPlaceToItin(j){
+  const t=ADD_ITINS[j], place=addTarget; closeAddToItin();
+  if(t&&place) setTimeout(()=>openWantToItin(place,t.id,t.name),260);
+}
+function wantSearch(q){
+  const box=document.getElementById('want-results');
+  q=(q||'').trim().toLowerCase();
+  if(!q){ box.classList.remove('show'); box.innerHTML=''; return; }
+  const have=new Set(SAVED_WANT.map(w=>w.n));
+  const hits=MAP_RESULTS.filter(r=>!have.has(r.n)&&(r.n+' '+r.loc).toLowerCase().includes(q)).slice(0,5);
+  box.innerHTML=hits.length
+    ? hits.map(r=>'<div class="want-res" onclick="addWant(\''+MAP_RESULTS.indexOf(r)+'\')">'+wantIcon()+
+        '<div class="saved-meta"><div class="saved-name">'+r.n+'</div><div class="saved-by">'+r.loc+'</div></div></div>').join('')
+    : '<div class="want-none">No places found on the map.</div>';
+  box.classList.add('show');
+}
+function addWant(i){
+  const r=MAP_RESULTS[+i]; if(!r) return;
+  SAVED_WANT.unshift(r);
+  renderWant();
+  const inp=document.getElementById('want-search'); inp.value='';
+  wantSearch('');
+  toast('Added to Want to Go');
+}
+renderSavedExtras();
+
+
+// --- TRIP TABS: Itin / Research / Checklist (added to every trip screen) ---
+const TRIP_EXTRAS={
+  's-caucasus':{
+    ideas:[ {n:'Stamba Hotel Café',loc:'Tbilisi, Georgia',k:'coffee',v:2,me:true}, {n:'Abanotubani sulfur baths',loc:'Tbilisi, Georgia',k:'experience',v:1}, {n:'Sighnaghi day trip',loc:'Sighnaghi, Georgia',k:'hike',v:0}, {n:'Cafesjian Center',loc:'Yerevan, Armenia',k:'museum',v:1,me:true}, {n:'Lolita',loc:'Tbilisi, Georgia',k:'restaurant',v:0}, {n:'Dry Bridge Market',loc:'Tbilisi, Georgia',k:'store',v:0} ],
+    todo:[ ['Print e-visa and hotel confirmations',true], ['Download offline maps for Georgia and Armenia',true], ['Book Tbilisi airport transfer',false], ['Pack a Type C/F power adapter',false], ['Tell the bank about travel dates',false], ['Buy travel insurance',false] ]
+  },
+  's-trip':{
+    ideas:[ {n:'Cannon Beach at sunrise',loc:'Cannon Beach, Oregon',k:'hike',v:2,me:true}, {n:'Tillamook Creamery',loc:'Tillamook, Oregon',k:'experience',v:1}, {n:'Powell’s Books',loc:'Portland, Oregon',k:'store',v:1,me:true}, {n:'Never Coffee',loc:'Portland, Oregon',k:'coffee',v:0} ],
+    todo:[ ['Reserve rental car',true], ['Check Highway 1 closures',false], ['Pack layers and rain jackets',false], ['Charge camera batteries',false] ]
+  }
+};
+function tripTabHTML(){ return '<button class="tt on" data-tab="itin">Itin</button><button class="tt" data-tab="research">Research</button><button class="tt" data-tab="checklist">Checklist</button>'; }
+function researchHTML(ideas){
+  return '<div class="rs-input"><input type="text" placeholder="Paste a link or type an idea"><button type="button" onclick="toast(\'Idea details — coming soon\')">Details</button></div>'+
+    '<div class="rs-bar"><div class="rs-seg"><button class="on" data-v="board">Board</button><button data-v="map">Map</button></div>'+
+    '<div class="rs-right"><div class="rs-view" role="group" aria-label="Layout"><button class="on" data-l="grid" aria-label="Grid view"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button><button data-l="list" aria-label="List view"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>'+
+    '<button class="rs-suggest" onclick="toast(\'Suggestions — coming soon\')">✦ Suggest</button></div></div>'+
+    '<div class="rs-board">'+ideas.map(i=>
+      '<div class="rs-card" data-n="'+i.n.replace(/"/g,'&quot;')+'" data-k="'+i.k+'" data-loc="'+(i.loc||'')+'"><div class="rs-tile">'+symSvg(i.k)+'<button type="button" class="rs-add" aria-label="Add to itin"><svg class="rs-add-i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div><div class="rs-body"><div class="rs-name">'+i.n+'</div>'+
+      '<div class="rs-foot"><button class="rs-vote'+(i.me?' on':'')+'" data-v="'+i.v+'" data-me="'+(i.me?1:0)+'"><svg viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/></svg><span>'+(i.me||i.v?i.v:'Vote')+'</span></button><span class="rs-more">···</span></div></div></div>').join('')+'</div>'+
+    '<div class="rs-map">Map of your saved ideas — coming soon</div>';
+}
+function checklistHTML(todo){
+  return '<div class="ck-head"><div class="ck-title">Checklist</div><div class="ck-count"></div></div><div class="ck-bar"><i></i></div>'+
+    '<div class="ck-list">'+todo.map(t=>
+      '<div class="ck-item'+(t[1]?' done':'')+'"><span class="ck-box"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="ck-text">'+t[0]+'</span></div>').join('')+'</div>'+
+    '<div class="ck-add"><input type="text" placeholder="Add an item" onkeydown="if(event.key===\'Enter\') ckAdd(this)"><button type="button" onclick="ckAdd(this.previousElementSibling)">Add</button></div>';
+}
+function ckUpdate(screen){
+  const items=[...screen.querySelectorAll('.ck-item')], done=items.filter(i=>i.classList.contains('done')).length;
+  screen.querySelector('.ck-count').textContent=done+' of '+items.length+' done';
+  screen.querySelector('.ck-bar i').style.width=(items.length?done/items.length*100:0)+'%';
+}
+function ckAdd(input){
+  const v=input.value.trim(); if(!v) return;
+  const screen=input.closest('.trip-screen'), list=screen.querySelector('.ck-list');
+  const d=document.createElement('div'); d.className='ck-item';
+  d.innerHTML='<span class="ck-box"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="ck-text"></span>';
+  d.querySelector('.ck-text').textContent=v; list.appendChild(d); input.value=''; ckUpdate(screen);
+}
+function setTripTab(screen,tab){
+  screen.dataset.tab=tab;
+  screen.querySelectorAll('.trip-tabs .tt').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  const c=screen.querySelector('.content'); if(c) c.scrollTop=0;
+  if(typeof applyElementFilters==='function' && screen===activeTrip()) applyElementFilters();
+}
+function initTripTabs(screen){
+  const row=screen.querySelector('.collab-row'); if(!row||screen.querySelector('.trip-tabs')) return;
+  const extra=TRIP_EXTRAS[screen.id]||{ideas:[],todo:[]};
+  const tabs=document.createElement('div'); tabs.className='trip-tabs'; tabs.innerHTML=tripTabHTML();
+  const rs=document.createElement('div'); rs.className='tp-panel tp-research'; rs.innerHTML=researchHTML(extra.ideas);
+  const ck=document.createElement('div'); ck.className='tp-panel tp-checklist'; ck.innerHTML=checklistHTML(extra.todo);
+  const srow=document.createElement('div'); srow.className='trip-search-row';
+  srow.innerHTML='<div class="ts-field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="text" placeholder="Search this itin..." oninput="filterElements(this.value)"></div><button class="search-cancel" onclick="closeTripSearch()">Cancel</button>';
+  row.after(srow); srow.after(tabs); tabs.after(rs); rs.after(ck);
+  const emp=document.createElement('div'); emp.className='empty-state ts-empty'; emp.style.display='none';
+  screen.querySelector('.content').appendChild(emp);
+  screen.dataset.tab='itin';
+  tabs.addEventListener('click',e=>{ const b=e.target.closest('.tt'); if(b) setTripTab(screen,b.dataset.tab); });
+  rs.querySelector('.rs-view').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+    rs.querySelectorAll('.rs-view button').forEach(x=>x.classList.toggle('on',x===b)); rs.classList.toggle('list',b.dataset.l==='list'); });
+  rs.querySelector('.rs-seg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+    rs.querySelectorAll('.rs-seg button').forEach(x=>x.classList.toggle('on',x===b)); rs.classList.toggle('map',b.dataset.v==='map'); });
+  rs.querySelectorAll('.rs-vote').forEach(btn=>btn.addEventListener('click',()=>{
+    const on=!btn.classList.contains('on'); btn.classList.toggle('on',on);
+    const n=(+btn.dataset.v)+(on&&btn.dataset.me!=='1'?1:0)-(!on&&btn.dataset.me==='1'?1:0);
+    btn.querySelector('span').textContent=n>0?n:'Vote'; }));
+  rs.addEventListener('click',e=>{
+    const b=e.target.closest('.rs-add'); if(!b||b.classList.contains('added')) return;
+    const card=b.closest('.rs-card'), name=(screen.querySelector('.hero-name')||{}).textContent||'this itin';
+    openWantToItin({n:card.dataset.n,loc:card.dataset.loc},screen.id,name,{cats:[card.dataset.k],done:()=>{
+      b.classList.add('added');
+      b.querySelector('.rs-add-i').innerHTML='<path d="M5 12.5l4.5 4.5L19 7.5"/>';
+    }});
+  });
+  ck.addEventListener('click',e=>{ const it=e.target.closest('.ck-item'); if(it){ it.classList.toggle('done'); ckUpdate(screen); } });
+  ckUpdate(screen);
+}
+document.querySelectorAll('.trip-screen').forEach(initTripTabs);
 
 // --- NEW ITIN CREATE ---
 const NI_PEOPLE=[
@@ -3516,6 +4166,10 @@ const NI_PEOPLE=[
 ];
 let niSelected=new Set(['ryan']), niLocations=[], niCover=null, niType=null;
 
+// Empty date fields read "Select date" instead of mm/dd/yyyy
+function syncDateWraps(){ document.querySelectorAll('.date-wrap').forEach(w=>{ const i=w.querySelector('input'); w.classList.toggle('empty',!i.value); }); }
+document.addEventListener('input',e=>{ if(e.target.matches&&e.target.matches('.date-wrap input')) e.target.parentElement.classList.toggle('empty',!e.target.value); });
+document.addEventListener('change',e=>{ if(e.target.matches&&e.target.matches('.date-wrap input')) e.target.parentElement.classList.toggle('empty',!e.target.value); });
 function openNewItin(){
   niSelected=new Set(['ryan']); niLocations=[]; niCover=null; niType=null;
   document.getElementById('ni-name').value='';
@@ -3526,7 +4180,7 @@ function openNewItin(){
   const cover=document.getElementById('ni-cover');
   cover.classList.remove('has'); cover.style.backgroundImage='';
   document.getElementById('ni-cover-label').textContent='Add a cover photo';
-  document.querySelectorAll('#ni-types .chip').forEach(c=>c.classList.remove('on'));
+  renderTypeMenu(); document.getElementById('ni-select').classList.remove('open'); syncDateWraps();
   renderNiPeople();
   refreshCreateBtn();
   go('s-new');
@@ -3701,21 +4355,31 @@ function avaFill(p){ // background style + optional initial glyph for a round av
   if(p.pic) return { style:"background-image:url('"+p.pic+"')", inner:'' };
   return { style:"background-color:"+(p.color||'#777'), inner:'<span class="init-txt">'+p.name.trim().charAt(0).toUpperCase()+'</span>' };
 }
+// Trip type: a styled dropdown (the browser's own list can't match the page)
+const TRIP_TYPES=["Vacation","Beach","Road trip","Outdoor","Culinary","Culture","Wellness","Backpacking","Cruise","Ski trip","Weekend getaway","Business","Festival","Celebration","Other"];
+function renderTypeMenu(){
+  document.getElementById('ni-menu').innerHTML=TRIP_TYPES.map(t=>
+    '<div class="ni-opt'+(t===niType?' on':'')+'" role="option" onclick="pickTripType(event,\''+t+'\')"><span>'+t+'</span>'+(t===niType?'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':'')+'</div>').join('');
+  const l=document.getElementById('ni-sel-label'); l.textContent=niType||'Select a trip type'; l.classList.toggle('ph',!niType);
+}
+function toggleTypeMenu(e){ e.stopPropagation(); document.getElementById('ni-select').classList.toggle('open'); }
+function pickTripType(e,t){ e.stopPropagation(); niType=(niType===t)?null:t; renderTypeMenu(); document.getElementById('ni-select').classList.remove('open'); }
+document.addEventListener('click',e=>{ const s=document.getElementById('ni-select'); if(s&&!s.contains(e.target)) s.classList.remove('open'); });
 function renderNiPeople(){
   const wrap=document.getElementById('ni-people');
-  const sel=NI_PEOPLE.filter(p=>niSelected.has(p.key)); // owner is always selected
-  const MAX_AVATARS=4; // leave the 5th circle for the Invite button
-  let shown=sel, overflow=0;
-  if(sel.length>MAX_AVATARS){ shown=sel.slice(0,MAX_AVATARS-1); overflow=sel.length-(MAX_AVATARS-1); }
+  // You're always on your own itin, so only friends are shown. Four fit on one row; the rest live behind "Show more".
+  const friends=NI_PEOPLE.filter(p=>!p.owner);
+  const SHOW=4, shown=friends.slice(0,SHOW), hidden=friends.slice(SHOW);
   let html=shown.map(p=>{
-    const cls=p.owner?'ni-person owner':'ni-person on';
     const a=avaFill(p);
-    return '<div class="'+cls+'" onclick="toggleParticipant(\''+p.key+'\')"><div class="ni-ava" style="'+a.style+'">'+a.inner+'</div><div class="ni-pname">'+(p.owner?p.name+' · you':p.name)+'</div></div>';
+    return '<div class="ni-person'+(niSelected.has(p.key)?' on':'')+'" onclick="toggleParticipant(\''+p.key+'\')"><div class="ni-ava" style="'+a.style+'">'+a.inner+'</div><div class="ni-pname">'+p.name+'</div></div>';
   }).join('');
-  if(overflow>0){
-    html+='<div class="ni-person ni-more" onclick="openInviteSheet()"><div class="ni-ava">+'+overflow+'</div><div class="ni-pname">More</div></div>';
+  if(hidden.length){
+    const picked=hidden.filter(p=>niSelected.has(p.key)).length;
+    html+='<div class="ni-person ni-more'+(picked?' on':'')+'" onclick="openInviteSheet()"><div class="ni-ava">+'+hidden.length+'</div><div class="ni-pname">Show more</div></div>';
+  } else {
+    html+='<div class="ni-person ni-add" onclick="openInviteSheet()"><div class="ni-ava">+</div><div class="ni-pname">Invite</div></div>';
   }
-  html+='<div class="ni-person ni-add" onclick="openInviteSheet()"><div class="ni-ava">+</div><div class="ni-pname">Invite</div></div>';
   wrap.innerHTML=html;
 }
 function toggleParticipant(key){
@@ -3726,7 +4390,7 @@ function toggleParticipant(key){
   if(document.getElementById('invite-sheet').classList.contains('show')) renderInviteList();
 }
 function renderInviteList(){
-  document.getElementById('invite-list').innerHTML=NI_PEOPLE.map(p=>{
+  document.getElementById('invite-list').innerHTML=NI_PEOPLE.filter(p=>!p.owner).map(p=>{
     const on=niSelected.has(p.key);
     const a=avaFill(p);
     const rowCls='pick-row'+(on?' on':'')+(p.owner?' owner':'');
@@ -3820,15 +4484,24 @@ function addLocation(e){
   e.preventDefault();
   const inp=e.target, v=inp.value.trim();
   if(!v) return;
-  niLocations.push(v); inp.value='';
+  niLocations.push({name:v,start:'',end:''}); inp.value='';
   renderLocations();
 }
 function renderLocations(){
-  const esc=s=>(s||'').replace(/</g,'&lt;');
+  const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
   document.getElementById('ni-locs').innerHTML=niLocations.map((l,i)=>
-    '<span class="loc-chip">'+esc(l)+'<span class="x" onclick="removeLocation('+i+')">✕</span></span>').join('');
+    '<div class="nl-row"><div class="nl-top"><span class="nl-drag" aria-label="Drag to reorder">⠿</span>'+
+            '<span class="nl-name">'+esc(l.name)+'</span><span class="x" onclick="removeLocation('+i+')" aria-label="Remove">✕</span></div>'+
+      '<div class="nl-dates"><label><span>Start</span><div class="date-wrap'+(l.start?'':' empty')+'"><input class="ef-input" type="date" value="'+esc(l.start)+'" onchange="setLocDate('+i+',\'start\',this.value)"><span class="date-ph">Select date</span></div></label>'+
+      '<label><span>End</span><div class="date-wrap'+(l.end?'':' empty')+'"><input class="ef-input" type="date" value="'+esc(l.end)+'" onchange="setLocDate('+i+',\'end\',this.value)"><span class="date-ph">Select date</span></div></label></div></div>').join('');
 }
+function setLocDate(i,k,v){ if(niLocations[i]) niLocations[i][k]=v; }
 function removeLocation(i){ niLocations.splice(i,1); renderLocations(); }
+// drag and drop the locations into order
+if(window.Sortable){
+  new Sortable(document.getElementById('ni-locs'),{ handle:'.nl-drag', animation:160, ghostClass:'nl-ghost', forceFallback:true, fallbackTolerance:3,
+    onEnd:function(e){ if(e.oldIndex===e.newIndex) return; const m=niLocations.splice(e.oldIndex,1)[0]; niLocations.splice(e.newIndex,0,m); renderLocations(); } });
+}
 function pickCover(){ document.getElementById('ni-cover-file').click(); }
 document.getElementById('ni-cover-file').addEventListener('change',function(){
   const f=this.files[0]; if(!f) return;
@@ -3843,11 +4516,6 @@ document.getElementById('ni-cover-file').addEventListener('change',function(){
   r.readAsDataURL(f);
   this.value='';
 });
-function pickType2(el){
-  const on=el.classList.contains('on');
-  document.querySelectorAll('#ni-types .chip').forEach(c=>c.classList.remove('on'));
-  if(!on){ el.classList.add('on'); niType=el.textContent; } else niType=null;
-}
 function refreshCreateBtn(){
   document.getElementById('new-create').disabled = !document.getElementById('ni-name').value.trim();
 }
@@ -3875,7 +4543,7 @@ function createItin(){
   const people=NI_PEOPLE.filter(p=>niSelected.has(p.key));
   const avatars=people.map(p=>'<div class="av" style="background:url(\''+p.pic+'\') center/cover;"></div>').join('');
   const coverCSS=niCover?'background:url('+niCover+') center/cover;':'background:linear-gradient(135deg,#0F6E56,#185FA5);';
-  const search=(name+' '+niLocations.join(' ')+' '+(niType||'')).toLowerCase();
+  const search=(name+' '+niLocations.map(l=>l.name).join(' ')+' '+(niType||'')).toLowerCase();
   const card=document.createElement('div');
   card.className='trip-card';
   card.setAttribute('data-search',search);
@@ -3886,8 +4554,7 @@ function createItin(){
   card.innerHTML='<div class="trip-cover"><div class="trip-cover-bg" style="'+coverCSS+'"></div>'+
     '<div class="avatars trip-cover-avatars">'+avatars+'</div></div>'+
     '<div class="trip-body"><div class="trip-name">'+name+'</div><div class="trip-dates">'+dates+'</div></div>';
-  const label=document.querySelector('#s-home .section-label[data-section="upcoming"]');
-  label.insertAdjacentElement('afterend',card);
+  document.querySelector('#s-home .today-box').insertAdjacentElement('afterend',card);
   go('s-home');
   toast('Itin created');
 }

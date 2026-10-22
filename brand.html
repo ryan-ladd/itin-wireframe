@@ -355,7 +355,7 @@
   .ac-stop .t { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--acc) 30%, var(--bg)); --ic: color-mix(in srgb, var(--acc) 55%, var(--fg)); display: flex; align-items: center; justify-content: center; }
   .ac-stop .t svg { width: 40px; height: 40px; }
   .ac-stop .b { flex: 1; min-width: 0; } .ac-stop .e { font-size: 11px; color: var(--mut); font-weight: 500; } .ac-stop .nn { font-size: 13px; font-weight: 800; } .ac-stop .l { font-size: 11px; color: var(--mut); font-weight: 400; }
-  .ac-toggle { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font: inherit; font-size: 11px; font-weight: 700; padding: 3px 8px 3px 10px; border-radius: 999px; border: 0; background: var(--acc); color: var(--acct); cursor: pointer; }
+  .ac-toggle { display: inline-flex; align-items: center; gap: 4px; margin-top: 7px; margin-left: -50px; /* icon 38px + 12px gap: lines the button up with the icon's left edge */ font: inherit; font-size: 11px; font-weight: 700; padding: 2px 7px 2px 9px; border-radius: 999px; border: 1px solid var(--fg); background: transparent; color: var(--fg); cursor: pointer; }
   .ac-toggle svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
   .ac-hood.closed .ac-toggle svg { transform: rotate(180deg); } .ac-hood.closed .ac-stops { display: none; }
   .ac-stops-cap { font-size: 11px; font-weight: 700; color: var(--acc); margin-top: 7px; }
@@ -412,6 +412,7 @@
   .sh .addstop:hover { background: #F6F4EE; color: #1a1a1a; }
   .sh .ddi.create { display: flex; align-items: center; gap: 10px; font-weight: 700; }
   .sh .ddi.create .tico { width: 26px; height: 26px; margin: 0; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
+  .sh .reqnote { font-size: 12px; color: #777; margin-top: 14px; line-height: 1.4; } .sh .reqnote i { font-style: normal; color: #E34234; font-weight: 700; }
   .sh .ddi:hover { background: #F6F4EE; } .sh .ddi.on { background: #FAF9F5; } .sh .ddi.on::after { content: '✓'; color: #E34234; }
   .sh .oc, .sh .tags.oc { border: 1.5px solid #E34234 !important; }  /* red outline = this field shows on the card */
   .sh .in.sel { padding-right: 30px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23999" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center / 18px; }
@@ -1397,11 +1398,11 @@ const ELEMENT_TYPES=[
 ];
 const TYPE_FIELDS={
   city:[
-    {key:'arrival_date',label:'Arrival Date',placeholder:'e.g. September 14, 2026'},
+    {key:'arrival_date',label:'Arrival Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'departure_date',label:'Departure Date',placeholder:'e.g. September 18, 2026'}
   ],
   accommodation:[
-    {key:'accommodation_type',label:'Accommodation Type',type:'select',options:['Hotel','Airbnb',"Friend's Place",'Vacation Home','Other'],fullWidth:true},
+    {key:'accommodation_type',label:'Stay Type',type:'select',options:['Hotel','Airbnb',"Friend's Place",'Vacation Home','Other'],fullWidth:true},
     {key:'check_in_date',label:'Check-in Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'check_in_time',label:'Check-in Time',placeholder:'e.g. 3:00 PM',primaryTime:true},
     {key:'check_out_date',label:'Check-out Date',required:true,placeholder:'e.g. September 18, 2026'},
@@ -1436,7 +1437,7 @@ const TYPE_FIELDS={
     {key:'restaurant',label:'Restaurant',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 7:30 PM',primaryTime:true},
-    {key:'reservation',label:'Reservation',type:'checkbox'},
+    {key:'booked',label:'Booked',type:'checkbox'},
     {key:'cancellation_fee',label:'Cancellation Fee',type:'checkbox'}
   ],
   coffee:[
@@ -1449,7 +1450,7 @@ const TYPE_FIELDS={
     {key:'bar_name',label:'Bar Name',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 9:00 PM',primaryTime:true},
-    {key:'reservation',label:'Reservation',type:'checkbox'},
+    {key:'booked',label:'Booked',type:'checkbox'},
     {key:'cancellation_fee',label:'Cancellation Fee',type:'checkbox'}
   ],
   store:[
@@ -1476,14 +1477,14 @@ const TYPE_FIELDS={
     {key:'museum_name',label:'Museum Name',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 2:00 PM',primaryTime:true},
-    {key:'ticket',label:'Ticket',type:'checkbox'}
+    {key:'booked',label:'Booked',type:'checkbox'}
   ],
   experience:[
     {key:'experience_name',label:'Name',required:true,placeholder:'e.g. Sunset sailing tour',fullWidth:true},
     {key:'experience_location',label:'Location',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 5:00 PM',primaryTime:true},
-    {key:'booking',label:'Booking',type:'checkbox'}
+    {key:'booked',label:'Booked',type:'checkbox'}
   ],
   ticket:[
     {key:'event_name',label:'Event Name',required:true,placeholder:'e.g. Swan Lake',fullWidth:true},
@@ -1544,12 +1545,14 @@ const TYPE_FIELDS={
   ],
   wellness:[
     {key:'wellness_type',label:'Wellness Experience',type:'select',options:['Massage','Meditation','Other','Sauna','Spa','Yoga'],fullWidth:true},
+    {key:'wellness_name',label:'Name',placeholder:'e.g. Morning flow',fullWidth:true},
     {key:'wellness_location',label:'Location',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 8:00 AM',primaryTime:true},
     {key:'booked',label:'Booked',type:'checkbox'}
   ],
   workout:[
+    {key:'workout_name',label:'Name',placeholder:'e.g. Morning lift',fullWidth:true},
     {key:'workout_location',label:'Location',type:'place',required:true,fullWidth:true},
     {key:'date',label:'Date',required:true,placeholder:'e.g. September 14, 2026'},
     {key:'time',label:'Time',required:true,placeholder:'e.g. 7:00 AM',primaryTime:true},
@@ -1595,21 +1598,21 @@ const SAMPLE = {
   accommodation: { name:'The Telegraph Hotel', stayNames:{ 'Airbnb':'Cozy Old Town Loft', "Friend's Place":"Nino's Apartment", 'Vacation Home':'Lakeview Cabin', 'Other':'Sunrise Guesthouse' }, locs:['31 Shota Rustaveli Ave, Tbilisi'], f:{accommodation_type:'Hotel',check_in_date:'October 26, 2026',check_in_time:'3:00 PM',check_out_date:'October 30, 2026',check_out_time:'11:00 AM',booking_platform:'Booking.com',phone:'+995 32 000 0000',cancellation_policy:'Free cancellation until October 22'}, u:{confirm:'1095068261',url:'telegraphhotel.com',addr:'31 Shota Rustaveli Ave, Tbilisi'} },
   flight: { name:'GYD → TBS', time:'11:10 AM', locs:[], f:{airline:'Azerbaijan Airlines',flight_number:'J2 1081',departure_airport:'GYD',arrival_airport:'TBS',departure_date:'October 26, 2026',departure_time:'11:10 AM',arrival_date:'October 26, 2026',arrival_time:'11:50 AM',terminal:'1',gate:'B4'}, u:{confirm:'K4TQ9X'} },
   car: { name:'Localrent', time:'8:00 AM', locs:['Localrent Tbilisi Office'], f:{pickup_location:'Localrent Tbilisi Office',dropoff_location:'Localrent Tbilisi Airport Desk',rental_company:'Localrent',pickup_date:'October 28, 2026',pickup_time:'8:00 AM',dropoff_date:'October 28, 2026',dropoff_time:'8:00 PM'}, u:{confirm:'LR-48213',url:'localrent.com',addr:'31 Rustaveli Ave, Tbilisi',addr2:'Tbilisi International Airport, Tbilisi'} },
-  restaurant: { name:'Qaytarma', time:'8:00 PM', locs:[], fav:true, f:{meal:'Dinner',restaurant:'Qaytarma',date:'October 25, 2026',time:'8:00 PM',reservation:'yes'}, u:{url:'qaytarma.example',addr:'Icherisheher, Baku'} },
+  restaurant: { name:'Qaytarma', time:'8:00 PM', locs:[], fav:true, f:{meal:'Dinner',restaurant:'Qaytarma',date:'October 25, 2026',time:'8:00 PM',booked:'yes'}, u:{url:'qaytarma.example',addr:'Icherisheher, Baku'} },
   coffee: { name:'Coffee Moffie', time:'9:00 AM', locs:[], f:{coffee_shop:'Coffee Moffie',date:'October 25, 2026',time:'9:00 AM'}, u:{addr:'14 Nizami St, Baku',url:'coffeemoffie.com'} },
-  bar: { name:'Vino Underground', time:'8:30 PM', locs:[], fav:false, f:{bar_type:'Wine Bar',bar_name:'Vino Underground',date:'October 26, 2026',time:'8:30 PM',reservation:'yes'}, u:{addr:'1 Machabeli St, Tbilisi',url:'vinounderground.example'} },
+  bar: { name:'Vino Underground', time:'8:30 PM', locs:[], fav:false, f:{bar_type:'Wine Bar',bar_name:'Vino Underground',date:'October 26, 2026',time:'8:30 PM',booked:'yes'}, u:{addr:'1 Machabeli St, Tbilisi',url:'vinounderground.example'} },
   store: { name:'Dry Bridge Market', time:'1:30 PM', locs:[], fav:false, f:{shop_type:'Market',shop_location:'Dry Bridge Market',date:'October 27, 2026',time:'1:30 PM'}, u:{addr:'Dry Bridge, Tbilisi',url:'drybridgemarket.example'} },
   hike: { name:'Gergeti Trinity Church trail', time:'12:00 PM', locs:[], fav:true, f:{trail_name:'Gergeti Trinity Church Trail',start_point:'Stepantsminda, Mtskheta-Mtianeti, Georgia',end_point:'Gergeti Trinity Church, Kazbegi, Georgia',date:'October 28, 2026',time:'12:00 PM',estimated_time:'3 hr',distance:'8 km'}, u:{url:'gergetitrail.example'} },
   neighborhood: { name:'Old City (Icherisheher)', time:'10:00 AM', locs:[], fav:true, f:{neighborhood_name:'Old City (Icherisheher)',date:'October 25, 2026',time:'10:00 AM'}, u:{url:'icherisheher.example'},
     stops:[{t:'museum',n:'Maiden Tower',l:'Icherisheher, Baku',time:'10:00 AM',fav:true},{t:'museum',n:'Palace of the Shirvanshahs',l:'Icherisheher, Baku',time:'11:00 AM'},{t:'coffee',n:'Tea break in a courtyard chaikhana',l:'Icherisheher, Baku',time:'11:45 AM',fav:true}] },
-  museum: { name:'Heydar Aliyev Center', time:'2:00 PM', locs:[], fav:true, f:{museum_name:'Heydar Aliyev Center',date:'October 25, 2026',time:'2:00 PM',ticket:'yes'}, u:{addr:'1 Heydar Aliyev Ave, Baku',confirm:'HAC-77120',url:'heydaraliyevcenter.example'} },
-  experience: { name:'Private sulfur bath at Orbeliani', time:'5:00 PM', locs:[], fav:false, f:{experience_name:'Private sulfur bath at Orbeliani',experience_location:'Orbeliani Baths',date:'October 26, 2026',time:'5:00 PM',booking:'yes'}, u:{addr:'Abanotubani Square, Tbilisi',confirm:'OB-5521',url:'orbelianibaths.example'} },
+  museum: { name:'Heydar Aliyev Center', time:'2:00 PM', locs:[], fav:true, f:{museum_name:'Heydar Aliyev Center',date:'October 25, 2026',time:'2:00 PM',booked:'yes'}, u:{addr:'1 Heydar Aliyev Ave, Baku',confirm:'HAC-77120',url:'heydaraliyevcenter.example'} },
+  experience: { name:'Private sulfur bath at Orbeliani', time:'5:00 PM', locs:[], fav:false, f:{experience_name:'Private sulfur bath at Orbeliani',experience_location:'Orbeliani Baths',date:'October 26, 2026',time:'5:00 PM',booked:'yes'}, u:{addr:'Abanotubani Square, Tbilisi',confirm:'OB-5521',url:'orbelianibaths.example'} },
   ticket: { name:'Swan Lake', time:'7:00 PM', locs:[], fav:false, f:{event_name:'Swan Lake',event_venue:'Tbilisi Opera and Ballet Theatre',date:'October 29, 2026',time:'7:00 PM',booked:'yes'}, u:{addr:'25 Rustaveli Ave, Tbilisi',confirm:'TOB-30918',url:'opera.ge'} },
   drive: { name:'Georgian Military Road to Kazbegi', time:'8:30 AM', locs:[], fav:false, f:{drive_name:'Georgian Military Road to Kazbegi',date:'October 28, 2026',time:'8:30 AM'}, u:{url:'georgianmilitaryroad.example'},
     stops:[{t:'museum',n:'Ananuri Fortress',l:'Ananuri, Georgia',time:'10:00 AM'},{t:'restaurant',n:'Lunch in Pasanauri',l:'Pasanauri, Georgia',time:'12:00 PM'},{t:'experience',n:'Friendship Monument',l:'Gudauri, Georgia',time:'1:30 PM'}] },
   visit: { name:'Tea with Nino\'s family', time:'4:00 PM', locs:[], fav:false, f:{visit_name:'Tea with Nino\'s family',visit_location:'Nino\'s apartment',date:'October 27, 2026',time:'4:00 PM'}, u:{addr:'12 Chavchavadze Ave, Tbilisi',url:'georgianhospitality.example'} },
-  wellness: { name:'Vera Yoga Studio', time:'8:00 AM', locs:[], fav:false, f:{wellness_type:'Yoga',wellness_location:'Vera Yoga Studio',date:'October 27, 2026',time:'8:00 AM',booked:'yes'}, u:{addr:'Vera Yoga Studio, Tbilisi',url:'verayoga.example'} },
-  workout: { name:'Hotel gym session', time:'7:00 AM', locs:[], fav:false, f:{workout_location:'The Telegraph Hotel Gym',date:'October 26, 2026',time:'7:00 AM',booked:'yes'}, u:{addr:'3 Telegraph Ave, Tbilisi',url:'telegraphhotel.example'} },
+  wellness: { name:'Vera Yoga Studio', time:'8:00 AM', locs:[], fav:false, f:{wellness_type:'Yoga',wellness_name:'Morning flow',wellness_location:'Vera Yoga Studio',date:'October 27, 2026',time:'8:00 AM',booked:'yes'}, u:{addr:'Vera Yoga Studio, Tbilisi',url:'verayoga.example'} },
+  workout: { name:'Hotel gym session', time:'7:00 AM', locs:[], fav:false, f:{workout_name:'Morning lift',workout_location:'The Telegraph Hotel Gym',date:'October 26, 2026',time:'7:00 AM',booked:'yes'}, u:{addr:'3 Telegraph Ave, Tbilisi',url:'telegraphhotel.example'} },
   bus: { name:'Bus to Sighnaghi', time:'9:30 AM', locs:[], fav:false, f:{pickup_point:'Ortachala Bus Station, Tbilisi, Georgia',dropoff_point:'Sighnaghi Bus Stop, Sighnaghi, Georgia',pickup_area:'Ortachala',dropoff_area:'Sighnaghi',operator:'Georgian Bus',line:'45',date:'October 28, 2026',pickup_time:'9:30 AM',dropoff_time:'11:45 AM',booked:'yes'}, u:{confirm:'BUS-2231',url:'georgianbus.example'} },
   train: { name:'Train to Batumi', time:'8:00 AM', locs:[], fav:false, f:{pickup_point:'Tbilisi Central Station, Tbilisi, Georgia',dropoff_point:'Batumi Railway Station, Batumi, Georgia',pickup_area:'Tbilisi',dropoff_area:'Batumi',operator:'Georgian Railway',train_number:'703',date:'October 31, 2026',pickup_time:'8:00 AM',dropoff_time:'12:30 PM',booked:'yes'}, u:{confirm:'TR88213',url:'railway.ge'} },
   ferry: { name:'Bosphorus ferry to Kadikoy', time:'10:30 AM', locs:[], fav:false, f:{pickup_point:'Eminonu Pier, Istanbul, Turkey',dropoff_point:'Kadikoy Pier, Istanbul, Turkey',pickup_area:'Eminonu',dropoff_area:'Kadikoy',operator:'Sehir Hatlari',line:'12',date:'November 3, 2026',pickup_time:'10:30 AM',dropoff_time:'11:05 AM',booked:'yes'}, u:{confirm:'SH-40117',url:'sehirhatlari.example'} },
@@ -1693,7 +1696,7 @@ const tagFor = (k, S) => k === 'restaurant' ? ((S.f && S.f.meal) || S.meal || 'R
 const primaryKey = k => ((TYPE_FIELDS[k] || []).find(f => f.primaryTime) || {}).key;
 // which stored fields feed the card (title + locations + time + tag)
 const LOC_KEYS = { flight:['departure_airport','arrival_airport'], drive:['start_location','end_location'], car:['pickup_location','dropoff_location'], hike:['trailhead_address'], experience:['meeting_point'], ticket:['venue_name'], bus:['departure_stop','arrival_stop'], train:['departure_station','arrival_station'], ferry:['departure_port','arrival_port'], funicular:['departure_station','arrival_station'], workout:['facility_name'] };
-const cardKeys = k => new Set(['name','location_name','address'].concat(LOC_KEYS[k] || [], (k === 'city' || k === 'accommodation') ? [] : (primaryKey(k) || []), k === 'restaurant' ? ['meal', 'restaurant', 'reservation'] : [], k === 'coffee' ? ['coffee_shop'] : [], k === 'bar' ? ['bar_type', 'bar_name', 'reservation'] : [], k === 'store' ? ['shop_type', 'shop_location'] : [], k === 'hike' ? ['trail_name'] : [], k === 'neighborhood' ? ['neighborhood_name'] : [], k === 'museum' ? ['museum_name', 'ticket'] : [], k === 'experience' ? ['experience_name', 'booking'] : [], k === 'ticket' ? ['event_name', 'booked'] : [], k === 'visit' ? ['visit_name'] : [], k === 'wellness' ? ['wellness_type', 'wellness_location', 'booked'] : [], k === 'workout' ? ['workout_location', 'booked'] : [], k === 'funicular' ? ['funicular_location', 'booked'] : [], k === 'misc' ? ['misc_name', 'misc_location'] : [], k === 'drive' ? ['drive_name'] : [], (k === 'bus' || k === 'train' || k === 'ferry') ? ['pickup_point', 'dropoff_point', 'booked'] : [], k === 'bus' ? ['operator', 'line'] : [], k === 'train' ? ['operator', 'train_number'] : [], k === 'ferry' ? ['operator', 'line'] : [], k === 'flight' ? ['airline', 'flight_number'] : [], k === 'car' ? ['dropoff_time'] : []));  // the city tag and the hotel banner don't show a time
+const cardKeys = k => new Set(['name','location_name','address'].concat(LOC_KEYS[k] || [], (k === 'city' || k === 'accommodation') ? [] : (primaryKey(k) || []), k === 'restaurant' ? ['meal', 'restaurant', 'booked'] : [], k === 'coffee' ? ['coffee_shop'] : [], k === 'bar' ? ['bar_type', 'bar_name', 'booked'] : [], k === 'store' ? ['shop_type', 'shop_location'] : [], k === 'hike' ? ['trail_name'] : [], k === 'neighborhood' ? ['neighborhood_name'] : [], k === 'museum' ? ['museum_name', 'booked'] : [], k === 'experience' ? ['experience_name', 'booked'] : [], k === 'ticket' ? ['event_name', 'booked'] : [], k === 'visit' ? ['visit_name'] : [], k === 'wellness' ? ['wellness_type', 'wellness_name', 'wellness_location', 'booked'] : [], k === 'workout' ? ['workout_name', 'workout_location', 'booked'] : [], k === 'funicular' ? ['funicular_location', 'booked'] : [], k === 'misc' ? ['misc_name', 'misc_location'] : [], k === 'drive' ? ['drive_name'] : [], (k === 'bus' || k === 'train' || k === 'ferry') ? ['pickup_point', 'dropoff_point', 'booked'] : [], k === 'bus' ? ['operator', 'line'] : [], k === 'train' ? ['operator', 'train_number'] : [], k === 'ferry' ? ['operator', 'line'] : [], k === 'flight' ? ['airline', 'flight_number'] : [], k === 'car' ? ['dropoff_time'] : []));  // the city tag and the hotel banner don't show a time
 
 // ----- peek: everything that has been filled out shows here (no row limit), in the same order as the edit view -----
 function peekOf(k, S){
@@ -1741,13 +1744,14 @@ function peekOf(k, S){
     add('Link', u.url, ['url']);
   } else if (k === 'workout') {
     const wk = key => TYPE_FIELDS.workout.find(x => x.key === key);
+    addField(wk('workout_name'));
     addField(wk('workout_location'));
     add('Address', u.addr, ['address']);
     ['date', 'time', 'booked'].forEach(key => addField(wk(key)));
     add('Link', u.url, ['url']);
   } else if (k === 'wellness') {
     const wf = key => TYPE_FIELDS.wellness.find(x => x.key === key);
-    ['wellness_type', 'wellness_location'].forEach(key => addField(wf(key)));
+    ['wellness_type', 'wellness_name', 'wellness_location'].forEach(key => addField(wf(key)));
     add('Address', u.addr, ['address']);
     ['date', 'time', 'booked'].forEach(key => addField(wf(key)));
     add('Link', u.url, ['url']);
@@ -1766,7 +1770,7 @@ function peekOf(k, S){
     add('Address', u.addr, ['address']);
     addField(xf('date'));
     addField(xf('time'));
-    addField(xf('booking'));
+    addField(xf('booked'));
     add('Confirmation', u.confirm, ['confirm']);
     add('Link', u.url, ['url']);
   } else if (k === 'museum') {
@@ -1775,7 +1779,7 @@ function peekOf(k, S){
     add('Address', u.addr, ['address']);
     addField(mf('date'));
     addField(mf('time'));
-    addField(mf('ticket'));
+    addField(mf('booked'));
     add('Confirmation', u.confirm, ['confirm']);
     add('Link', u.url, ['url']);
   } else if (k === 'bus' || k === 'train' || k === 'ferry') {
@@ -1812,7 +1816,7 @@ function peekOf(k, S){
     add('Address', u.addr, ['address']);
     addField(bf('date'));
     addField(bf('time'));
-    addField(bf('reservation'));
+    addField(bf('booked'));
     addField(bf('cancellation_fee'));
     add('Link', u.url, ['url']);
   } else if (k === 'coffee') {
@@ -1829,7 +1833,7 @@ function peekOf(k, S){
     add('Address', u.addr, ['address']);
     addField(rf('date'));
     addField(rf('time'));
-    addField(rf('reservation'));
+    addField(rf('booked'));
     addField(rf('cancellation_fee'));
     add('Link', u.url, ['url']);
   } else if (k === 'car') {
@@ -1894,13 +1898,10 @@ function cardHTML(k, S, th){
   else if (k === 'ferry') inner = busCard(S, 'Ferry');
   else {
     const when = ((k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'wellness' || k === 'workout' || k === 'drive' || k === 'funicular' || k === 'misc') && S.f.time) ? S.f.time : S.time;
-    const eb = (when ? esc(when) + '<span class="sep">·</span>' : '') + esc(tagFor(k, S));
-    inner = '<div class="ac"><div class="ac-ei">' + symTint(symName(k)) + '</div><div class="ac-info"><div class="ac-eb">' + eb + '</div><div class="ac-en">' + esc(k === 'restaurant' ? (S.f.restaurant || S.name) : k === 'coffee' ? (S.f.coffee_shop || S.name) : k === 'bar' ? (S.f.bar_name || S.name) : k === 'store' ? (S.f.shop_location || S.name) : k === 'hike' ? (S.f.trail_name || S.name) : k === 'neighborhood' ? (S.f.neighborhood_name || S.name) : k === 'museum' ? (S.f.museum_name || S.name) : k === 'experience' ? (S.f.experience_name || S.name) : k === 'ticket' ? (S.f.event_name || S.name) : k === 'visit' ? (S.f.visit_name || S.name) : k === 'wellness' ? (S.f.wellness_location || S.name) : k === 'workout' ? (S.f.workout_location || S.name) : k === 'funicular' ? (S.f.funicular_location || S.name) : k === 'misc' ? (S.f.misc_name || S.name) : k === 'drive' ? (S.f.drive_name || S.name) : S.name) + '</div>' +
-      ((k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'wellness' || k === 'workout' || k === 'drive' || k === 'funicular') ? [] : (k === 'misc' ? [S.f.misc_location].filter(Boolean) : (S.locs || []))).map(l => '<div class="ac-ed">' + esc(l) + '</div>').join('') +
-      ((k === 'restaurant' || k === 'bar') && S.f.reservation === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Reservation</div>' : '') +
-      (k === 'museum' && S.f.ticket === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Ticket</div>' : '') +
-      (k === 'experience' && S.f.booking === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
-      ((k === 'ticket' || k === 'wellness' || k === 'workout' || k === 'funicular') && S.f.booked === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
+    const eb = k === 'misc' ? esc(when || '') : (when ? esc(when) + '<span class="sep">·</span>' : '') + esc(tagFor(k, S));
+    inner = '<div class="ac"><div class="ac-ei">' + symTint(symName(k)) + '</div><div class="ac-info"><div class="ac-eb">' + eb + '</div><div class="ac-en">' + esc(k === 'restaurant' ? (S.f.restaurant || S.name) : k === 'coffee' ? (S.f.coffee_shop || S.name) : k === 'bar' ? (S.f.bar_name || S.name) : k === 'store' ? (S.f.shop_location || S.name) : k === 'hike' ? (S.f.trail_name || S.name) : k === 'neighborhood' ? (S.f.neighborhood_name || S.name) : k === 'museum' ? (S.f.museum_name || S.name) : k === 'experience' ? (S.f.experience_name || S.name) : k === 'ticket' ? (S.f.event_name || S.name) : k === 'visit' ? (S.f.visit_name || S.name) : k === 'wellness' ? (S.f.wellness_name || S.f.wellness_location || S.name) : k === 'workout' ? (S.f.workout_name || S.f.workout_location || S.name) : k === 'funicular' ? (S.f.funicular_location || S.name) : k === 'misc' ? (S.f.misc_name || S.name) : k === 'drive' ? (S.f.drive_name || S.name) : S.name) + '</div>' +
+      ((k === 'restaurant' || k === 'coffee' || k === 'bar' || k === 'store' || k === 'hike' || k === 'neighborhood' || k === 'museum' || k === 'experience' || k === 'ticket' || k === 'visit' || k === 'drive' || k === 'funicular') ? [] : (k === 'misc' ? [S.f.misc_location].filter(Boolean) : k === 'wellness' ? [S.f.wellness_name && S.f.wellness_location].filter(Boolean) : k === 'workout' ? [S.f.workout_name && S.f.workout_location].filter(Boolean) : (S.locs || []))).map(l => '<div class="ac-ed">' + esc(l) + '</div>').join('') +
+      (S.f.booked === 'yes' ? '<div class="ac-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Booked</div>' : '') +
       ((S.stops && S.stops.length) ? '<button type="button" class="ac-toggle" aria-expanded="true"><span>Hide Stops</span><svg viewBox="0 0 24 24"><path d="M6 14.5l6-6 6 6"/></svg></button>' : '') +
       '</div><div class="ac-star' + (S.fav ? ' on' : '') + '">' + STAR + '</div>';
     if (S.stops && S.stops.length) inner = inner.replace('<div class="ac">', '<div class="ac ac-hood">') + '<div class="ac-stops">' + S.stops.map(s => '<div class="ac-stop"><div class="t">' + symTint(symName(s.t)) + '</div><div class="b"><div class="e">' + (s.time ? esc(s.time) + '<span class="sep">·</span>' : '') + esc(tagFor(s.t, {})) + '</div><div class="nn">' + esc(s.n) + '</div></div><div class="ac-star' + (s.fav ? ' on' : '') + '">' + STAR + '</div></div>').join('') + '</div>';
@@ -2009,7 +2010,7 @@ function editHTML(k, S, create){
     h += fieldHTML(rf('restaurant'), f.restaurant, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(rf('date'), f.date, ck, pk) + fieldHTML(rf('time'), f.time, ck, pk) + '</div>';
-    h += '<div class="r2">' + fieldHTML(rf('reservation'), f.reservation, ck, pk) + fieldHTML(rf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(rf('booked'), f.booked, ck, pk) + fieldHTML(rf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
     h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
   }
@@ -2027,7 +2028,7 @@ function editHTML(k, S, create){
     h += fieldHTML(bf('bar_name'), f.bar_name, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(bf('date'), f.date, ck, pk) + fieldHTML(bf('time'), f.time, ck, pk) + '</div>';
-    h += '<div class="r2">' + fieldHTML(bf('reservation'), f.reservation, ck, pk) + fieldHTML(bf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(bf('booked'), f.booked, ck, pk) + fieldHTML(bf('cancellation_fee'), f.cancellation_fee, ck, pk) + '</div>';
     h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
   }
@@ -2074,19 +2075,23 @@ function editHTML(k, S, create){
   }
   if (k === 'workout') {
     const wk = key => TYPE_FIELDS.workout.find(x => x.key === key);
+    h += fieldHTML(wk('workout_name'), f.workout_name, ck, pk);
     h += fieldHTML(wk('workout_location'), f.workout_location, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(wk('date'), f.date, ck, pk) + fieldHTML(wk('time'), f.time, ck, pk) + '</div>';
     h += '<div class="r2">' + fieldHTML(wk('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
   }
   if (k === 'wellness') {
     const wf = key => TYPE_FIELDS.wellness.find(x => x.key === key);
     h += fieldHTML(wf('wellness_type'), f.wellness_type, ck, pk);
+    h += fieldHTML(wf('wellness_name'), f.wellness_name, ck, pk);
     h += fieldHTML(wf('wellness_location'), f.wellness_location, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(wf('date'), f.date, ck, pk) + fieldHTML(wf('time'), f.time, ck, pk) + '</div>';
     h += '<div class="r2">' + fieldHTML(wf('booked'), f.booked, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
   }
   if (k === 'visit') {
@@ -2095,6 +2100,7 @@ function editHTML(k, S, create){
     h += fieldHTML(vf('visit_location'), f.visit_location, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(vf('date'), f.date, ck, pk) + fieldHTML(vf('time'), f.time, ck, pk) + '</div>';
+    h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
   }
   if (k === 'experience') {
@@ -2103,7 +2109,7 @@ function editHTML(k, S, create){
     h += fieldHTML(xf('experience_location'), f.experience_location, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(xf('date'), f.date, ck, pk) + fieldHTML(xf('time'), f.time, ck, pk) + '</div>';
-    h += '<div class="r2">' + fieldHTML(xf('booking'), f.booking, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(xf('booked'), f.booked, ck, pk) + '</div>';
     h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
     h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
@@ -2113,7 +2119,7 @@ function editHTML(k, S, create){
     h += fieldHTML(mf('museum_name'), f.museum_name, ck, pk);
     h += '<div class="lb">Address</div><div class="in ro">' + esc(u.addr || '') + '</div>';
     h += '<div class="r2">' + fieldHTML(mf('date'), f.date, ck, pk) + fieldHTML(mf('time'), f.time, ck, pk) + '</div>';
-    h += '<div class="r2">' + fieldHTML(mf('ticket'), f.ticket, ck, pk) + '</div>';
+    h += '<div class="r2">' + fieldHTML(mf('booked'), f.booked, ck, pk) + '</div>';
     h += '<div class="r2">' + uni('confirm', 'Confirmation Number', u.confirm, ['confirm']) + '</div>';
     h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
     fields = [];
@@ -2190,8 +2196,8 @@ function editHTML(k, S, create){
   if (!hid.has('cost') || !hid.has('link')) h += pair(hid.has('cost') ? none : uni('cost', 'Cost', u.cost, ['cost']), hid.has('link') ? none : uni('url', 'Link', u.url, ['url']));
   }
   if (!isCity) h += '<div class="lb">Photos</div><div class="phs"><div>+</div></div>';
-  if (k === 'visit' || k === 'wellness' || k === 'workout') h += '<div class="r2">' + uni('url', 'Link', u.url, ['url']) + '</div>';
   h += '<div class="lb">Notes</div><div class="in' + (u.notes ? '' : ' ph') + '" style="min-height:76px;align-items:flex-start;line-height:1.4">' + esc(u.notes || '') + '</div>';
+  if (create) h += '<div class="reqnote"><i class="req">*</i> Required: fill these in to add the stop. A date is always required, because every stop has to sort into a day.</div>';
   h += create ? '<div class="btns"><div class="b1">Cancel</div><div class="b2">Add</div></div></div>' : '<div class="btns"><div class="b1 del">Delete</div><div class="b2">Save</div></div></div>';
   return h;
 }
